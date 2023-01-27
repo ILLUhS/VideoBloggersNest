@@ -4,6 +4,7 @@ import { Blog, BlogModelType } from '../../domain/schemas/blog.schema';
 import { BlogCreateDtoType } from '../types/blog.create.dto';
 import { BlogUpdateDtoType } from '../types/blog.update.dto';
 import { BlogRepository } from '../../infrastructure/repositories/blog.repository';
+import { PostRepository } from '../../infrastructure/repositories/post.repository';
 
 @Injectable()
 export class BlogService {
@@ -11,7 +12,8 @@ export class BlogService {
   constructor(
     @InjectModel(Blog.name)
     private blogModel: BlogModelType,
-    protected blogRepository: BlogRepository, //protected postsRepository: PostsRepository,
+    protected blogRepository: BlogRepository,
+    protected postRepository: PostRepository,
   ) {}
   async findBlogById(id: string) {
     return await this.blogRepository.findById(id);
@@ -25,11 +27,13 @@ export class BlogService {
     const blog = await this.blogRepository.findById(id);
     if (!blog) return false;
     blog.updateProperties(blogDto);
-    const posts = await this.blogRepository.findPostsByBlogId(id);
-    posts!.forEach((p) => {
-      p.updateBlogName(blogDto.name);
-      this.blogRepository.save(p);
-    });
+    const posts = await this.postRepository.findPostsByBlogId(id);
+    if (posts) {
+      posts.forEach((p) => {
+        p.updateBlogName(blogDto.name);
+        this.postRepository.save(p);
+      });
+    }
     return await this.blogRepository.save(blog);
   }
   async deleteBlogByTd(id: string) {
