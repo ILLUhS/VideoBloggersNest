@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument, Model } from 'mongoose';
 import { PostCreateDtoType } from '../../application/types/post.create.dto';
 import { PostUpdateDtoType } from '../../application/types/post.update.dto';
+import { ReactionDocument } from './reaction.schema';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -21,7 +22,10 @@ export type PostModelType = Model<PostDocument> &
   PostModelMethods &
   PostModelStaticMethods;
 
-@Schema()
+@Schema({
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 export class Post {
   @Prop({ required: true })
   id: string;
@@ -43,6 +47,8 @@ export class Post {
 
   @Prop({ required: true })
   createdAt: string;
+
+  reactions: ReactionDocument[];
 
   static makeInstance(
     postDto: PostCreateDtoType,
@@ -79,3 +85,9 @@ PostSchema.methods = {
   updateProperties: Post.prototype.updateProperties,
   updateBlogName: Post.prototype.updateBlogName,
 };
+PostSchema.virtual('reactions', {
+  ref: 'Reaction',
+  localField: 'id',
+  foreignField: 'entityId',
+  options: { lean: true },
+});

@@ -18,7 +18,7 @@ export class BlogService {
   async findBlogById(id: string) {
     return await this.blogRepository.findById(id);
   }
-  async createBlog(blogDto: BlogCreateDtoType) {
+  async createBlog(blogDto: BlogCreateDtoType): Promise<string | null> {
     const newBlog = this.blogModel.makeInstance(blogDto, this.blogModel);
     const result = await this.blogRepository.save(newBlog);
     return result ? newBlog.id : null;

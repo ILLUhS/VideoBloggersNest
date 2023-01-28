@@ -9,6 +9,9 @@ import { BlogService } from '../application/services/blog.service';
 import { PostRepository } from '../infrastructure/repositories/post.repository';
 import { PostService } from '../application/services/post.service';
 import { Post, PostSchema } from '../domain/schemas/post.schema';
+import { QueryRepository } from '../infrastructure/query.repository';
+import { BlogController } from '../api/controllers/blog.controller';
+import { Reaction, ReactionSchema } from '../domain/schemas/reaction.schema';
 
 @Module({
   imports: [
@@ -17,11 +20,13 @@ import { Post, PostSchema } from '../domain/schemas/post.schema';
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
+      { name: Reaction.name, schema: ReactionSchema },
     ]),
   ],
-  controllers: [AppController],
+  controllers: [AppController, BlogController],
   providers: [
     AppService,
+    QueryRepository,
     BlogService,
     BlogRepository,
     PostService,
