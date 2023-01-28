@@ -13,6 +13,9 @@ import { QueryRepository } from '../infrastructure/query.repository';
 import { BlogController } from '../api/controllers/blog.controller';
 import { Reaction, ReactionSchema } from '../domain/schemas/reaction.schema';
 import { Comment, CommentSchema } from '../domain/schemas/comment.schema';
+import { PostController } from '../api/controllers/post.controller';
+import { CommentController } from '../api/controllers/comment.controller';
+import { TestingAllDataController } from '../api/controllers/testing.all.data.controller';
 
 @Module({
   imports: [
@@ -25,14 +28,20 @@ import { Comment, CommentSchema } from '../domain/schemas/comment.schema';
       { name: Comment.name, schema: CommentSchema },
     ]),
   ],
-  controllers: [AppController, BlogController],
+  controllers: [
+    AppController,
+    BlogController,
+    PostController,
+    CommentController,
+    TestingAllDataController,
+  ],
   providers: [
     AppService,
-    QueryRepository,
     BlogService,
-    BlogRepository,
     PostService,
+    BlogRepository,
     PostRepository,
+    QueryRepository,
   ],
 })
 export class AppModule {}
