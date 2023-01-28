@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PostRepository } from '../../infrastructure/repositories/post.repository';
-import { PostCreateDtoType } from '../types/post.create.dto';
+import { PostCreateDtoType } from '../types/post.create.dto.type';
 import { BlogRepository } from '../../infrastructure/repositories/blog.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostModelType } from '../../domain/schemas/post.schema';
-import { PostUpdateDtoType } from '../types/post.update.dto';
+import { PostUpdateDtoType } from '../types/post.update.dto.type';
 
 @Injectable()
 export class PostService {

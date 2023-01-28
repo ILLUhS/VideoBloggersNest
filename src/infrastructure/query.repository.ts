@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogModelType } from '../domain/schemas/blog.schema';
 import { Post, PostModelType } from '../domain/schemas/post.schema';
-import { QueryParamsType } from '../api/types/query.params';
-import { BlogsViewType } from '../api/types/blog.view';
-import { FilterQueryType } from '../api/types/filter.query';
+import { QueryParamsType } from '../api/types/query.params.type';
+import { BlogsViewType } from '../api/types/blog.view.type';
+import { FilterQueryType } from '../api/types/filter.query.type';
 import { ReactionDocument } from '../domain/schemas/reaction.schema';
+import { Comment, CommentModelType } from '../domain/schemas/comment.schema';
+import { CommentsViewType } from '../api/types/comment.view.type';
 
 @Injectable()
 export class QueryRepository {
   constructor(
     @InjectModel(Blog.name) private blogModel: BlogModelType,
     @InjectModel(Post.name) private postModel: PostModelType,
+    @InjectModel(Comment.name) private commentModel: CommentModelType,
   ) {}
   async getBlogsWithQueryParam(searchParams: QueryParamsType) {
     const blogs = await this.blogModel
@@ -209,12 +212,13 @@ export class QueryRepository {
           createdAt: user.accountData.createdAt,
         }
       : null;
-  }
+  }*/
   async findCommentById(
     id: string,
     userId?: string,
   ): Promise<CommentsViewType | null> {
-    const comment = await this.db.CommentModel.findOne({ id: id })
+    const comment = await this.commentModel
+      .findOne({ id: id })
       .populate('reactions')
       .select({ _id: 0, __v: 0 })
       .exec();
@@ -223,8 +227,10 @@ export class QueryRepository {
     return {
       id: comment.id,
       content: comment.content,
-      userId: comment.userId,
-      userLogin: comment.userLogin,
+      commentatorInfo: {
+        userId: comment.userId,
+        userLogin: comment.userLogin,
+      },
       createdAt: comment.createdAt,
       likesInfo: likesInfoMapped,
     };
@@ -235,16 +241,15 @@ export class QueryRepository {
     userId?: string,
   ) {
     if (!filter) filter = {};
-    const comments = await this.db.CommentModel.find(filter)
+    const comments = await this.commentModel
+      .find(filter)
       .populate('reactions')
       .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
       .limit(searchParams.pageSize)
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
       .select({ _id: 0, __v: 0 })
       .exec();
-    const commentsCount = await this.db.CommentModel.countDocuments(
-      filter,
-    ).exec();
+    const commentsCount = await this.commentModel.countDocuments(filter).exec();
     return {
       pagesCount: Math.ceil(commentsCount / searchParams.pageSize),
       page: searchParams.pageNumber,
@@ -259,15 +264,17 @@ export class QueryRepository {
           return {
             id: comment.id,
             content: comment.content,
-            userId: comment.userId,
-            userLogin: comment.userLogin,
+            commentatorInfo: {
+              userId: comment.userId,
+              userLogin: comment.userLogin,
+            },
             createdAt: comment.createdAt,
             likesInfo: likesInfoMapped,
           };
         }),
       ),
     };
-  }*/
+  }
   async likesInfoMap(reactions: ReactionDocument[], userId?: string) {
     if (!userId) userId = '';
     let myStatus = 'None';

@@ -12,6 +12,7 @@ import { Post, PostSchema } from '../domain/schemas/post.schema';
 import { QueryRepository } from '../infrastructure/query.repository';
 import { BlogController } from '../api/controllers/blog.controller';
 import { Reaction, ReactionSchema } from '../domain/schemas/reaction.schema';
+import { Comment, CommentSchema } from '../domain/schemas/comment.schema';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Reaction, ReactionSchema } from '../domain/schemas/reaction.schema';
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Reaction.name, schema: ReactionSchema },
+      { name: Comment.name, schema: CommentSchema },
     ]),
   ],
   controllers: [AppController, BlogController],

@@ -9,14 +9,14 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { QueryParamsType } from '../types/query.params';
+import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
 import { QueryRepository } from '../../infrastructure/query.repository';
-import { BlogCreateDtoType } from '../../application/types/blog.create.dto';
+import { BlogCreateDtoType } from '../../application/types/blog.create.dto.type';
 import { BlogService } from '../../application/services/blog.service';
-import { BlogUpdateDtoType } from '../../application/types/blog.update.dto';
+import { BlogUpdateDtoType } from '../../application/types/blog.update.dto.type';
 import { Response } from 'express';
-import { PostCreateDtoType } from '../../application/types/post.create.dto';
+import { PostCreateDtoType } from '../../application/types/post.create.dto.type';
 import { PostService } from '../../application/services/post.service';
 
 @Controller('blogs')
@@ -41,11 +41,16 @@ export class BlogController {
   async findPostsByBlogId(
     @Param('id') id: string,
     @Query() query: QueryParamsType,
+    @Res() res: Response,
   ) {
     const searchParams = await queryParamsValidation(query);
-    return await this.queryRepository.getPotsWithQueryParam(searchParams, {
-      blogId: id,
-    });
+    const blog = await this.queryRepository.findBlogById(id);
+    if (!blog) return res.sendStatus(404);
+    return res.status(200).json(
+      await this.queryRepository.getPotsWithQueryParam(searchParams, {
+        blogId: id,
+      }),
+    );
   }
   @Post()
   async createBlog(@Body() blogDto: BlogCreateDtoType, @Res() res: Response) {
@@ -61,6 +66,8 @@ export class BlogController {
     @Body() postDto: PostCreateDtoType,
     @Res() res: Response,
   ) {
+    const blog = await this.queryRepository.findBlogById(id);
+    if (!blog) return res.sendStatus(404);
     postDto.blogId = id;
     const postId = await this.postService.createPost(postDto);
     if (!postId) return res.sendStatus(400);

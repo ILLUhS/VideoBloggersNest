@@ -1,8 +1,8 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { BlogCreateDtoType } from '../../application/types/blog.create.dto';
-import { BlogUpdateDtoType } from '../../application/types/blog.update.dto';
+import { BlogCreateDtoType } from '../../application/types/blog.create.dto.type';
+import { BlogUpdateDtoType } from '../../application/types/blog.update.dto.type';
 
 export type BlogDocument = HydratedDocument<Blog>;
 

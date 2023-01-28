@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { PostService } from '../../application/services/post.service';
-import { QueryParamsType } from '../types/query.params';
+import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
 import { Response } from 'express';
-import { PostCreateDtoType } from '../../application/types/post.create.dto';
-import { PostUpdateDtoType } from '../../application/types/post.update.dto';
+import { PostCreateDtoType } from '../../application/types/post.create.dto.type';
+import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
 
 @Controller('posts')
 export class PostController {
@@ -33,6 +33,21 @@ export class PostController {
     const post = await this.queryRepository.findPostById(id);
     if (!post) return res.sendStatus(404);
     return res.status(200).json(post);
+  }
+  @Get(':id/comments')
+  async findCommentsByPostId(
+    @Param('id') id: string,
+    @Query() query: QueryParamsType,
+    @Res() res: Response,
+  ) {
+    const searchParams = await queryParamsValidation(query);
+    const post = await this.queryRepository.findPostById(id);
+    if (!post) return res.sendStatus(404);
+    return res.status(200).json(
+      await this.queryRepository.getCommentsWithQueryParam(searchParams, {
+        postId: id,
+      }),
+    );
   }
   @Post()
   async createPost(@Body() postDto: PostCreateDtoType, @Res() res: Response) {
