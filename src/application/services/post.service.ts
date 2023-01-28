@@ -12,15 +12,14 @@ export class PostService {
     @InjectModel(Post.name) private postModel: PostModelType,
     protected postRepository: PostRepository,
     protected blogRepository: BlogRepository,
-  ) /*protected commentService: CommentService,
-              protected queryRepository: QueryRepository*/ {}
+  ) /*protected commentService: CommentService*/ {}
   async findPostById(id: string) {
     return await this.postRepository.findById(id);
   }
   async deletePostByTd(id: string) {
     return await this.postRepository.deleteByTd(id);
   }
-  async createPost(postDto: PostCreateDtoType) {
+  async createPost(postDto: PostCreateDtoType): Promise<string | null> {
     const currentBlog = await this.blogRepository.findById(postDto.blogId);
     if (!currentBlog) return null;
     const newPost = this.postModel.makeInstance(

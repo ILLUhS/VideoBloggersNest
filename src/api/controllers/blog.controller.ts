@@ -9,19 +9,22 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { QueryParamsType } from './types/query.params';
-import { queryParamsValidation } from './helpers';
+import { QueryParamsType } from '../types/query.params';
+import { queryParamsValidation } from '../helpers';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { BlogCreateDtoType } from '../../application/types/blog.create.dto';
 import { BlogService } from '../../application/services/blog.service';
 import { BlogUpdateDtoType } from '../../application/types/blog.update.dto';
 import { Response } from 'express';
+import { PostCreateDtoType } from '../../application/types/post.create.dto';
+import { PostService } from '../../application/services/post.service';
 
 @Controller('blogs')
 export class BlogController {
   constructor(
     protected queryRepository: QueryRepository,
     protected blogService: BlogService,
+    protected postService: PostService,
   ) {}
   @Get()
   async findAll(@Query() query: QueryParamsType) {
@@ -51,6 +54,19 @@ export class BlogController {
     return res
       .status(201)
       .json(await this.queryRepository.findBlogById(blogId));
+  }
+  @Post(':id/posts')
+  async createPostByBlogId(
+    @Param('id') id: string,
+    @Body() postDto: PostCreateDtoType,
+    @Res() res: Response,
+  ) {
+    postDto.blogId = id;
+    const postId = await this.postService.createPost(postDto);
+    if (!postId) return res.sendStatus(400);
+    return res
+      .status(201)
+      .json(await this.queryRepository.findPostById(postId));
   }
   @Put(':id')
   async updateBlogById(

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogModelType } from '../domain/schemas/blog.schema';
 import { Post, PostModelType } from '../domain/schemas/post.schema';
-import { QueryParamsType } from '../api/controllers/types/query.params';
-import { BlogsViewType } from '../api/controllers/types/blog.view';
-import { FilterQueryType } from '../api/controllers/types/filter.query';
+import { QueryParamsType } from '../api/types/query.params';
+import { BlogsViewType } from '../api/types/blog.view';
+import { FilterQueryType } from '../api/types/filter.query';
 import { ReactionDocument } from '../domain/schemas/reaction.schema';
 
 @Injectable()
