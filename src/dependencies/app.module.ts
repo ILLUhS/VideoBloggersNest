@@ -19,6 +19,7 @@ import { TestingAllDataController } from '../api/controllers/testing.all.data.co
 import { User, UserSchema } from '../domain/schemas/user.schema';
 import { UserService } from '../application/services/user.service';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
+import { UserController } from '../api/controllers/user.controller';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UserRepository } from '../infrastructure/repositories/user.repository';
     BlogController,
     PostController,
     CommentController,
+    UserController,
     TestingAllDataController,
   ],
   providers: [

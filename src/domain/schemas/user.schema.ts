@@ -1,22 +1,20 @@
+import * as bcrypt from 'bcrypt';
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcrypt';
-import add from 'date-fns/add';
+import { add } from 'date-fns';
 import { UserCreateDtoType } from '../../application/types/user.create.dto.type';
 
 export type UserDocument = HydratedDocument<User>;
 
-export type UserModelMethods = {};
+//export type UserModelMethods = {};
 export type UserModelStaticMethods = {
   makeInstanceByAdmin(
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
-  ): UserDocument;
+  ): Promise<UserDocument>;
 };
-export type UserModelType = Model<UserDocument> &
-  UserModelMethods &
-  UserModelStaticMethods;
+export type UserModelType = Model<UserDocument> & UserModelStaticMethods;
 
 @Schema()
 export class User {
@@ -44,7 +42,7 @@ export class User {
   @Prop({ required: true })
   emailIsConfirmed: boolean;
 
-  private static async generateHash(password: string, salt: string) {
+  static async generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   }
 
@@ -52,8 +50,8 @@ export class User {
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
   ): Promise<UserDocument> {
-    const passwordSalt = await bcrypt.genSalt();
-    const passwordHash = await this.generateHash(
+    const passwordSalt = await bcrypt.genSalt(10);
+    const passwordHash = await User.generateHash(
       userDto.password,
       passwordSalt,
     );
@@ -71,5 +69,5 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.statics = { makeInstance: User.makeInstanceByAdmin };
-UserSchema.methods = {};
+UserSchema.statics = { makeInstanceByAdmin: User.makeInstanceByAdmin };
+//UserSchema.methods = {};

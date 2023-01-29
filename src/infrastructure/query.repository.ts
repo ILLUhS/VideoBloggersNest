@@ -8,6 +8,8 @@ import { FilterQueryType } from '../api/types/filter.query.type';
 import { ReactionDocument } from '../domain/schemas/reaction.schema';
 import { Comment, CommentModelType } from '../domain/schemas/comment.schema';
 import { CommentsViewType } from '../api/types/comment.view.type';
+import { User, UserModelType } from '../domain/schemas/user.schema';
+import { UserViewType } from '../api/types/user.view.type';
 
 @Injectable()
 export class QueryRepository {
@@ -15,6 +17,7 @@ export class QueryRepository {
     @InjectModel(Blog.name) private blogModel: BlogModelType,
     @InjectModel(Post.name) private postModel: PostModelType,
     @InjectModel(Comment.name) private commentModel: CommentModelType,
+    @InjectModel(User.name) private userModel: UserModelType,
   ) {}
   async getBlogsWithQueryParam(searchParams: QueryParamsType) {
     const blogs = await this.blogModel
@@ -138,17 +141,18 @@ export class QueryRepository {
       },
     };
   }
-  /*async getUsersWithQueryParam(searchParams: QueryParamsType) {
-    const users = await this.db.UserModel.find()
+  async getUsersWithQueryParam(searchParams: QueryParamsType) {
+    const users = await this.userModel
+      .find()
       .or([
         {
-          'accountData.login': {
+          login: {
             $regex: searchParams.searchLoginTerm,
             $options: 'i',
           },
         },
         {
-          'accountData.email': {
+          email: {
             $regex: searchParams.searchEmailTerm,
             $options: 'i',
           },
@@ -160,21 +164,22 @@ export class QueryRepository {
       .select({
         _id: 0,
         id: 1,
-        'accountData.login': 1,
-        'accountData.email': 1,
-        'accountData.createdAt': 1,
+        login: 1,
+        email: 1,
+        createdAt: 1,
       })
       .exec();
-    const usersCount = await this.db.UserModel.countDocuments()
+    const usersCount = await this.userModel
+      .countDocuments()
       .or([
         {
-          'accountData.login': {
+          login: {
             $regex: searchParams.searchLoginTerm,
             $options: 'i',
           },
         },
         {
-          'accountData.email': {
+          email: {
             $regex: searchParams.searchEmailTerm,
             $options: 'i',
           },
@@ -188,31 +193,32 @@ export class QueryRepository {
       totalCount: usersCount,
       items: users.map((user) => ({
         id: user.id,
-        login: user.accountData.login,
-        email: user.accountData.email,
-        createdAt: user.accountData.createdAt,
+        login: user.login,
+        email: user.email,
+        createdAt: user.createdAt,
       })),
     };
   }
   async findUserById(id: string): Promise<UserViewType | null> {
-    const user = await this.db.UserModel.findOne({ id: id })
+    const user = await this.userModel
+      .findOne({ id: id })
       .select({
         _id: 0,
         id: 1,
-        'accountData.login': 1,
-        'accountData.email': 1,
-        'accountData.createdAt': 1,
+        login: 1,
+        email: 1,
+        createdAt: 1,
       })
       .exec();
     return user
       ? {
           id: user.id,
-          login: user.accountData.login,
-          email: user.accountData.email,
-          createdAt: user.accountData.createdAt,
+          login: user.login,
+          email: user.email,
+          createdAt: user.createdAt,
         }
       : null;
-  }*/
+  }
   async findCommentById(
     id: string,
     userId?: string,
