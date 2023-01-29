@@ -17,7 +17,7 @@ export class PostService {
     return await this.postRepository.findById(id);
   }
   async deletePostByTd(id: string) {
-    return await this.postRepository.deleteByTd(id);
+    return await this.postRepository.deleteById(id);
   }
   async createPost(postDto: PostCreateDtoType): Promise<string | null> {
     const currentBlog = await this.blogRepository.findById(postDto.blogId);

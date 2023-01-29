@@ -1,13 +1,15 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
+import add from 'date-fns/add';
 import { UserCreateDtoType } from '../../application/types/user.create.dto.type';
 
 export type UserDocument = HydratedDocument<User>;
 
 export type UserModelMethods = {};
 export type UserModelStaticMethods = {
-  makeInstance(
+  makeInstanceByAdmin(
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
   ): UserDocument;
@@ -42,22 +44,32 @@ export class User {
   @Prop({ required: true })
   emailIsConfirmed: boolean;
 
-  static makeInstance(
+  private static async generateHash(password: string, salt: string) {
+    return await bcrypt.hash(password, salt);
+  }
+
+  static async makeInstanceByAdmin(
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
-  ): UserDocument {
+  ): Promise<UserDocument> {
+    const passwordSalt = await bcrypt.genSalt();
+    const passwordHash = await this.generateHash(
+      userDto.password,
+      passwordSalt,
+    );
     return new UserModel({
       id: uuidv4(),
-      title: postDto.title,
-      shortDescription: postDto.shortDescription,
-      content: postDto.content,
-      blogId: postDto.blogId,
-      blogName: blogName,
+      login: userDto.login,
+      passwordHash: passwordHash,
+      email: userDto.email,
       createdAt: new Date().toISOString(),
+      emailConfirmationCode: uuidv4(),
+      emailExpirationTime: add(new Date(), { hours: 24 }),
+      emailIsConfirmed: true,
     });
   }
 }
 
-export const PostSchema = SchemaFactory.createForClass(User);
-PostSchema.statics = { makeInstance: User.makeInstance };
-PostSchema.methods = {};
+export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.statics = { makeInstance: User.makeInstanceByAdmin };
+UserSchema.methods = {};

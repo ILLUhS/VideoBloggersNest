@@ -16,6 +16,9 @@ import { Comment, CommentSchema } from '../domain/schemas/comment.schema';
 import { PostController } from '../api/controllers/post.controller';
 import { CommentController } from '../api/controllers/comment.controller';
 import { TestingAllDataController } from '../api/controllers/testing.all.data.controller';
+import { User, UserSchema } from '../domain/schemas/user.schema';
+import { UserService } from '../application/services/user.service';
+import { UserRepository } from '../infrastructure/repositories/user.repository';
 
 @Module({
   imports: [
@@ -26,6 +29,7 @@ import { TestingAllDataController } from '../api/controllers/testing.all.data.co
       { name: Post.name, schema: PostSchema },
       { name: Reaction.name, schema: ReactionSchema },
       { name: Comment.name, schema: CommentSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [
@@ -39,8 +43,10 @@ import { TestingAllDataController } from '../api/controllers/testing.all.data.co
     AppService,
     BlogService,
     PostService,
+    UserService,
     BlogRepository,
     PostRepository,
+    UserRepository,
     QueryRepository,
   ],
 })
