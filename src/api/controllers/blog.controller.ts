@@ -12,7 +12,7 @@ import {
 import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
 import { QueryRepository } from '../../infrastructure/query.repository';
-import { BlogCreateDtoType } from '../../application/types/blog.create.dto.type';
+import { BlogCreateDto } from '../../application/types/blog.create.dto';
 import { BlogService } from '../../application/services/blog.service';
 import { BlogUpdateDtoType } from '../../application/types/blog.update.dto.type';
 import { Response } from 'express';
@@ -53,7 +53,7 @@ export class BlogController {
     );
   }
   @Post()
-  async createBlog(@Body() blogDto: BlogCreateDtoType, @Res() res: Response) {
+  async createBlog(@Body() blogDto: BlogCreateDto, @Res() res: Response) {
     const blogId = await this.blogService.createBlog(blogDto);
     if (!blogId) return res.sendStatus(400);
     return res
