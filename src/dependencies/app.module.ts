@@ -53,6 +53,5 @@ import { AuthModule } from '../api/auth/auth.module';
     UserRepository,
     QueryRepository,
   ],
-  exports: [UserService],
 })
 export class AppModule {}

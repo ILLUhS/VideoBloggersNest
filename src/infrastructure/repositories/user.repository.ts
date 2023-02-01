@@ -14,6 +14,12 @@ export class UserRepository {
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ id: id });
   }
+  async findByField(
+    field: string,
+    value: string,
+  ): Promise<UserDocument | null> {
+    return this.userModel.findOne({ [field]: value });
+  }
   async deleteById(id: string): Promise<boolean> {
     return (
       (await this.userModel.deleteOne({ id: id }).exec()).deletedCount === 1

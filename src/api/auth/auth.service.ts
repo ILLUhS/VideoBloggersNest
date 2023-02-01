@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../application/services/user.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -19,12 +20,32 @@ export class AuthService {
   }*/
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { userId: user.id, login: user.login };
     return {
-      access_token: this.jwtService.sign(payload, {
+      accessToken: this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET,
         expiresIn: '15m',
       }),
     };
+  }
+  private async generateHash(password: string, salt: string) {
+    return await bcrypt.hash(password, salt);
+  }
+  async cechCredentials(loginOrEmail: string, password: string) {
+    const user = await this.usersService.findUserByField(
+      await this.isLoginOrEmail(loginOrEmail),
+      loginOrEmail,
+    );
+    if (!user) return null;
+    const passwordHash = await this.generateHash(
+      password,
+      user.passwordHash.substring(0, 30),
+    );
+    const confirmed = user.emailIsConfirmed;
+    if (!confirmed) return null;
+    return user.passwordHash === passwordHash ? user : null;
+  }
+  async isLoginOrEmail(loginOrEmail: string) {
+    return loginOrEmail.includes('@') ? 'email' : 'login';
   }
 }
