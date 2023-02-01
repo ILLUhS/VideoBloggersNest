@@ -20,9 +20,11 @@ import { User, UserSchema } from '../domain/schemas/user.schema';
 import { UserService } from '../application/services/user.service';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { UserController } from '../api/controllers/user.controller';
+import { AuthModule } from '../api/auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URL),
     MongooseModule.forFeature([
@@ -51,5 +53,6 @@ import { UserController } from '../api/controllers/user.controller';
     UserRepository,
     QueryRepository,
   ],
+  exports: [UserService],
 })
 export class AppModule {}

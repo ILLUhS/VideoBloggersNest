@@ -1,4 +1,4 @@
-import { IsString, Length, Matches } from 'class-validator';
+import { IsString, IsUrl, Length, Matches } from 'class-validator';
 
 export class BlogCreateDto {
   @IsString()
@@ -9,10 +9,11 @@ export class BlogCreateDto {
   @Length(1, 500)
   description: string;
 
-  @IsString()
+  //@IsString()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   @Length(1, 100)
-  @Matches(
-    '^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n',
-  )
+  /*@Matches(
+    '^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$',
+  )*/
   websiteUrl: string;
 }

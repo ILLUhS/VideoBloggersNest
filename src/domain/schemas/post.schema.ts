@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument, Model } from 'mongoose';
-import { PostCreateDtoType } from '../../application/types/post.create.dto.type';
+import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
 import { ReactionDocument } from './reaction.schema';
 
@@ -13,7 +13,7 @@ export type PostModelMethods = {
 };
 export type PostModelStaticMethods = {
   makeInstance(
-    postDto: PostCreateDtoType,
+    postDto: PostCreateDto,
     PostModel: PostModelType,
     blogName: string,
   ): PostDocument;
@@ -51,7 +51,7 @@ export class Post {
   reactions: ReactionDocument[];
 
   static makeInstance(
-    postDto: PostCreateDtoType,
+    postDto: PostCreateDto,
     PostModel: PostModelType,
     blogName: string,
   ): PostDocument {

@@ -18,6 +18,9 @@ export class UserService {
     const result = await this.usersRepository.save(newUser);
     return result ? newUser.id : null;
   }
+  async findUser(userId: string) {
+    return await this.usersRepository.findById(userId);
+  }
   async deleteUserById(id: string) {
     return await this.usersRepository.deleteById(id);
   }

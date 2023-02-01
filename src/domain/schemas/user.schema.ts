@@ -45,7 +45,7 @@ export class User {
   static async generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   }
-
+  //todo move bcrypt to service
   static async makeInstanceByAdmin(
     userDto: UserCreateDtoType,
     UserModel: UserModelType,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PostRepository } from '../../infrastructure/repositories/post.repository';
-import { PostCreateDtoType } from '../types/post.create.dto.type';
+import { PostCreateDto } from '../types/post.create.dto';
 import { BlogRepository } from '../../infrastructure/repositories/blog.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostModelType } from '../../domain/schemas/post.schema';
@@ -19,7 +19,7 @@ export class PostService {
   async deletePostByTd(id: string) {
     return await this.postRepository.deleteById(id);
   }
-  async createPost(postDto: PostCreateDtoType): Promise<string | null> {
+  async createPost(postDto: PostCreateDto): Promise<string | null> {
     const currentBlog = await this.blogRepository.findById(postDto.blogId);
     if (!currentBlog) return null;
     const newPost = this.postModel.makeInstance(

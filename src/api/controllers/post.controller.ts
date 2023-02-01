@@ -14,7 +14,7 @@ import { PostService } from '../../application/services/post.service';
 import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
 import { Response } from 'express';
-import { PostCreateDtoType } from '../../application/types/post.create.dto.type';
+import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
 
 @Controller('posts')
@@ -50,7 +50,7 @@ export class PostController {
     );
   }
   @Post()
-  async createPost(@Body() postDto: PostCreateDtoType, @Res() res: Response) {
+  async createPost(@Body() postDto: PostCreateDto, @Res() res: Response) {
     const postId = await this.postService.createPost(postDto);
     if (!postId) return res.sendStatus(400);
     return res
