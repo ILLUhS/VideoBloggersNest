@@ -10,21 +10,32 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../../domain/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import {
+  RefreshTokenMeta,
+  RefreshTokenMetaSchema,
+} from '../../domain/schemas/refreshTokenMetaSchema';
+import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/refresh.token.meta.repository';
 
 @Module({
   imports: [
     PassportModule,
     ConfigModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: RefreshTokenMeta.name, schema: RefreshTokenMetaSchema },
+    ]),
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     BasicStrategy,
     LocalStrategy,
+    JwtStrategy,
     UserService,
     JwtService,
     UserRepository,
+    RefreshTokenMetaRepository,
   ],
 })
 export class AuthModule {}
