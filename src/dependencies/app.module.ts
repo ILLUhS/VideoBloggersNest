@@ -21,6 +21,7 @@ import { UserService } from '../application/services/user.service';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { UserController } from '../api/controllers/user.controller';
 import { AuthModule } from '../api/auth/auth.module';
+import { LoginOrEmailValidate } from '../api/auth/login.or.email.validate';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AuthModule } from '../api/auth/auth.module';
     PostRepository,
     UserRepository,
     QueryRepository,
+    LoginOrEmailValidate,
   ],
 })
 export class AppModule {}

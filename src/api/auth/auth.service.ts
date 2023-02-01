@@ -14,8 +14,8 @@ import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/re
 export class AuthService {
   constructor(
     @InjectModel(RefreshTokenMeta.name)
-    private refreshTokenMetaRepository: RefreshTokenMetaRepository,
     private refreshTokenMetaModel: RefreshTokenMetaModelType,
+    private refreshTokenMetaRepository: RefreshTokenMetaRepository,
     private usersService: UserService,
     private jwtService: JwtService,
   ) {}
