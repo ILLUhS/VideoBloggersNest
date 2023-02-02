@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { BasicStrategy } from './strategies/basic.strategy';
@@ -16,6 +21,7 @@ import {
   RefreshTokenMetaSchema,
 } from '../../domain/schemas/refreshTokenMetaSchema';
 import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/refresh.token.meta.repository';
+import { LoginMiddleware } from './login.middleware';
 
 @Module({
   imports: [
@@ -38,4 +44,10 @@ import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/re
     RefreshTokenMetaRepository,
   ],
 })
-export class AuthModule {}
+export class AuthModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoginMiddleware)
+      .forRoutes({ path: 'auth/login', method: RequestMethod.POST });
+  }
+}
