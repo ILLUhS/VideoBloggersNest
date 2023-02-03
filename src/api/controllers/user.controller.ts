@@ -12,8 +12,8 @@ import { QueryRepository } from '../../infrastructure/query.repository';
 import { UserService } from '../../application/services/user.service';
 import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
-import { UserCreateDtoType } from '../../application/types/user.create.dto.type';
 import { Response } from 'express';
+import { UserInputDto } from '../../application/types/user.input.dto';
 
 @Controller('users')
 export class UserController {
@@ -27,7 +27,7 @@ export class UserController {
     return await this.queryRepository.getUsersWithQueryParam(searchParams);
   }
   @Post()
-  async createUser(@Body() userDto: UserCreateDtoType, @Res() res: Response) {
+  async createUser(@Body() userDto: UserInputDto, @Res() res: Response) {
     const userId = await this.userService.createUser(userDto);
     if (!userDto) return res.sendStatus(400);
     return res

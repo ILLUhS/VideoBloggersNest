@@ -13,6 +13,10 @@ export type UserModelStaticMethods = {
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
   ): Promise<UserDocument>;
+  makeInstance(
+    userDto: UserCreateDtoType,
+    UserModel: UserModelType,
+  ): Promise<UserDocument>;
 };
 export type UserModelType = Model<UserDocument> & UserModelStaticMethods;
 
@@ -50,15 +54,10 @@ export class User {
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
   ): Promise<UserDocument> {
-    const passwordSalt = await bcrypt.genSalt(10);
-    const passwordHash = await User.generateHash(
-      userDto.password,
-      passwordSalt,
-    );
     return new UserModel({
       id: uuidv4(),
       login: userDto.login,
-      passwordHash: passwordHash,
+      passwordHash: userDto.passwordHash,
       email: userDto.email,
       createdAt: new Date().toISOString(),
       emailConfirmationCode: uuidv4(),
@@ -66,8 +65,27 @@ export class User {
       emailIsConfirmed: true,
     });
   }
+
+  static async makeInstance(
+    userDto: UserCreateDtoType,
+    UserModel: UserModelType,
+  ): Promise<UserDocument> {
+    return new UserModel({
+      id: uuidv4(),
+      login: userDto.login,
+      passwordHash: userDto.passwordHash,
+      email: userDto.email,
+      createdAt: new Date().toISOString(),
+      emailConfirmationCode: uuidv4(),
+      emailExpirationTime: add(new Date(), { hours: 24 }),
+      emailIsConfirmed: false,
+    });
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.statics = { makeInstanceByAdmin: User.makeInstanceByAdmin };
+UserSchema.statics = {
+  makeInstanceByAdmin: User.makeInstanceByAdmin,
+  makeInstance: User.makeInstance,
+};
 //UserSchema.methods = {};

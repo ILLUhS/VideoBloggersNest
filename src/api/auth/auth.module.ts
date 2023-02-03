@@ -5,7 +5,7 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BasicStrategy } from './strategies/basic.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { AuthService } from './auth.service';
@@ -22,6 +22,8 @@ import {
 } from '../../domain/schemas/refreshTokenMetaSchema';
 import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/refresh.token.meta.repository';
 import { LoginMiddleware } from './login.middleware';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { getMailConfig } from '../../configs/email.config';
 
 @Module({
   imports: [
@@ -31,6 +33,11 @@ import { LoginMiddleware } from './login.middleware';
       { name: User.name, schema: UserSchema },
       { name: RefreshTokenMeta.name, schema: RefreshTokenMetaSchema },
     ]),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getMailConfig,
+    }),
   ],
   controllers: [AuthController],
   providers: [

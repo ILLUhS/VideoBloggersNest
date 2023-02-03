@@ -1,13 +1,23 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserLoginInputDto } from '../types/user.login.input.dto';
+import { UserInputDto } from '../../application/types/user.input.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(protected authService: AuthService) {}
 
+  //LoginMiddleware - validate login and pass
   @UseGuards(AuthGuard('local'))
   @Post('/login')
   async login(
@@ -29,5 +39,16 @@ export class AuthController {
         path: '/auth/refresh-token',
       })
       .json(accessToken);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/me')
+  async getAuthUser(@Req() req: Request) {
+    return await this.authService.getAuthUserInfo(req.user);
+  }
+
+  @Post('/registration')
+  async regUser(@Body() userDto: UserInputDto) {
+    return await this.authService.createUser(userDto);
   }
 }

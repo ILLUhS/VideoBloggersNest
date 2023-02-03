@@ -1,5 +1,5 @@
 export type UserCreateDtoType = {
   login: string;
-  password: string;
+  passwordHash: string;
   email: string;
 };

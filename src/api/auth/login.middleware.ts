@@ -19,7 +19,10 @@ export class LoginMiddleware implements NestMiddleware {
       loginOrEmail.length < 3 ||
       loginOrEmail.length > 10
     )
-      throw new BadRequestException();
+      throw new BadRequestException({
+        field: 'loginOrEmail',
+        message: 'bad input',
+      });
     if (!password || typeof password !== 'string')
       throw new BadRequestException();
     if (password.length < 6 || password.length > 20)

@@ -70,10 +70,9 @@ export class QueryRepository {
   }
   async getPotsWithQueryParam(
     searchParams: QueryParamsType,
-    filter?: FilterQueryType,
-    userId?: string,
+    filter: FilterQueryType = {}, //установка дефолтного значения
+    userId = '',
   ) {
-    if (!filter) filter = {};
     const posts = await this.postModel
       .find(filter)
       .populate('reactions')
@@ -116,7 +115,7 @@ export class QueryRepository {
       ),
     };
   }
-  async findPostById(id: string, userId?: string) {
+  async findPostById(id: string, userId = '') {
     const post = await this.postModel
       .findOne({ id: id })
       .populate('reactions')
@@ -221,7 +220,7 @@ export class QueryRepository {
   }
   async findCommentById(
     id: string,
-    userId?: string,
+    userId = '',
   ): Promise<CommentsViewType | null> {
     const comment = await this.commentModel
       .findOne({ id: id })
@@ -243,8 +242,8 @@ export class QueryRepository {
   }
   async getCommentsWithQueryParam(
     searchParams: QueryParamsType,
-    filter?: FilterQueryType,
-    userId?: string,
+    filter: FilterQueryType = {},
+    userId = '',
   ) {
     if (!filter) filter = {};
     const comments = await this.commentModel
@@ -281,8 +280,7 @@ export class QueryRepository {
       ),
     };
   }
-  async likesInfoMap(reactions: ReactionDocument[], userId?: string) {
-    if (!userId) userId = '';
+  async likesInfoMap(reactions: ReactionDocument[], userId: string) {
     let myStatus = 'None';
     let likesCount = 0;
     let dislikesCount = 0;

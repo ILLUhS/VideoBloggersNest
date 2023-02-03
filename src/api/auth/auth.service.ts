@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../application/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,17 +9,45 @@ import {
   RefreshTokenMetaModelType,
 } from '../../domain/schemas/refreshTokenMetaSchema';
 import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/refresh.token.meta.repository';
+import {
+  User,
+  UserDocument,
+  UserModelType,
+} from '../../domain/schemas/user.schema';
+import { UserInputDto } from '../../application/types/user.input.dto';
+import { UserRepository } from '../../infrastructure/repositories/user.repository';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectModel(User.name) private userModel: UserModelType,
     @InjectModel(RefreshTokenMeta.name)
     private refreshTokenMetaModel: RefreshTokenMetaModelType,
     private refreshTokenMetaRepository: RefreshTokenMetaRepository,
+    protected usersRepository: UserRepository,
     private usersService: UserService,
     private jwtService: JwtService,
+    private readonly mailerService: MailerService,
   ) {}
 
+  async createUser(userDto: UserInputDto) {
+    const passwordSalt = await bcrypt.genSalt(10);
+    const passwordHash = await this.generateHash(
+      userDto.password,
+      passwordSalt,
+    );
+    const user = await this.userModel.makeInstance(
+      {
+        login: userDto.login,
+        passwordHash: passwordHash,
+        email: userDto.email,
+      },
+      this.userModel,
+    );
+    await this.sendConfirmMail(user);
+    await this.usersRepository.save(user);
+  }
   async createAccessToken(user: any) {
     const payload = { userId: user.id, login: user.login, email: user.email };
     return {
@@ -82,8 +110,8 @@ export class AuthService {
       payload.userId,
     );
   }
-  private async generateHash(password: string, salt: string) {
-    return await bcrypt.hash(password, salt);
+  async getAuthUserInfo(user: any) {
+    return { email: user.email, login: user.login, userId: user.id };
   }
   async cechCredentials(loginOrEmail: string, password: string) {
     const user = await this.usersService.findUserByField(
@@ -98,6 +126,34 @@ export class AuthService {
     const confirmed = user.emailIsConfirmed;
     if (!confirmed) return null;
     return user.passwordHash === passwordHash ? user : null;
+  }
+  async sendConfirmMail(user: UserDocument) {
+    const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
+    // Отправка почты
+    return await this.mailerService
+      .sendMail({
+        to: user.email,
+        subject: 'Подтверждение регистрации',
+        template: String.prototype.concat(
+          __dirname,
+          '/../auth/templates.email/',
+          'confirmReg',
+        ),
+        context: {
+          code: user.emailConfirmationCode,
+          username: user.login,
+          urlConfirmAddress,
+        },
+      })
+      .catch((e) => {
+        throw new HttpException(
+          `Ошибка работы почты: ${JSON.stringify(e)}`,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      });
+  }
+  private async generateHash(password: string, salt: string) {
+    return await bcrypt.hash(password, salt);
   }
   private async isLoginOrEmail(loginOrEmail: string) {
     return loginOrEmail.includes('@') ? 'email' : 'login';
