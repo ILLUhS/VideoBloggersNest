@@ -22,6 +22,7 @@ import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { UserController } from '../api/controllers/user.controller';
 import { AuthModule } from '../api/auth/auth.module';
 import { LoginOrEmailValidate } from '../api/auth/login.or.email.validate';
+import { AuthHeaderInterceptor } from '../api/controllers/interceptors/auth.header.interceptor';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { LoginOrEmailValidate } from '../api/auth/login.or.email.validate';
     UserRepository,
     QueryRepository,
     LoginOrEmailValidate,
+    AuthHeaderInterceptor,
   ],
 })
 export class AppModule {}

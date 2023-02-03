@@ -25,6 +25,8 @@ import { LoginMiddleware } from './login.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from '../../configs/email.config';
 import { RefreshStrategy } from './strategies/refresh.strategy';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -39,6 +41,7 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
       inject: [ConfigService],
       useFactory: getMailConfig,
     }),
+    ThrottlerModule.forRootAsync({ useFactory: () => ({ ttl: 10, limit: 5 }) }),
   ],
   controllers: [AuthController],
   providers: [
@@ -51,6 +54,10 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
     JwtService,
     UserRepository,
     RefreshTokenMetaRepository,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AuthModule implements NestModule {

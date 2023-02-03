@@ -14,6 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserLoginInputDto } from '../types/user.login.input.dto';
 import { UserInputDto } from '../../application/types/user.input.dto';
 import { EmailDto } from '../auth/types/email.dto';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -43,6 +44,7 @@ export class AuthController {
       .json(accessToken);
   }
 
+  @SkipThrottle()
   @UseGuards(AuthGuard('jwt'))
   @Get('/me')
   async getAuthUser(@Req() req: Request) {
@@ -68,6 +70,7 @@ export class AuthController {
     return;
   }
 
+  @SkipThrottle()
   @UseGuards(AuthGuard('refresh'))
   @Post('logout')
   async logout(@Req() req: Request) {

@@ -1,0 +1,22 @@
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class AuthHeaderInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const req = context.switchToHttp().getRequest();
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(' ')[1];
+      const payload = JSON.parse(
+        Buffer.from(token.split('.')[1], 'base64').toString('ascii'),
+      );
+      req.user = { userId: payload.userId };
+    }
+    return next.handle().pipe();
+  }
+}

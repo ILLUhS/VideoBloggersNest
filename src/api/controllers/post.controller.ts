@@ -7,15 +7,18 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { PostService } from '../../application/services/post.service';
 import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
+import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 
 @Controller('posts')
 export class PostController {
@@ -23,9 +26,17 @@ export class PostController {
     protected queryRepository: QueryRepository,
     protected postService: PostService,
   ) {}
+
+  @UseInterceptors(AuthHeaderInterceptor)
   @Get()
-  async findAll(@Query() query: QueryParamsType) {
+  async findAll(@Query() query: QueryParamsType, @Req() req: Request) {
     const searchParams = await queryParamsValidation(query);
+    if (req.user)
+      return await this.queryRepository.getPotsWithQueryParam(
+        searchParams,
+        {},
+        req.user['userId'],
+      );
     return await this.queryRepository.getPotsWithQueryParam(searchParams);
   }
   @Get(':id')
