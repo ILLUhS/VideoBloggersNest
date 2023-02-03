@@ -24,6 +24,7 @@ import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/re
 import { LoginMiddleware } from './login.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from '../../configs/email.config';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { getMailConfig } from '../../configs/email.config';
     BasicStrategy,
     LocalStrategy,
     JwtStrategy,
+    RefreshStrategy,
     UserService,
     JwtService,
     UserRepository,

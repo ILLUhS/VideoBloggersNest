@@ -9,7 +9,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   constructor(private authService: AuthService) {
     super({
       ignoreExpiration: false,
-      passReqToCallback: true,
+      passReqToCallback: false,
       secretOrKey: process.env.REFRESH_JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {

@@ -45,7 +45,7 @@ export class AuthService {
       },
       this.userModel,
     );
-    await this.sendConfirmMail(user);
+    await this.sendConfirmEmail(user);
     await this.usersRepository.save(user);
   }
   async createAccessToken(user: any) {
@@ -110,11 +110,17 @@ export class AuthService {
       payload.userId,
     );
   }
+  async deleteSession(payload: any) {
+    return await this.refreshTokenMetaRepository.deleteByUserIdAndDeviceId(
+      payload.userId,
+      payload.deviceId,
+    );
+  }
   async getAuthUserInfo(user: any) {
     return { email: user.email, login: user.login, userId: user.id };
   }
   async cechCredentials(loginOrEmail: string, password: string) {
-    const user = await this.usersService.findUserByField(
+    const user = await this.usersRepository.findByField(
       await this.isLoginOrEmail(loginOrEmail),
       loginOrEmail,
     );
@@ -127,7 +133,25 @@ export class AuthService {
     if (!confirmed) return null;
     return user.passwordHash === passwordHash ? user : null;
   }
-  async sendConfirmMail(user: UserDocument) {
+  async confirmEmail(code: string): Promise<boolean> {
+    const user = await this.usersRepository.findByField(
+      'emailConfirmationCode',
+      code,
+    );
+    if (!user) return false;
+    const result = await user.emailConfirm();
+    if (!result) return false;
+    return await this.usersRepository.save(user);
+  }
+  async resendEmail(email: string) {
+    const user = await this.usersRepository.findByField('email', email);
+    if (!user) return false;
+    await user.emailExpDate();
+    await this.sendConfirmEmail(user);
+    await this.usersRepository.save(user);
+    return true;
+  }
+  async sendConfirmEmail(user: UserDocument) {
     const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
     // Отправка почты
     return await this.mailerService

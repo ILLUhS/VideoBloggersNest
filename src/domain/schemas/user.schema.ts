@@ -1,4 +1,3 @@
-import * as bcrypt from 'bcrypt';
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,7 +6,10 @@ import { UserCreateDtoType } from '../../application/types/user.create.dto.type'
 
 export type UserDocument = HydratedDocument<User>;
 
-//export type UserModelMethods = {};
+export type UserModelMethods = {
+  emailConfirm(): Promise<boolean>;
+  emailExpDate(): Promise<void>;
+};
 export type UserModelStaticMethods = {
   makeInstanceByAdmin(
     userDto: UserCreateDtoType,
@@ -18,7 +20,9 @@ export type UserModelStaticMethods = {
     UserModel: UserModelType,
   ): Promise<UserDocument>;
 };
-export type UserModelType = Model<UserDocument> & UserModelStaticMethods;
+export type UserModelType = Model<UserDocument> &
+  UserModelMethods &
+  UserModelStaticMethods;
 
 @Schema()
 export class User {
@@ -41,15 +45,24 @@ export class User {
   emailConfirmationCode: string;
 
   @Prop({ required: true })
-  emailExpirationTime: string;
+  emailExpirationTime: Date;
 
   @Prop({ required: true })
   emailIsConfirmed: boolean;
 
-  static async generateHash(password: string, salt: string) {
-    return await bcrypt.hash(password, salt);
+  async emailConfirm(): Promise<boolean> {
+    if (
+      this.emailExpirationTime <= new Date() ||
+      this.emailIsConfirmed === true
+    )
+      return false;
+    this.emailIsConfirmed = true;
+    return true;
   }
-  //todo move bcrypt to service
+  async emailExpDate(): Promise<void> {
+    this.emailExpirationTime = add(new Date(), { hours: 24 });
+  }
+
   static async makeInstanceByAdmin(
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
@@ -88,4 +101,7 @@ UserSchema.statics = {
   makeInstanceByAdmin: User.makeInstanceByAdmin,
   makeInstance: User.makeInstance,
 };
-//UserSchema.methods = {};
+UserSchema.methods = {
+  emailConfirm: User.prototype.emailConfirm,
+  emailExpDate: User.prototype.emailExpDate,
+};
