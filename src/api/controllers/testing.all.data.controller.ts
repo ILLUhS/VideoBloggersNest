@@ -1,24 +1,28 @@
-import { Controller, Delete, Res } from '@nestjs/common';
-import { BlogService } from '../../application/services/blog.service';
-import { PostService } from '../../application/services/post.service';
-import { UserService } from '../../application/services/user.service';
-import { Response } from 'express';
-import { AuthService } from '../../auth/application/services/auth.service';
+import { Controller, Delete, HttpCode } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Connection } from 'mongoose';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
   constructor(
-    protected blogService: BlogService,
+    @InjectConnection()
+    private readonly connection: Connection /*protected blogService: BlogService,
     protected postService: PostService,
-    protected userService: UserService /*protected authService: AuthService,*/,
+    protected userService: UserService*/ /*protected authService: AuthService,*/,
   ) {}
+
+  @HttpCode(204)
   @Delete()
-  async DeleteAll(@Res() res: Response) {
-    await this.blogService.deleteAllBlogs();
+  async DeleteAll() {
+    const collections = this.connection.collections;
+    for (const key in collections) {
+      await collections[key].deleteMany({});
+    }
+    /*await this.blogService.deleteAllBlogs();
     await this.postService.deleteAllPosts();
-    await this.userService.deleteAllUsers();
+    await this.userService.deleteAllUsers();*/
     /*await this.authService.deleteAllRefreshTokMeta();
     await this.authService.deleteAllPassRec();*/
-    return res.sendStatus(204);
+    return;
   }
 }

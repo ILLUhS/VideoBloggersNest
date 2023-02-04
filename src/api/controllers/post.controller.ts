@@ -48,6 +48,7 @@ export class PostController {
     return await this.queryRepository.getPotsWithQueryParam(searchParams);
   }
 
+  @UseInterceptors(AuthHeaderInterceptor)
   @Get(':id')
   async findById(@Param('id') id: string) {
     const post = await this.queryRepository.findPostById(id);
@@ -55,6 +56,7 @@ export class PostController {
     return post;
   }
 
+  @UseInterceptors(AuthHeaderInterceptor)
   @Get(':id/comments')
   async findCommentsByPostId(
     @Param('id') id: string,

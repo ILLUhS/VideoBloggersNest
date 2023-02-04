@@ -1,14 +1,22 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
-import { Response } from 'express';
+import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 
 @Controller('comments')
 export class CommentController {
   constructor(protected queryRepository: QueryRepository) {}
+
+  @UseInterceptors(AuthHeaderInterceptor)
   @Get(':id')
-  async findById(@Param('id') id: string, @Res() res: Response) {
+  async findById(@Param('id') id: string) {
     const comment = await this.queryRepository.findCommentById(id);
-    if (!comment) return res.sendStatus(404);
-    return res.status(200).json(comment);
+    if (!comment) throw new NotFoundException();
+    return comment;
   }
 }
