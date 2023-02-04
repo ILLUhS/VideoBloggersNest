@@ -239,6 +239,12 @@ export class AuthService {
         );
       });
   }
+  async deleteAllRefreshTokMeta(): Promise<boolean> {
+    return await this.refreshTokenMetaRepository.deleteAll();
+  }
+  async deleteAllPassRec(): Promise<boolean> {
+    return await this.passRecRepository.deleteAll();
+  }
   private async generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   }

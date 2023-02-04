@@ -22,4 +22,7 @@ export class PasswordRecoveryRepository {
   async save(passRec: PasswordRecoveryDocument): Promise<boolean> {
     return !!(await passRec.save());
   }
+  async deleteAll(): Promise<boolean> {
+    return (await this.passRecModel.deleteMany().exec()).acknowledged;
+  }
 }

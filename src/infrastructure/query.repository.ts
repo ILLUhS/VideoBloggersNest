@@ -34,6 +34,7 @@ export class QueryRepository {
         description: 1,
         websiteUrl: 1,
         createdAt: 1,
+        isMembership: 1,
       })
       .exec();
     const blogsCount = await this.blogModel
@@ -52,6 +53,7 @@ export class QueryRepository {
         description: blog.description,
         websiteUrl: blog.websiteUrl,
         createdAt: blog.createdAt,
+        isMembership: blog.isMembership,
       })),
     };
   }
@@ -65,6 +67,7 @@ export class QueryRepository {
         description: 1,
         websiteUrl: 1,
         createdAt: 1,
+        isMembership: 1,
       })
       .exec();
   }

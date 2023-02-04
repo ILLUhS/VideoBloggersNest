@@ -1,14 +1,18 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  NotFoundException,
   Param,
   Post,
   Put,
   Query,
-  Res,
+  Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
@@ -16,10 +20,11 @@ import { QueryRepository } from '../../infrastructure/query.repository';
 import { BlogCreateDto } from '../../application/types/blog.create.dto';
 import { BlogService } from '../../application/services/blog.service';
 import { BlogUpdateDtoType } from '../../application/types/blog.update.dto.type';
-import { Response } from 'express';
+import { Request } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostService } from '../../application/services/post.service';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 
 @Controller('blogs')
 export class BlogController {
@@ -28,46 +33,53 @@ export class BlogController {
     protected blogService: BlogService,
     protected postService: PostService,
   ) {}
+
   @Get()
   async findAll(@Query() query: QueryParamsType) {
     const searchParams = await queryParamsValidation(query);
     return await this.queryRepository.getBlogsWithQueryParam(searchParams);
   }
+
   @Get(':id')
-  async findById(@Param('id') id: string, @Res() res: Response) {
+  async findById(@Param('id') id: string) {
     const blog = await this.queryRepository.findBlogById(id);
-    if (!blog) return res.sendStatus(404);
-    return res.status(200).json(blog);
+    if (!blog) throw new NotFoundException();
+    return blog;
   }
+
+  @UseInterceptors(AuthHeaderInterceptor)
   @Get(':id/posts')
   async findPostsByBlogId(
     @Param('id') id: string,
     @Query() query: QueryParamsType,
-    @Res() res: Response,
+    @Req() req: Request,
   ) {
     const searchParams = await queryParamsValidation(query);
     const blog = await this.queryRepository.findBlogById(id);
-    if (!blog) return res.sendStatus(404);
-    return res.status(200).json(
-      await this.queryRepository.getPotsWithQueryParam(searchParams, {
-        blogId: id,
-      }),
-    );
+    if (!blog) throw new NotFoundException();
+    if (req.user)
+      return await this.queryRepository.getPotsWithQueryParam(
+        searchParams,
+        { blogId: id },
+        req.user['userId'],
+      );
+    return await this.queryRepository.getPotsWithQueryParam(searchParams, {
+      blogId: id,
+    });
   }
+
   @UseGuards(AuthGuard('basic'))
   @Post()
-  async createBlog(@Body() blogDto: BlogCreateDto, @Res() res: Response) {
+  async createBlog(@Body() blogDto: BlogCreateDto) {
     const blogId = await this.blogService.createBlog(blogDto);
-    if (!blogId) return res.sendStatus(400);
-    return res
-      .status(201)
-      .json(await this.queryRepository.findBlogById(blogId));
+    if (!blogId) throw new BadRequestException();
+    return await this.queryRepository.findBlogById(blogId);
   }
+
   @Post(':id/posts')
   async createPostByBlogId(
     @Param('id') id: string,
     @Body() postDto: PostCreateDto,
-    @Res() res: Response,
   ) {
     const postClass: PostCreateDto = {
       title: postDto.title,
@@ -76,28 +88,29 @@ export class BlogController {
       blogId: id,
     };
     const blog = await this.queryRepository.findBlogById(id);
-    if (!blog) return res.sendStatus(404);
+    if (!blog) throw new NotFoundException();
     postDto.blogId = id;
     const postId = await this.postService.createPost(postClass);
-    if (!postId) return res.sendStatus(400);
-    return res
-      .status(201)
-      .json(await this.queryRepository.findPostById(postId));
+    if (!postId) throw new BadRequestException();
+    return await this.queryRepository.findPostById(postId);
   }
+
+  @HttpCode(204)
   @Put(':id')
   async updateBlogById(
     @Param('id') id: string,
     @Body() blogDto: BlogUpdateDtoType,
-    @Res() res: Response,
   ) {
     const result = await this.blogService.updateBlog(id, blogDto);
-    if (!result) return res.sendStatus(404);
-    return res.sendStatus(204);
+    if (!result) throw new NotFoundException();
+    return;
   }
+
+  @HttpCode(204)
   @Delete(':id')
-  async deleteBlogById(@Param('id') id: string, @Res() res: Response) {
+  async deleteBlogById(@Param('id') id: string) {
     const result = await this.blogService.deleteBlogByTd(id);
-    if (!result) return res.sendStatus(404);
-    return res.sendStatus(204);
+    if (!result) throw new NotFoundException();
+    return;
   }
 }

@@ -11,11 +11,13 @@ export class AuthHeaderInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.switchToHttp().getRequest();
     if (req.headers.authorization) {
-      const token = req.headers.authorization.split(' ')[1];
-      const payload = JSON.parse(
-        Buffer.from(token.split('.')[1], 'base64').toString('ascii'),
-      );
-      req.user = { userId: payload.userId };
+      if (req.headers.authorization.split(' ')[0] === 'Bearer') {
+        const token = req.headers.authorization.split(' ')[1];
+        const payload = JSON.parse(
+          Buffer.from(token.split('.')[1], 'base64').toString('ascii'),
+        );
+        req.user = { userId: payload.userId };
+      }
     }
     return next.handle().pipe();
   }
