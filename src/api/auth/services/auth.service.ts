@@ -1,29 +1,29 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../../application/services/user.service';
+import { UserService } from '../../../application/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   RefreshTokenMeta,
   RefreshTokenMetaModelType,
-} from '../../domain/schemas/refreshTokenMetaSchema';
-import { RefreshTokenMetaRepository } from '../../infrastructure/repositories/refresh.token.meta.repository';
+} from '../../../domain/schemas/refreshTokenMetaSchema';
+import { RefreshTokenMetaRepository } from '../ifrastructure/repositories/refresh.token.meta.repository';
 import {
   User,
   UserDocument,
   UserModelType,
-} from '../../domain/schemas/user.schema';
-import { UserInputDto } from '../../application/types/user.input.dto';
-import { UserRepository } from '../../infrastructure/repositories/user.repository';
+} from '../../../domain/schemas/user.schema';
+import { UserInputDto } from '../../../application/types/user.input.dto';
+import { UserRepository } from '../../../infrastructure/repositories/user.repository';
 import { MailerService } from '@nestjs-modules/mailer';
-import { PasswordRecoveryRepository } from '../../infrastructure/repositories/password.recovery.repository';
+import { PasswordRecoveryRepository } from '../ifrastructure/repositories/password.recovery.repository';
 import {
   PasswordRecovery,
   PasswordRecoveryDocument,
   PasswordRecoveryModelType,
-} from '../../domain/schemas/password.recovery.schema';
-import { NewPassDto } from './types/new.pass.dto';
+} from '../../../domain/schemas/password.recovery.schema';
+import { NewPassDto } from '../types/new.pass.dto';
 
 @Injectable()
 export class AuthService {
@@ -161,55 +161,6 @@ export class AuthService {
     await this.usersRepository.save(user);
     return true;
   }
-  async sendConfirmEmail(user: UserDocument) {
-    const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
-    // Отправка почты
-    return await this.mailerService
-      .sendMail({
-        to: user.email,
-        subject: 'Подтверждение регистрации',
-        template: String.prototype.concat(
-          __dirname,
-          '/../auth/templates.email/',
-          'confirmReg',
-        ),
-        context: {
-          code: user.emailConfirmationCode,
-          username: user.login,
-          urlConfirmAddress,
-        },
-      })
-      .catch((e) => {
-        throw new HttpException(
-          `Ошибка работы почты: ${JSON.stringify(e)}`,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      });
-  }
-  async sendRecoveryEmail(passRec: PasswordRecoveryDocument) {
-    const urlConfirmAddress = `https://video-bloggers-nest.app/password-recovery?recoveryCode=`;
-    // Отправка почты
-    return await this.mailerService
-      .sendMail({
-        to: passRec.email,
-        subject: 'Подтверждение восстановления пароля',
-        template: String.prototype.concat(
-          __dirname,
-          '/../auth/templates.email/',
-          'confirmPassRecovery.ejs',
-        ),
-        context: {
-          code: passRec.recoveryCode,
-          urlConfirmAddress,
-        },
-      })
-      .catch((e) => {
-        throw new HttpException(
-          `Ошибка работы почты: ${JSON.stringify(e)}`,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      });
-  }
   async createPassRecovery(email: string): Promise<boolean> {
     const user = await this.usersRepository.findByField('email', email);
     if (!user) return false;
@@ -238,6 +189,55 @@ export class AuthService {
     );
     await user.setPassHash(newPassHash);
     return await this.usersRepository.save(user);
+  }
+  async sendConfirmEmail(user: UserDocument) {
+    const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
+    // Отправка почты
+    return await this.mailerService
+      .sendMail({
+        to: user.email,
+        subject: 'Подтверждение регистрации',
+        template: String.prototype.concat(
+          __dirname,
+          '/../auth/services/templates.email/',
+          'confirmReg',
+        ),
+        context: {
+          code: user.emailConfirmationCode,
+          username: user.login,
+          urlConfirmAddress,
+        },
+      })
+      .catch((e) => {
+        throw new HttpException(
+          `Ошибка работы почты: ${JSON.stringify(e)}`,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      });
+  }
+  async sendRecoveryEmail(passRec: PasswordRecoveryDocument) {
+    const urlConfirmAddress = `https://video-bloggers-nest.app/password-recovery?recoveryCode=`;
+    // Отправка почты
+    return await this.mailerService
+      .sendMail({
+        to: passRec.email,
+        subject: 'Подтверждение восстановления пароля',
+        template: String.prototype.concat(
+          __dirname,
+          '/../auth/services/templates.email/',
+          'confirmPassRecovery.ejs',
+        ),
+        context: {
+          code: passRec.recoveryCode,
+          urlConfirmAddress,
+        },
+      })
+      .catch((e) => {
+        throw new HttpException(
+          `Ошибка работы почты: ${JSON.stringify(e)}`,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      });
   }
   private async generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);

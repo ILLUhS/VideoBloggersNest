@@ -9,14 +9,13 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { UserLoginInputDto } from '../types/user.login.input.dto';
-import { UserInputDto } from '../../application/types/user.input.dto';
-import { EmailDto } from '../auth/types/email.dto';
+import { UserInputDto } from '../../../application/types/user.input.dto';
+import { EmailDto } from '../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
-import { NewPassDto } from '../auth/types/new.pass.dto';
+import { NewPassDto } from '../types/new.pass.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,11 +25,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @HttpCode(200)
   @Post('/login')
-  async login(
-    @Body() userInputDto: UserLoginInputDto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
+  async login(@Req() req: Request, @Res() res: Response) {
     const accessToken = await this.authService.createAccessToken(req.user);
     const refreshToken = await this.authService.createRefreshToken(
       req.user,
