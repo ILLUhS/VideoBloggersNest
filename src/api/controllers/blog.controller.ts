@@ -76,6 +76,7 @@ export class BlogController {
     return await this.queryRepository.findBlogById(blogId);
   }
 
+  @UseGuards(AuthGuard('basic'))
   @Post(':id/posts')
   async createPostByBlogId(
     @Param('id') id: string,
@@ -95,6 +96,7 @@ export class BlogController {
     return await this.queryRepository.findPostById(postId);
   }
 
+  @UseGuards(AuthGuard('basic'))
   @HttpCode(204)
   @Put(':id')
   async updateBlogById(
@@ -106,6 +108,7 @@ export class BlogController {
     return;
   }
 
+  @UseGuards(AuthGuard('basic'))
   @HttpCode(204)
   @Delete(':id')
   async deleteBlogById(@Param('id') id: string) {

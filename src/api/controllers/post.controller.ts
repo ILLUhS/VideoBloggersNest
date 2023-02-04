@@ -3,22 +3,25 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  NotFoundException,
   Param,
   Post,
   Put,
   Query,
   Req,
-  Res,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { PostService } from '../../application/services/post.service';
 import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('posts')
 export class PostController {
@@ -39,49 +42,53 @@ export class PostController {
       );
     return await this.queryRepository.getPotsWithQueryParam(searchParams);
   }
+
   @Get(':id')
-  async findById(@Param('id') id: string, @Res() res: Response) {
+  async findById(@Param('id') id: string) {
     const post = await this.queryRepository.findPostById(id);
-    if (!post) return res.sendStatus(404);
-    return res.status(200).json(post);
+    if (!post) throw new NotFoundException();
+    return post;
   }
+
   @Get(':id/comments')
   async findCommentsByPostId(
     @Param('id') id: string,
     @Query() query: QueryParamsType,
-    @Res() res: Response,
   ) {
     const searchParams = await queryParamsValidation(query);
     const post = await this.queryRepository.findPostById(id);
-    if (!post) return res.sendStatus(404);
-    return res.status(200).json(
-      await this.queryRepository.getCommentsWithQueryParam(searchParams, {
-        postId: id,
-      }),
-    );
+    if (!post) throw new NotFoundException();
+    return await this.queryRepository.getCommentsWithQueryParam(searchParams, {
+      postId: id,
+    });
   }
+
+  @UseGuards(AuthGuard('basic'))
   @Post()
-  async createPost(@Body() postDto: PostCreateDto, @Res() res: Response) {
+  async createPost(@Body() postDto: PostCreateDto) {
     const postId = await this.postService.createPost(postDto);
-    if (!postId) return res.sendStatus(400);
-    return res
-      .status(201)
-      .json(await this.queryRepository.findPostById(postId));
+    if (!postId) throw new NotFoundException();
+    return await this.queryRepository.findPostById(postId);
   }
+
+  @UseGuards(AuthGuard('basic'))
+  @HttpCode(204)
   @Put(':id')
   async updatePostById(
     @Param('id') id: string,
     @Body() postDto: PostUpdateDtoType,
-    @Res() res: Response,
   ) {
     const result = await this.postService.updatePost(id, postDto);
-    if (!result) return res.sendStatus(404);
-    return res.sendStatus(204);
+    if (!result) throw new NotFoundException();
+    return;
   }
+
+  @UseGuards(AuthGuard('basic'))
+  @HttpCode(204)
   @Delete(':id')
-  async deleteBlogById(@Param('id') id: string, @Res() res: Response) {
+  async deleteBlogById(@Param('id') id: string) {
     const result = await this.postService.deletePostByTd(id);
-    if (!result) return res.sendStatus(404);
-    return res.sendStatus(204);
+    if (!result) throw new NotFoundException();
+    return;
   }
 }
