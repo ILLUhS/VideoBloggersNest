@@ -21,7 +21,7 @@ export class UserService {
       userDto.password,
       passwordSalt,
     );
-    const user = await this.userModel.makeInstanceByAdmin(
+    const user = await this.userModel.makeInstance(
       {
         login: userDto.login,
         passwordHash: passwordHash,
@@ -29,6 +29,7 @@ export class UserService {
       },
       this.userModel,
     );
+    await user.emailConfirm();
     const result = await this.usersRepository.save(user);
     return result ? user.id : null;
   }

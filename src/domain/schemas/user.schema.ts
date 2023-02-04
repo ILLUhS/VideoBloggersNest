@@ -9,12 +9,9 @@ export type UserDocument = HydratedDocument<User>;
 export type UserModelMethods = {
   emailConfirm(): Promise<boolean>;
   emailExpDate(): Promise<void>;
+  setPassHash(newPassHash: string): Promise<void>;
 };
 export type UserModelStaticMethods = {
-  makeInstanceByAdmin(
-    userDto: UserCreateDtoType,
-    UserModel: UserModelType,
-  ): Promise<UserDocument>;
   makeInstance(
     userDto: UserCreateDtoType,
     UserModel: UserModelType,
@@ -59,24 +56,11 @@ export class User {
     this.emailIsConfirmed = true;
     return true;
   }
-  async emailExpDate(): Promise<void> {
+  async updEmailExpDate(): Promise<void> {
     this.emailExpirationTime = add(new Date(), { hours: 24 });
   }
-
-  static async makeInstanceByAdmin(
-    userDto: UserCreateDtoType,
-    UserModel: UserModelType,
-  ): Promise<UserDocument> {
-    return new UserModel({
-      id: uuidv4(),
-      login: userDto.login,
-      passwordHash: userDto.passwordHash,
-      email: userDto.email,
-      createdAt: new Date().toISOString(),
-      emailConfirmationCode: uuidv4(),
-      emailExpirationTime: add(new Date(), { hours: 24 }),
-      emailIsConfirmed: true,
-    });
+  async setPassHash(newPassHash: string): Promise<void> {
+    this.passwordHash = newPassHash;
   }
 
   static async makeInstance(
@@ -98,10 +82,10 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 UserSchema.statics = {
-  makeInstanceByAdmin: User.makeInstanceByAdmin,
   makeInstance: User.makeInstance,
 };
 UserSchema.methods = {
   emailConfirm: User.prototype.emailConfirm,
-  emailExpDate: User.prototype.emailExpDate,
+  emailExpDate: User.prototype.updEmailExpDate,
+  setPassHash: User.prototype.setPassHash,
 };

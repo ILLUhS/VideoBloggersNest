@@ -27,6 +27,11 @@ import { getMailConfig } from '../../configs/email.config';
 import { RefreshStrategy } from './strategies/refresh.strategy';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { PasswordRecoveryRepository } from '../../infrastructure/repositories/password.recovery.repository';
+import {
+  PasswordRecovery,
+  PasswordRecoverySchema,
+} from '../../domain/schemas/password.recovery.schema';
 
 @Module({
   imports: [
@@ -35,6 +40,7 @@ import { APP_GUARD } from '@nestjs/core';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: RefreshTokenMeta.name, schema: RefreshTokenMetaSchema },
+      { name: PasswordRecovery.name, schema: PasswordRecoverySchema },
     ]),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
@@ -54,6 +60,7 @@ import { APP_GUARD } from '@nestjs/core';
     JwtService,
     UserRepository,
     RefreshTokenMetaRepository,
+    PasswordRecoveryRepository,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

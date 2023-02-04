@@ -27,6 +27,10 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     if (!payload) throw new UnauthorizedException();
     const tokenValid = await this.authService.checkPayloadRefreshToken(payload);
     if (!tokenValid) throw new UnauthorizedException();
-    return payload;
+    return {
+      deviceId: payload.deviceId,
+      userId: payload.id,
+      login: payload.login,
+    };
   }
 }
