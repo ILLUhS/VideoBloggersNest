@@ -1,10 +1,10 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
@@ -25,6 +25,7 @@ import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostService } from '../../application/services/post.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
+import { BlogPostInputDto } from '../types/blog.post.input.dto';
 
 @Controller('blogs')
 export class BlogController {
@@ -72,7 +73,7 @@ export class BlogController {
   @Post()
   async createBlog(@Body() blogDto: BlogCreateDto) {
     const blogId = await this.blogService.createBlog(blogDto);
-    if (!blogId) throw new BadRequestException();
+    if (!blogId) throw new InternalServerErrorException();
     return await this.queryRepository.findBlogById(blogId);
   }
 
@@ -80,9 +81,9 @@ export class BlogController {
   @Post(':id/posts')
   async createPostByBlogId(
     @Param('id') id: string,
-    @Body() postDto: PostCreateDto,
+    @Body() postDto: BlogPostInputDto,
   ) {
-    const postClass: PostCreateDto = {
+    const postCreateDto: PostCreateDto = {
       title: postDto.title,
       shortDescription: postDto.shortDescription,
       content: postDto.content,
@@ -90,9 +91,8 @@ export class BlogController {
     };
     const blog = await this.queryRepository.findBlogById(id);
     if (!blog) throw new NotFoundException();
-    postDto.blogId = id;
-    const postId = await this.postService.createPost(postClass);
-    if (!postId) throw new BadRequestException();
+    const postId = await this.postService.createPost(postCreateDto);
+    if (!postId) throw new InternalServerErrorException();
     return await this.queryRepository.findPostById(postId);
   }
 

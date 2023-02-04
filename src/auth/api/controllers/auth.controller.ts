@@ -9,13 +9,13 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../application/services/auth.service';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserInputDto } from '../../../application/types/user.input.dto';
-import { EmailDto } from '../types/email.dto';
+import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
-import { NewPassDto } from '../types/new.pass.dto';
+import { NewPassDto } from '../../types/new.pass.dto';
 
 @Controller('auth')
 export class AuthController {

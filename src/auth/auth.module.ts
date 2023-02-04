@@ -6,32 +6,32 @@ import {
 } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BasicStrategy } from './controllers/guards/strategies/basic.strategy';
-import { LocalStrategy } from './controllers/guards/strategies/local.strategy';
-import { AuthService } from './services/auth.service';
-import { AuthController } from './controllers/auth.controller';
-import { UserService } from '../../application/services/user.service';
+import { BasicStrategy } from './api/controllers/guards/strategies/basic.strategy';
+import { LocalStrategy } from './api/controllers/guards/strategies/local.strategy';
+import { AuthService } from './application/services/auth.service';
+import { AuthController } from './api/controllers/auth.controller';
+import { UserService } from '../application/services/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../domain/schemas/user.schema';
+import { User, UserSchema } from '../domain/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from '../../infrastructure/repositories/user.repository';
-import { JwtStrategy } from './controllers/guards/strategies/jwt.strategy';
+import { UserRepository } from '../infrastructure/repositories/user.repository';
+import { JwtStrategy } from './api/controllers/guards/strategies/jwt.strategy';
 import {
   RefreshTokenMeta,
   RefreshTokenMetaSchema,
-} from '../../domain/schemas/refreshTokenMetaSchema';
+} from '../domain/schemas/refreshTokenMetaSchema';
 import { RefreshTokenMetaRepository } from './ifrastructure/repositories/refresh.token.meta.repository';
-import { LoginMiddleware } from './controllers/middlewares/login.middleware';
+import { LoginMiddleware } from './api/controllers/middlewares/login.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { getMailConfig } from '../../configs/email.config';
-import { RefreshStrategy } from './controllers/guards/strategies/refresh.strategy';
+import { getMailConfig } from './application/configs/email.config';
+import { RefreshStrategy } from './api/controllers/guards/strategies/refresh.strategy';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { PasswordRecoveryRepository } from './ifrastructure/repositories/password.recovery.repository';
 import {
   PasswordRecovery,
   PasswordRecoverySchema,
-} from '../../domain/schemas/password.recovery.schema';
+} from '../domain/schemas/password.recovery.schema';
 
 @Module({
   imports: [

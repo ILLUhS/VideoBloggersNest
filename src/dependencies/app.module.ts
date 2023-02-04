@@ -20,8 +20,10 @@ import { User, UserSchema } from '../domain/schemas/user.schema';
 import { UserService } from '../application/services/user.service';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { UserController } from '../api/controllers/user.controller';
-import { AuthModule } from '../api/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 import { AuthHeaderInterceptor } from '../api/controllers/interceptors/auth.header.interceptor';
+import { CommentRepository } from '../infrastructure/repositories/comment.repository';
+import { CommentService } from '../application/services/comment.service';
 
 @Module({
   imports: [
@@ -49,9 +51,11 @@ import { AuthHeaderInterceptor } from '../api/controllers/interceptors/auth.head
     BlogService,
     PostService,
     UserService,
+    CommentService,
     BlogRepository,
     PostRepository,
     UserRepository,
+    CommentRepository,
     QueryRepository,
     AuthHeaderInterceptor,
   ],

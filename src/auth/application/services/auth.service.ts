@@ -8,7 +8,7 @@ import {
   RefreshTokenMeta,
   RefreshTokenMetaModelType,
 } from '../../../domain/schemas/refreshTokenMetaSchema';
-import { RefreshTokenMetaRepository } from '../ifrastructure/repositories/refresh.token.meta.repository';
+import { RefreshTokenMetaRepository } from '../../ifrastructure/repositories/refresh.token.meta.repository';
 import {
   User,
   UserDocument,
@@ -17,13 +17,13 @@ import {
 import { UserInputDto } from '../../../application/types/user.input.dto';
 import { UserRepository } from '../../../infrastructure/repositories/user.repository';
 import { MailerService } from '@nestjs-modules/mailer';
-import { PasswordRecoveryRepository } from '../ifrastructure/repositories/password.recovery.repository';
+import { PasswordRecoveryRepository } from '../../ifrastructure/repositories/password.recovery.repository';
 import {
   PasswordRecovery,
   PasswordRecoveryDocument,
   PasswordRecoveryModelType,
 } from '../../../domain/schemas/password.recovery.schema';
-import { NewPassDto } from '../types/new.pass.dto';
+import { NewPassDto } from '../../types/new.pass.dto';
 
 @Injectable()
 export class AuthService {
@@ -127,7 +127,7 @@ export class AuthService {
     );
   }
   async getAuthUserInfo(user: any) {
-    return { email: user.email, login: user.login, userId: user.id };
+    return { email: user.email, login: user.login, userId: user.userId };
   }
   async cechCredentials(loginOrEmail: string, password: string) {
     const user = await this.usersRepository.findByField(
@@ -199,7 +199,7 @@ export class AuthService {
         subject: 'Подтверждение регистрации',
         template: String.prototype.concat(
           __dirname,
-          '/../auth/services/templates.email/',
+          '/auth/application/templates.email/',
           'confirmReg',
         ),
         context: {
@@ -224,7 +224,7 @@ export class AuthService {
         subject: 'Подтверждение восстановления пароля',
         template: String.prototype.concat(
           __dirname,
-          '/../auth/services/templates.email/',
+          '/../auth/application/templates.email/',
           'confirmPassRecovery.ejs',
         ),
         context: {

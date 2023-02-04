@@ -8,7 +8,7 @@ import { CommentCreateDtoType } from '../../application/types/comment.create.dto
 export type CommentDocument = HydratedDocument<Comment>;
 
 export type CommentModelMethods = {
-  updateProperties(commentDto: CommentUpdateDtoType): void;
+  setContent(commentDto: CommentUpdateDtoType): void;
 };
 export type CommentModelStaticMethods = {
   makeInstance(
@@ -59,7 +59,7 @@ export class Comment {
     });
   }
 
-  updateProperties(commentDto: CommentUpdateDtoType) {
+  setContent(commentDto: CommentUpdateDtoType) {
     this.content = commentDto.content;
   }
 }
@@ -67,7 +67,7 @@ export class Comment {
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 CommentSchema.statics = { makeInstance: Comment.makeInstance };
 CommentSchema.methods = {
-  updateProperties: Comment.prototype.updateProperties,
+  setContent: Comment.prototype.setContent,
 };
 CommentSchema.virtual('reactions', {
   ref: 'Reaction',

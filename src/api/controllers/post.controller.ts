@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
@@ -22,12 +23,16 @@ import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { AuthGuard } from '@nestjs/passport';
+import { CommentInputDto } from '../types/comment.input.dto';
+import { CommentService } from '../../application/services/comment.service';
+import { CommentCreateDtoType } from '../../application/types/comment.create.dto.type';
 
 @Controller('posts')
 export class PostController {
   constructor(
     protected queryRepository: QueryRepository,
     protected postService: PostService,
+    protected commentService: CommentService,
   ) {}
 
   @UseInterceptors(AuthHeaderInterceptor)
@@ -69,6 +74,26 @@ export class PostController {
     const postId = await this.postService.createPost(postDto);
     if (!postId) throw new NotFoundException();
     return await this.queryRepository.findPostById(postId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/comments')
+  async createCommentByPostId(
+    @Param('id') postId: string,
+    @Body() commentDto: CommentInputDto,
+    @Req() req: Request,
+  ) {
+    const post = await this.queryRepository.findPostById(postId);
+    if (!post) throw new NotFoundException();
+    const commentCreateDto: CommentCreateDtoType = {
+      content: commentDto.content,
+      userId: req.user['userId'],
+      userLogin: req.user['login'],
+      postId: postId,
+    };
+    const commentId = await this.commentService.createComment(commentCreateDto);
+    if (!commentId) throw new InternalServerErrorException();
+    return await this.queryRepository.findCommentById(commentId);
   }
 
   @UseGuards(AuthGuard('basic'))

@@ -4,7 +4,7 @@ import {
   RefreshTokenMeta,
   RefreshTokenMetaDocument,
   RefreshTokenMetaModelType,
-} from '../../../../domain/schemas/refreshTokenMetaSchema';
+} from '../../../domain/schemas/refreshTokenMetaSchema';
 
 @Injectable()
 export class RefreshTokenMetaRepository {

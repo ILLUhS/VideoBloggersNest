@@ -3,7 +3,7 @@ import {
   PasswordRecovery,
   PasswordRecoveryDocument,
   PasswordRecoveryModelType,
-} from '../../../../domain/schemas/password.recovery.schema';
+} from '../../../domain/schemas/password.recovery.schema';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
