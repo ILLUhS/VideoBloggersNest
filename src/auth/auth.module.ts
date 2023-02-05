@@ -36,7 +36,6 @@ import { SecurityDevicesController } from './api/controllers/security.devices.co
 import { AuthQueryRepository } from './ifrastructure/repositories/auth.query.repository';
 import { CheckOwnerDeviceInterceptor } from './api/controllers/interceptors/check.owner.device.interceptor';
 import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check.login.email.interceptor';
-import { CheckEmailIsRegisteredInterceptor } from './api/controllers/interceptors/check.email.is.registered.interceptor';
 
 @Module({
   imports: [
@@ -69,7 +68,6 @@ import { CheckEmailIsRegisteredInterceptor } from './api/controllers/interceptor
     AuthQueryRepository,
     CheckOwnerDeviceInterceptor,
     CheckLoginEmailInterceptor,
-    CheckEmailIsRegisteredInterceptor,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

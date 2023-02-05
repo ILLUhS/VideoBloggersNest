@@ -19,7 +19,6 @@ import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
 import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.interceptor';
-import { CheckEmailIsRegisteredInterceptor } from './interceptors/check.email.is.registered.interceptor';
 
 @SkipThrottle()
 @Controller('auth')
@@ -72,7 +71,6 @@ export class AuthController {
     return;
   }
 
-  @UseInterceptors(CheckEmailIsRegisteredInterceptor)
   @HttpCode(204)
   @Post('/registration-email-resending')
   async resendRegEmail(@Body() emailDto: EmailDto) {

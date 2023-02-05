@@ -173,6 +173,7 @@ export class AuthService {
     const user = await this.usersRepository.findByField('email', email);
     if (!user) return false;
     await user.updEmailCode();
+    if (await user.getEmailIsConfirmed()) return false;
     await this.sendConfirmEmail(user);
     await this.usersRepository.save(user);
     return true;

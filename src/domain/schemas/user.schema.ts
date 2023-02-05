@@ -10,6 +10,7 @@ export type UserModelMethods = {
   emailConfirm(): Promise<boolean>;
   updEmailCode(): Promise<void>;
   setPassHash(newPassHash: string): Promise<void>;
+  getEmailIsConfirmed(): Promise<boolean>;
 };
 export type UserModelStaticMethods = {
   makeInstance(
@@ -63,6 +64,9 @@ export class User {
   async setPassHash(newPassHash: string): Promise<void> {
     this.passwordHash = newPassHash;
   }
+  async getEmailIsConfirmed(): Promise<boolean> {
+    return this.emailIsConfirmed;
+  }
 
   static async makeInstance(
     userDto: UserCreateDtoType,
@@ -89,4 +93,5 @@ UserSchema.methods = {
   emailConfirm: User.prototype.emailConfirm,
   updEmailCode: User.prototype.updEmailCode,
   setPassHash: User.prototype.setPassHash,
+  getEmailIsConfirmed: User.prototype.getEmailIsConfirmed,
 };
