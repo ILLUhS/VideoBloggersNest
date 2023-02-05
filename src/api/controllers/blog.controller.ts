@@ -26,7 +26,9 @@ import { PostService } from '../../application/services/post.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { BlogPostInputDto } from '../types/blog.post.input.dto';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('blogs')
 export class BlogController {
   constructor(

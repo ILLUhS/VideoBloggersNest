@@ -21,7 +21,9 @@ import { CheckOwnerCommentInterceptor } from './interceptors/check.owner.comment
 import { LikeStatusInputDto } from '../types/like.status.input.dto';
 import { LikeService } from '../../application/services/like.service';
 import { Request } from 'express';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('comments')
 export class CommentController {
   constructor(

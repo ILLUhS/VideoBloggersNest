@@ -17,6 +17,7 @@ import { Request } from 'express';
 import { AuthQueryRepository } from '../../ifrastructure/repositories/auth.query.repository';
 import { CheckOwnerDeviceInterceptor } from './interceptors/check.owner.device.interceptor';
 
+@SkipThrottle()
 @Controller('/security/devices')
 export class SecurityDevicesController {
   constructor(

@@ -28,7 +28,9 @@ import { CommentService } from '../../application/services/comment.service';
 import { CommentCreateDtoType } from '../../application/types/comment.create.dto.type';
 import { LikeStatusInputDto } from '../types/like.status.input.dto';
 import { LikeService } from '../../application/services/like.service';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('posts')
 export class PostController {
   constructor(

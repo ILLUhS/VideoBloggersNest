@@ -18,6 +18,7 @@ import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
 
+@SkipThrottle()
 @Controller('auth')
 export class AuthController {
   constructor(protected authService: AuthService) {}
