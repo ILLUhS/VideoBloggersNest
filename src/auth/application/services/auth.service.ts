@@ -211,7 +211,7 @@ export class AuthService {
         subject: 'Подтверждение регистрации',
         template: String.prototype.concat(
           __dirname,
-          '/../templates.email/',
+          '/templates.email/',
           'confirmReg',
         ),
         context: {
@@ -236,8 +236,8 @@ export class AuthService {
         subject: 'Подтверждение восстановления пароля',
         template: String.prototype.concat(
           __dirname,
-          '/../templates.email/',
-          'confirmPassRecovery.ejs',
+          '/templates.email/',
+          'confirmPassRecovery',
         ),
         context: {
           code: passRec.recoveryCode,
