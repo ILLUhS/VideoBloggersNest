@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './dependencies/app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import cookieParser = require('cookie-parser');
 import { BadExceptionFilter } from './api/exception.filters/bad.exception.filter';
 
 async function bootstrap() {
