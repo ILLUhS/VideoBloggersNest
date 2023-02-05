@@ -19,10 +19,14 @@ import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
 import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.interceptor';
+import { AuthQueryRepository } from '../../ifrastructure/repositories/auth.query.repository';
 
 @Controller('auth')
 export class AuthController {
-  constructor(protected authService: AuthService) {}
+  constructor(
+    protected authService: AuthService,
+    protected authQueryRepository: AuthQueryRepository,
+  ) {}
 
   //LoginMiddleware - validate login and pass
   @UseGuards(AuthGuard('local'))
@@ -49,7 +53,11 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/me')
   async getAuthUser(@Req() req: Request) {
-    return await this.authService.getAuthUserInfo(req.user);
+    const user = await this.authQueryRepository.findAuthUserById(
+      req.user['userId'],
+    );
+    if (!user) throw new InternalServerErrorException();
+    return user;
   }
 
   @UseInterceptors(CheckLoginEmailInterceptor)

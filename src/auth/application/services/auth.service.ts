@@ -63,7 +63,10 @@ export class AuthService {
     return user ? user.id : null;
   }
   async createAccessToken(user: any) {
-    const payload = { userId: user.id, login: user.login, email: user.email };
+    const payload = {
+      userId: user.userId,
+      login: user.login,
+    };
     return {
       accessToken: this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET,
@@ -72,7 +75,11 @@ export class AuthService {
     };
   }
   async createRefreshToken(user: any, deviceName: string, deviceIp: string) {
-    const payload = { deviceId: uuidv4(), userId: user.id, login: user.login };
+    const payload = {
+      deviceId: uuidv4(),
+      userId: user.userId,
+      login: user.login,
+    };
     const token = this.jwtService.sign(payload, {
       secret: process.env.REFRESH_JWT_SECRET,
       expiresIn: '20s',
@@ -141,9 +148,6 @@ export class AuthService {
       userId,
       deviceId,
     );
-  }
-  async getAuthUserInfo(user: any) {
-    return { email: user.email, login: user.login, userId: user.userId };
   }
   async cechCredentials(loginOrEmail: string, password: string) {
     const user = await this.usersRepository.findByField(
