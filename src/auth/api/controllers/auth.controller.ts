@@ -104,15 +104,19 @@ export class AuthController {
   @HttpCode(200)
   @Post('/refresh-token')
   async getNewRefreshToken(@Req() req: Request, @Res() res: Response) {
+    const accessToken = await this.authService.createAccessToken(req.user);
     const refreshToken = await this.authService.reCreateRefreshToken(
       req.user,
       req.ip,
     );
-    return res.status(200).cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      path: '/auth/refresh-token',
-    });
+    return res
+      .status(200)
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        path: '/auth/refresh-token',
+      })
+      .json(accessToken);
   }
 
   @HttpCode(204)
