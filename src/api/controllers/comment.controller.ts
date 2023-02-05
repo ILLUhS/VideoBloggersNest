@@ -4,9 +4,11 @@ import {
   Delete,
   Get,
   HttpCode,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Put,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,18 +18,28 @@ import { CommentUpdateDto } from '../../application/types/comment.update.dto';
 import { CommentService } from '../../application/services/comment.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CheckOwnerInterceptor } from './interceptors/check.owner.interceptor';
+import { LikeStatusInputDto } from '../types/like.status.input.dto';
+import { LikeService } from '../../application/services/like.service';
+import { Request } from 'express';
 
 @Controller('comments')
 export class CommentController {
   constructor(
     protected queryRepository: QueryRepository,
     protected commentService: CommentService,
+    protected likeService: LikeService,
   ) {}
 
   @UseInterceptors(AuthHeaderInterceptor)
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    const comment = await this.queryRepository.findCommentById(id);
+  async findCommentById(@Param('id') id: string, @Req() req: Request) {
+    let comment;
+    if (req.user)
+      comment = await this.queryRepository.findCommentById(
+        id,
+        req.user['userId'],
+      );
+    else comment = await this.queryRepository.findCommentById(id);
     if (!comment) throw new NotFoundException();
     return comment;
   }
@@ -42,6 +54,26 @@ export class CommentController {
   ) {
     const result = this.commentService.updateComment(id, commentUpdateDto);
     if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(204)
+  @Put(':id')
+  async setLikeDislike(
+    @Param('id') id: string,
+    @Body() likeStatusInputDto: LikeStatusInputDto,
+    @Req() req: Request,
+  ) {
+    const commentUserId = await this.commentService.findComment(id);
+    if (!commentUserId) throw new NotFoundException();
+    const result = await this.likeService.createLikeDislike({
+      userId: req.user['userId'],
+      login: req.user['login'],
+      reaction: likeStatusInputDto.likeStatus,
+      entityId: id,
+    });
+    if (!result) throw new InternalServerErrorException();
     return;
   }
 

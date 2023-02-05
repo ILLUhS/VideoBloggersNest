@@ -17,14 +17,14 @@ export class CheckOwnerInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
-    if (req.baseUrl === '/comments') {
+    if (req.originalUrl.split('/')[1] === 'comments') {
       const commentUserId = await this.commentService.findComment(
         req.params.id,
       );
       if (!commentUserId) throw new NotFoundException();
       if (req.user['userId'] !== commentUserId) throw new ForbiddenException();
     }
-    /*if (req.baseUrl === '/security') {
+    /*if (req.originalUrl.split('/')[1] === 'security') {
       const commentUserId = await this.commentService.findComment(
         req.params.id,
       );

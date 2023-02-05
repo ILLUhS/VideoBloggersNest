@@ -26,6 +26,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { CommentInputDto } from '../types/comment.input.dto';
 import { CommentService } from '../../application/services/comment.service';
 import { CommentCreateDtoType } from '../../application/types/comment.create.dto.type';
+import { LikeStatusInputDto } from '../types/like.status.input.dto';
+import { LikeService } from '../../application/services/like.service';
 
 @Controller('posts')
 export class PostController {
@@ -33,6 +35,7 @@ export class PostController {
     protected queryRepository: QueryRepository,
     protected postService: PostService,
     protected commentService: CommentService,
+    protected likeService: LikeService,
   ) {}
 
   @UseInterceptors(AuthHeaderInterceptor)
@@ -50,8 +53,11 @@ export class PostController {
 
   @UseInterceptors(AuthHeaderInterceptor)
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    const post = await this.queryRepository.findPostById(id);
+  async findById(@Param('id') id: string, @Req() req: Request) {
+    let post;
+    if (req.user)
+      post = await this.queryRepository.findPostById(id, req.user['userId']);
+    else post = await this.queryRepository.findPostById(id);
     if (!post) throw new NotFoundException();
     return post;
   }
@@ -81,17 +87,17 @@ export class PostController {
   @UseGuards(AuthGuard('jwt'))
   @Post(':id/comments')
   async createCommentByPostId(
-    @Param('id') postId: string,
+    @Param('id') id: string,
     @Body() commentDto: CommentInputDto,
     @Req() req: Request,
   ) {
-    const post = await this.queryRepository.findPostById(postId);
-    if (!post) throw new NotFoundException();
+    const postId = await this.postService.findPostById(id);
+    if (!postId) throw new NotFoundException();
     const commentCreateDto: CommentCreateDtoType = {
       content: commentDto.content,
       userId: req.user['userId'],
       userLogin: req.user['login'],
-      postId: postId,
+      postId: id,
     };
     const commentId = await this.commentService.createComment(commentCreateDto);
     if (!commentId) throw new InternalServerErrorException();
@@ -107,6 +113,26 @@ export class PostController {
   ) {
     const result = await this.postService.updatePost(id, postDto);
     if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(204)
+  @Put(':id')
+  async setLikeDislike(
+    @Param('id') id: string,
+    @Body() likeStatusInputDto: LikeStatusInputDto,
+    @Req() req: Request,
+  ) {
+    const postId = await this.postService.findPostById(id);
+    if (!postId) throw new NotFoundException();
+    const result = await this.likeService.createLikeDislike({
+      userId: req.user['userId'],
+      login: req.user['login'],
+      reaction: likeStatusInputDto.likeStatus,
+      entityId: id,
+    });
+    if (!result) throw new InternalServerErrorException();
     return;
   }
 

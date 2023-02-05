@@ -13,8 +13,10 @@ export class PostService {
     protected postRepository: PostRepository,
     protected blogRepository: BlogRepository,
   ) /*protected commentService: CommentService*/ {}
-  async findPostById(id: string) {
-    return await this.postRepository.findById(id);
+
+  async findPostById(id: string): Promise<string | null> {
+    const post = await this.postRepository.findById(id);
+    return post ? post.id : null;
   }
   async deletePostByTd(id: string) {
     return await this.postRepository.deleteById(id);

@@ -25,6 +25,8 @@ import { AuthHeaderInterceptor } from '../api/controllers/interceptors/auth.head
 import { CommentRepository } from '../infrastructure/repositories/comment.repository';
 import { CommentService } from '../application/services/comment.service';
 import { CheckOwnerInterceptor } from '../api/controllers/interceptors/check.owner.interceptor';
+import { ReactionsRepository } from '../infrastructure/repositories/reaction.repository';
+import { LikeService } from '../application/services/like.service';
 
 @Module({
   imports: [
@@ -53,10 +55,12 @@ import { CheckOwnerInterceptor } from '../api/controllers/interceptors/check.own
     PostService,
     UserService,
     CommentService,
+    LikeService,
     BlogRepository,
     PostRepository,
     UserRepository,
     CommentRepository,
+    ReactionsRepository,
     QueryRepository,
     AuthHeaderInterceptor,
     CheckOwnerInterceptor,
