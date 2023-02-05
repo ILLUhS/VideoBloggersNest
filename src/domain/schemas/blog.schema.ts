@@ -46,7 +46,7 @@ export class Blog {
       description: blogDto.description,
       websiteUrl: blogDto.websiteUrl,
       createdAt: new Date().toISOString(),
-      isMembership: true,
+      isMembership: false,
     });
   }
 
