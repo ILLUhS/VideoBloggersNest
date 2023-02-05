@@ -7,7 +7,7 @@ import {
 } from '../../domain/schemas/user.schema';
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
 import { UserInputDto } from '../types/user.input.dto';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {

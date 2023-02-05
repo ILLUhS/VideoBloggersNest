@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../../application/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   RefreshTokenMeta,
@@ -211,7 +211,7 @@ export class AuthService {
         subject: 'Подтверждение регистрации',
         template: String.prototype.concat(
           __dirname,
-          '/auth/application/templates.email/',
+          '/../templates.email/',
           'confirmReg',
         ),
         context: {
@@ -236,7 +236,7 @@ export class AuthService {
         subject: 'Подтверждение восстановления пароля',
         template: String.prototype.concat(
           __dirname,
-          '/../auth/application/templates.email/',
+          '/../templates.email/',
           'confirmPassRecovery.ejs',
         ),
         context: {
