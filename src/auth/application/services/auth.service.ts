@@ -209,7 +209,7 @@ export class AuthService {
       .sendMail({
         to: user.email,
         subject: 'Подтверждение регистрации',
-        template: String.prototype.concat(
+        /*template: String.prototype.concat(
           __dirname,
           '/templates.email/',
           'confirmReg',
@@ -218,7 +218,13 @@ export class AuthService {
           code: user.emailConfirmationCode,
           username: user.login,
           urlConfirmAddress,
-        },
+        },*/
+        html: `<main>
+    Здравствуйте, <%= ${user.login} %>!<br />
+    От Вас поступила регистрация на сайте video-bloggers-nest.<br />
+    Для окончания регистрации пройдите пожалуйста по
+    <a href="<%= ${urlConfirmAddress} %><%= ${user.emailConfirmationCode} %>">ссылке</a> .
+</main>`,
       })
       .catch((e) => {
         throw new HttpException(
@@ -234,7 +240,7 @@ export class AuthService {
       .sendMail({
         to: passRec.email,
         subject: 'Подтверждение восстановления пароля',
-        template: String.prototype.concat(
+        /*template: String.prototype.concat(
           __dirname,
           '/templates.email/',
           'confirmPassRecovery',
@@ -242,7 +248,13 @@ export class AuthService {
         context: {
           code: passRec.recoveryCode,
           urlConfirmAddress,
-        },
+        },*/
+        html: `<main>
+    Здравствуйте!<br />
+    От Вас поступила заявка на восстановление пароля на сайте video-bloggers-nest.<br />
+    Для продолжения восстановления пароля пройдите пожалуйста по
+    <a href="<%= ${urlConfirmAddress} %><%= ${passRec.recoveryCode} %>">ссылке</a> .
+</main>`,
       })
       .catch((e) => {
         throw new HttpException(
