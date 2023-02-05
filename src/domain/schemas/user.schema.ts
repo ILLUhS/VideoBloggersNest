@@ -8,7 +8,7 @@ export type UserDocument = HydratedDocument<User>;
 
 export type UserModelMethods = {
   emailConfirm(): Promise<boolean>;
-  emailExpDate(): Promise<void>;
+  updEmailCode(): Promise<void>;
   setPassHash(newPassHash: string): Promise<void>;
 };
 export type UserModelStaticMethods = {
@@ -56,7 +56,8 @@ export class User {
     this.emailIsConfirmed = true;
     return true;
   }
-  async updEmailExpDate(): Promise<void> {
+  async updEmailCode(): Promise<void> {
+    this.emailConfirmationCode = uuidv4();
     this.emailExpirationTime = add(new Date(), { hours: 24 });
   }
   async setPassHash(newPassHash: string): Promise<void> {
@@ -86,6 +87,6 @@ UserSchema.statics = {
 };
 UserSchema.methods = {
   emailConfirm: User.prototype.emailConfirm,
-  updEmailExpDate: User.prototype.updEmailExpDate,
+  updEmailCode: User.prototype.updEmailCode,
   setPassHash: User.prototype.setPassHash,
 };

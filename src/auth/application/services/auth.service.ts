@@ -172,7 +172,7 @@ export class AuthService {
   async resendEmail(email: string) {
     const user = await this.usersRepository.findByField('email', email);
     if (!user) return false;
-    await user.updEmailExpDate();
+    await user.updEmailCode();
     await this.sendConfirmEmail(user);
     await this.usersRepository.save(user);
     return true;
