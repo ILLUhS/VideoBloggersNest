@@ -15,8 +15,9 @@ export class BlogService {
     protected blogRepository: BlogRepository,
     protected postRepository: PostRepository,
   ) {}
-  async findBlogById(id: string) {
-    return await this.blogRepository.findById(id);
+  async findBlogById(id: string): Promise<string | null> {
+    const blog = await this.blogRepository.findById(id);
+    return blog ? blog.id : null;
   }
   async createBlog(blogDto: BlogCreateDto): Promise<string | null> {
     const newBlog = this.blogModel.makeInstance(blogDto, this.blogModel);

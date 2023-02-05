@@ -27,6 +27,7 @@ import { CommentService } from '../application/services/comment.service';
 import { CheckOwnerCommentInterceptor } from '../api/controllers/interceptors/check.owner.comment.interceptor';
 import { ReactionsRepository } from '../infrastructure/repositories/reaction.repository';
 import { LikeService } from '../application/services/like.service';
+import { BlogIdValidate } from '../api/controllers/validators/blog.id.validate';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { LikeService } from '../application/services/like.service';
     QueryRepository,
     AuthHeaderInterceptor,
     CheckOwnerCommentInterceptor,
+    BlogIdValidate,
   ],
 })
 export class AppModule {}

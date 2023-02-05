@@ -69,10 +69,19 @@ export class PostController {
   async findCommentsByPostId(
     @Param('id') id: string,
     @Query() query: QueryParamsType,
+    @Req() req: Request,
   ) {
     const searchParams = await queryParamsValidation(query);
     const post = await this.queryRepository.findPostById(id);
     if (!post) throw new NotFoundException();
+    if (req.user)
+      return await this.queryRepository.getCommentsWithQueryParam(
+        searchParams,
+        {
+          postId: id,
+        },
+        req.user['userId'],
+      );
     return await this.queryRepository.getCommentsWithQueryParam(searchParams, {
       postId: id,
     });
