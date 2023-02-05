@@ -20,7 +20,6 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
 import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.interceptor';
 
-@SkipThrottle()
 @Controller('auth')
 export class AuthController {
   constructor(protected authService: AuthService) {}
