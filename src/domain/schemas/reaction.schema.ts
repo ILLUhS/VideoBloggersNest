@@ -1,5 +1,5 @@
-import mongoose, { HydratedDocument, Model } from 'mongoose';
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Model } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ReactionCreateDtoType } from '../../application/types/reaction.create.dto.type';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,18 +11,19 @@ export type ReactionModelMethods = {
 export type ReactionModelStaticMethods = {
   makeInstance(
     reactionDto: ReactionCreateDtoType,
-    reactionModel: ReactionModelType,
+    ReactionModel: ReactionModelType,
   ): ReactionDocument;
 };
 export type ReactionModelType = Model<ReactionDocument> &
   ReactionModelMethods &
   ReactionModelStaticMethods;
 
+@Schema()
 export class Reaction {
   @Prop({ required: true })
   id: string;
 
-  @Prop({ type: mongoose.Schema.Types.String, required: true })
+  @Prop({ required: true })
   entityId: string;
 
   @Prop({ required: true })
@@ -43,9 +44,9 @@ export class Reaction {
 
   static makeInstance(
     reactionDto: ReactionCreateDtoType,
-    reactionModel: ReactionModelType,
+    ReactionModel: ReactionModelType,
   ): ReactionDocument {
-    return new reactionModel({
+    return new ReactionModel({
       id: uuidv4(),
       entityId: reactionDto.entityId,
       userId: reactionDto.userId,

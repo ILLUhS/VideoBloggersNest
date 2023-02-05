@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument, Model } from 'mongoose';
 import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
-import { ReactionDocument } from './reaction.schema';
+import { Reaction, ReactionDocument } from './reaction.schema';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -86,7 +86,7 @@ PostSchema.methods = {
   updateBlogName: Post.prototype.updateBlogName,
 };
 PostSchema.virtual('reactions', {
-  ref: 'Reaction',
+  ref: Reaction.name,
   localField: 'id',
   foreignField: 'entityId',
   options: { lean: true },

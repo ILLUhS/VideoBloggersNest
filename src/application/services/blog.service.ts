@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogModelType } from '../../domain/schemas/blog.schema';
 import { BlogCreateDto } from '../types/blog.create.dto';
-import { BlogUpdateDtoType } from '../types/blog.update.dto.type';
+import { BlogUpdateDto } from '../types/blog.update.dto';
 import { BlogRepository } from '../../infrastructure/repositories/blog.repository';
 import { PostRepository } from '../../infrastructure/repositories/post.repository';
 
@@ -23,7 +23,7 @@ export class BlogService {
     const result = await this.blogRepository.save(newBlog);
     return result ? newBlog.id : null;
   }
-  async updateBlog(id: string, blogDto: BlogUpdateDtoType) {
+  async updateBlog(id: string, blogDto: BlogUpdateDto) {
     const blog = await this.blogRepository.findById(id);
     if (!blog) return false;
     blog.updateProperties(blogDto);

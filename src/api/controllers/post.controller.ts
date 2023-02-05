@@ -120,7 +120,7 @@ export class PostController {
 
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(204)
-  @Put(':id')
+  @Put(':id/like-status')
   async setLikeDislike(
     @Param('id') id: string,
     @Body() likeStatusInputDto: LikeStatusInputDto,

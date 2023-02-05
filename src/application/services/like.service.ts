@@ -19,7 +19,7 @@ export class LikeService {
       reactionDto.userId,
     );
     if (alreadyLike) {
-      await alreadyLike.setStatus(reactionDto.reaction);
+      alreadyLike.setStatus(reactionDto.reaction);
       return await this.reactionRepository.save(alreadyLike);
     }
     const newLike = this.reactionModel.makeInstance(

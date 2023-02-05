@@ -46,9 +46,9 @@ export class Comment {
 
   static makeInstance(
     commentDto: CommentCreateDtoType,
-    commentModel: CommentModelType,
+    CommentModel: CommentModelType,
   ): CommentDocument {
-    return new commentModel({
+    return new CommentModel({
       id: uuidv4(),
       content: commentDto.content,
       userId: commentDto.userId,

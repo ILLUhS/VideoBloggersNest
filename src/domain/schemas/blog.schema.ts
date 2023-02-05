@@ -2,12 +2,12 @@ import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { BlogCreateDto } from '../../application/types/blog.create.dto';
-import { BlogUpdateDtoType } from '../../application/types/blog.update.dto.type';
+import { BlogUpdateDto } from '../../application/types/blog.update.dto';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
 export type BlogModelMethods = {
-  updateProperties(blogDto: BlogUpdateDtoType): void;
+  updateProperties(blogDto: BlogUpdateDto): void;
 };
 export type BlogModelStaticMethods = {
   makeInstance(blogDto: BlogCreateDto, BlogModel: BlogModelType): BlogDocument;
@@ -50,7 +50,7 @@ export class Blog {
     });
   }
 
-  updateProperties(blogDto: BlogUpdateDtoType) {
+  updateProperties(blogDto: BlogUpdateDto) {
     this.name = blogDto.name;
     this.description = blogDto.description;
     this.websiteUrl = blogDto.websiteUrl;

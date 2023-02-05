@@ -19,7 +19,7 @@ import { queryParamsValidation } from '../helpers';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { BlogCreateDto } from '../../application/types/blog.create.dto';
 import { BlogService } from '../../application/services/blog.service';
-import { BlogUpdateDtoType } from '../../application/types/blog.update.dto.type';
+import { BlogUpdateDto } from '../../application/types/blog.update.dto';
 import { Request } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostService } from '../../application/services/post.service';
@@ -103,7 +103,7 @@ export class BlogController {
   @Put(':id')
   async updateBlogById(
     @Param('id') id: string,
-    @Body() blogDto: BlogUpdateDtoType,
+    @Body() blogDto: BlogUpdateDto,
   ) {
     const result = await this.blogService.updateBlog(id, blogDto);
     if (!result) throw new NotFoundException();
