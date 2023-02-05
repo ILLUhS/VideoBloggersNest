@@ -51,8 +51,8 @@ export class SecurityDevicesController {
   @UseGuards(AuthGuard('refresh'))
   @UseInterceptors(CheckOwnerDeviceInterceptor)
   @HttpCode(204)
-  @Delete()
-  async deleteCurrentSession(@Param('id') id: string, @Req() req: Request) {
+  @Delete(':id')
+  async deleteSessionById(@Param('id') id: string, @Req() req: Request) {
     const result = await this.authService.deleteSession(req.user['userId'], id);
     if (!result) throw new NotFoundException();
     return;
