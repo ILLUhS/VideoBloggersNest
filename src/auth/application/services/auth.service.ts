@@ -58,8 +58,8 @@ export class AuthService {
     await this.sendConfirmEmail(user);
     await this.usersRepository.save(user);
   }
-  async findUserByEmail(email: string) {
-    const user = await this.usersRepository.findByField('email', email);
+  async findUserByField(field: string, value: string) {
+    const user = await this.usersRepository.findByField(field, value);
     return user ? user.id : null;
   }
   async createAccessToken(user: any) {
@@ -208,6 +208,7 @@ export class AuthService {
   }
   async sendConfirmEmail(user: UserDocument) {
     const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
+    const link = `https://video-bloggers.vercel.app/confirm-email?code=${user.emailConfirmationCode}`;
     // Отправка почты
     return await this.mailerService
       .sendMail({
@@ -223,12 +224,10 @@ export class AuthService {
           username: user.login,
           urlConfirmAddress,
         },*/
-        html: `<main>
-    Здравствуйте, <%= ${user.login} %>!<br />
-    От Вас поступила регистрация на сайте video-bloggers-nest.<br />
-    Для окончания регистрации пройдите пожалуйста по
-    <a href="<%= ${urlConfirmAddress} %><%= ${user.emailConfirmationCode} %>">ссылке</a> .
-</main>`,
+        html: `<h1>Thank for your registration</h1>
+        <p>To finish registration please follow the link below:
+            <a href=${link}>complete registration</a>
+        </p>`,
       })
       .catch((e) => {
         throw new HttpException(
@@ -239,6 +238,7 @@ export class AuthService {
   }
   async sendRecoveryEmail(passRec: PasswordRecoveryDocument) {
     const urlConfirmAddress = `https://video-bloggers-nest.app/password-recovery?recoveryCode=`;
+    const link = `https://video-bloggers.vercel.app/password-recovery?recoveryCode=${passRec.recoveryCode}`;
     // Отправка почты
     return await this.mailerService
       .sendMail({
@@ -253,12 +253,10 @@ export class AuthService {
           code: passRec.recoveryCode,
           urlConfirmAddress,
         },*/
-        html: `<main>
-    Здравствуйте!<br />
-    От Вас поступила заявка на восстановление пароля на сайте video-bloggers-nest.<br />
-    Для продолжения восстановления пароля пройдите пожалуйста по
-    <a href="<%= ${urlConfirmAddress} %><%= ${passRec.recoveryCode} %>">ссылке</a> .
-</main>`,
+        html: `<h1>You have chosen password recovery</h1>
+        <p>To finish recovery please follow the link below:
+            <a href=${link}>recovery password</a>
+        </p>`,
       })
       .catch((e) => {
         throw new HttpException(

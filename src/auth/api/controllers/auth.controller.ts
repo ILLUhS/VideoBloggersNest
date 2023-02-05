@@ -18,7 +18,7 @@ import { UserInputDto } from '../../../application/types/user.input.dto';
 import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
-import { CheckEmailInterceptor } from './interceptors/check.email.interceptor';
+import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.interceptor';
 
 @SkipThrottle()
 @Controller('auth')
@@ -53,7 +53,7 @@ export class AuthController {
     return await this.authService.getAuthUserInfo(req.user);
   }
 
-  @UseInterceptors(CheckEmailInterceptor)
+  @UseInterceptors(CheckLoginEmailInterceptor)
   @HttpCode(204)
   @Post('/registration')
   async regUser(@Body() userDto: UserInputDto) {
