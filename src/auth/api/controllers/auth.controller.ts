@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from '../../application/services/auth.service';
 import { Request, Response } from 'express';
@@ -17,6 +18,7 @@ import { UserInputDto } from '../../../application/types/user.input.dto';
 import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
+import { CheckEmailInterceptor } from './interceptors/check.email.interceptor';
 
 @SkipThrottle()
 @Controller('auth')
@@ -51,6 +53,7 @@ export class AuthController {
     return await this.authService.getAuthUserInfo(req.user);
   }
 
+  @UseInterceptors(CheckEmailInterceptor)
   @HttpCode(204)
   @Post('/registration')
   async regUser(@Body() userDto: UserInputDto) {

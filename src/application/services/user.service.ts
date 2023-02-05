@@ -15,6 +15,7 @@ export class UserService {
     @InjectModel(User.name) private userModel: UserModelType,
     protected usersRepository: UserRepository,
   ) {}
+
   async createUser(userDto: UserInputDto): Promise<string | null> {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this.generateHash(
