@@ -2,13 +2,12 @@ import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ReactionDocument } from './reaction.schema';
 import { v4 as uuidv4 } from 'uuid';
-import { CommentUpdateDtoType } from '../../application/types/comment.update.dto.type';
 import { CommentCreateDtoType } from '../../application/types/comment.create.dto.type';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
 export type CommentModelMethods = {
-  setContent(commentDto: CommentUpdateDtoType): void;
+  setContent(content: string): void;
 };
 export type CommentModelStaticMethods = {
   makeInstance(
@@ -59,8 +58,8 @@ export class Comment {
     });
   }
 
-  setContent(commentDto: CommentUpdateDtoType) {
-    this.content = commentDto.content;
+  setContent(content: string) {
+    this.content = content;
   }
 }
 

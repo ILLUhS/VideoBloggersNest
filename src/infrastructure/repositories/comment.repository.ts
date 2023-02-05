@@ -15,6 +15,9 @@ export class CommentRepository {
   async save(comment: CommentDocument) {
     return !!(await comment.save());
   }
+  async findById(id: string) {
+    return this.commentModel.findOne({ id: id });
+  }
   async deleteAll(): Promise<boolean> {
     return (await this.commentModel.deleteMany().exec()).acknowledged;
   }

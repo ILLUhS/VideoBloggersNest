@@ -24,6 +24,7 @@ import { AuthModule } from '../auth/auth.module';
 import { AuthHeaderInterceptor } from '../api/controllers/interceptors/auth.header.interceptor';
 import { CommentRepository } from '../infrastructure/repositories/comment.repository';
 import { CommentService } from '../application/services/comment.service';
+import { CheckOwnerInterceptor } from '../api/controllers/interceptors/check.owner.interceptor';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { CommentService } from '../application/services/comment.service';
     CommentRepository,
     QueryRepository,
     AuthHeaderInterceptor,
+    CheckOwnerInterceptor,
   ],
 })
 export class AppModule {}
