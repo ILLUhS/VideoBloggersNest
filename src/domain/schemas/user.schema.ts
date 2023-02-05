@@ -86,6 +86,6 @@ UserSchema.statics = {
 };
 UserSchema.methods = {
   emailConfirm: User.prototype.emailConfirm,
-  emailExpDate: User.prototype.updEmailExpDate,
+  updEmailExpDate: User.prototype.updEmailExpDate,
   setPassHash: User.prototype.setPassHash,
 };
