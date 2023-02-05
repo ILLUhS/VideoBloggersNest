@@ -3,17 +3,20 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  InternalServerErrorException,
+  NotFoundException,
   Param,
   Post,
   Query,
-  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { UserService } from '../../application/services/user.service';
 import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
-import { Response } from 'express';
 import { UserInputDto } from '../../application/types/user.input.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UserController {
@@ -21,23 +24,28 @@ export class UserController {
     protected queryRepository: QueryRepository,
     protected userService: UserService,
   ) {}
+
+  @UseGuards(AuthGuard('basic'))
   @Get()
   async findAll(@Query() query: QueryParamsType) {
     const searchParams = await queryParamsValidation(query);
     return await this.queryRepository.getUsersWithQueryParam(searchParams);
   }
+
+  @UseGuards(AuthGuard('basic'))
   @Post()
-  async createUser(@Body() userDto: UserInputDto, @Res() res: Response) {
+  async createUser(@Body() userDto: UserInputDto) {
     const userId = await this.userService.createUser(userDto);
-    if (!userDto) return res.sendStatus(400);
-    return res
-      .status(201)
-      .json(await this.queryRepository.findUserById(userId));
+    if (!userId) throw new InternalServerErrorException();
+    return await this.queryRepository.findUserById(userId);
   }
+
+  @UseGuards(AuthGuard('basic'))
+  @HttpCode(204)
   @Delete(':id')
-  async deleteUserById(@Param('id') id: string, @Res() res: Response) {
+  async deleteUserById(@Param('id') id: string) {
     const result = await this.userService.deleteUserById(id);
-    if (!result) return res.sendStatus(404);
-    return res.sendStatus(204);
+    if (!result) throw new NotFoundException();
+    return;
   }
 }

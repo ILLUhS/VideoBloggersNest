@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  InternalServerErrorException,
   Post,
   Req,
   Res,
@@ -59,7 +60,10 @@ export class AuthController {
   @Post('/registration-confirmation')
   async confirmUser(@Body('code') code: string) {
     const result = await this.authService.confirmEmail(code);
-    if (!result) throw new BadRequestException();
+    if (!result)
+      throw new BadRequestException({
+        message: [{ field: 'code', message: 'invalid code' }],
+      });
     return;
   }
 
@@ -67,7 +71,15 @@ export class AuthController {
   @Post('/registration-email-resending')
   async resendRegEmail(@Body() emailDto: EmailDto) {
     const result = await this.authService.resendEmail(emailDto.email);
-    if (!result) throw new BadRequestException();
+    if (!result)
+      throw new BadRequestException({
+        message: [
+          {
+            field: 'email',
+            message: 'invalid email',
+          },
+        ],
+      });
     return;
   }
 
@@ -80,7 +92,7 @@ export class AuthController {
       req.user['userId'],
       req.user['deviceId'],
     );
-    if (!result) throw new BadRequestException();
+    if (!result) throw new InternalServerErrorException();
     return;
   }
 
@@ -104,7 +116,15 @@ export class AuthController {
   @Post('/password-recovery')
   async passRecovery(@Body() emailDto: EmailDto) {
     const result = await this.authService.createPassRecovery(emailDto.email);
-    if (!result) throw new BadRequestException();
+    if (!result)
+      throw new BadRequestException({
+        message: [
+          {
+            field: 'email',
+            message: 'invalid email',
+          },
+        ],
+      });
     return;
   }
 
@@ -112,7 +132,15 @@ export class AuthController {
   @Post('/new-password')
   async newPass(@Body() newPassDto: NewPassDto) {
     const result = await this.authService.createNewPass(newPassDto);
-    if (!result) throw new BadRequestException();
+    if (!result)
+      throw new BadRequestException({
+        message: [
+          {
+            field: 'recoveryCode',
+            message: 'invalid recoveryCode',
+          },
+        ],
+      });
     return;
   }
 }
