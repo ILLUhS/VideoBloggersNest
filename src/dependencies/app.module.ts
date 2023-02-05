@@ -24,7 +24,7 @@ import { AuthModule } from '../auth/auth.module';
 import { AuthHeaderInterceptor } from '../api/controllers/interceptors/auth.header.interceptor';
 import { CommentRepository } from '../infrastructure/repositories/comment.repository';
 import { CommentService } from '../application/services/comment.service';
-import { CheckOwnerInterceptor } from '../api/controllers/interceptors/check.owner.interceptor';
+import { CheckOwnerCommentInterceptor } from '../api/controllers/interceptors/check.owner.comment.interceptor';
 import { ReactionsRepository } from '../infrastructure/repositories/reaction.repository';
 import { LikeService } from '../application/services/like.service';
 
@@ -63,7 +63,7 @@ import { LikeService } from '../application/services/like.service';
     ReactionsRepository,
     QueryRepository,
     AuthHeaderInterceptor,
-    CheckOwnerInterceptor,
+    CheckOwnerCommentInterceptor,
   ],
 })
 export class AppModule {}

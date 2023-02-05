@@ -120,10 +120,22 @@ export class AuthService {
       payload.userId,
     );
   }
-  async deleteSession(payload: any) {
+  async findSession(deviceId: string): Promise<string | null> {
+    const session = await this.refreshTokenMetaRepository.findByDeviceId(
+      deviceId,
+    );
+    return session ? session.userId : null;
+  }
+  async deleteSession(userId: string, deviceId: string) {
     return await this.refreshTokenMetaRepository.deleteByUserIdAndDeviceId(
-      payload.userId,
-      payload.deviceId,
+      userId,
+      deviceId,
+    );
+  }
+  async deleteAllSessionsExcludeCurrent(userId: string, deviceId: string) {
+    return await this.refreshTokenMetaRepository.deleteAllExceptCurrent(
+      userId,
+      deviceId,
     );
   }
   async getAuthUserInfo(user: any) {

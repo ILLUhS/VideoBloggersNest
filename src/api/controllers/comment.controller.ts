@@ -17,7 +17,7 @@ import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { CommentUpdateDto } from '../../application/types/comment.update.dto';
 import { CommentService } from '../../application/services/comment.service';
 import { AuthGuard } from '@nestjs/passport';
-import { CheckOwnerInterceptor } from './interceptors/check.owner.interceptor';
+import { CheckOwnerCommentInterceptor } from './interceptors/check.owner.comment.interceptor';
 import { LikeStatusInputDto } from '../types/like.status.input.dto';
 import { LikeService } from '../../application/services/like.service';
 import { Request } from 'express';
@@ -45,7 +45,7 @@ export class CommentController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(CheckOwnerInterceptor)
+  @UseInterceptors(CheckOwnerCommentInterceptor)
   @HttpCode(204)
   @Put(':id')
   async updComment(
@@ -78,7 +78,7 @@ export class CommentController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(CheckOwnerInterceptor)
+  @UseInterceptors(CheckOwnerCommentInterceptor)
   @HttpCode(204)
   @Delete(':id')
   async deleteComment(@Param('id') id: string) {

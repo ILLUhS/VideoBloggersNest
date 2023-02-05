@@ -32,6 +32,9 @@ import {
   PasswordRecovery,
   PasswordRecoverySchema,
 } from '../domain/schemas/password.recovery.schema';
+import { SecurityDevicesController } from './api/controllers/security.devices.controller';
+import { AuthQueryRepository } from './ifrastructure/repositories/auth.query.repository';
+import { CheckOwnerDeviceInterceptor } from './api/controllers/interceptors/check.owner.device.interceptor';
 
 @Module({
   imports: [
@@ -49,7 +52,7 @@ import {
     }),
     ThrottlerModule.forRootAsync({ useFactory: () => ({ ttl: 10, limit: 5 }) }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, SecurityDevicesController],
   providers: [
     AuthService,
     BasicStrategy,
@@ -61,6 +64,8 @@ import {
     UserRepository,
     RefreshTokenMetaRepository,
     PasswordRecoveryRepository,
+    AuthQueryRepository,
+    CheckOwnerDeviceInterceptor,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

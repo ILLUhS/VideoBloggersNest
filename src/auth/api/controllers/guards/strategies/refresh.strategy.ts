@@ -29,7 +29,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     if (!tokenValid) throw new UnauthorizedException();
     return {
       deviceId: payload.deviceId,
-      userId: payload.id,
+      userId: payload.userId,
       login: payload.login,
     };
   }

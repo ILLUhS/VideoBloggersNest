@@ -76,7 +76,10 @@ export class AuthController {
   @HttpCode(204)
   @Post('/logout')
   async logout(@Req() req: Request) {
-    const result = await this.authService.deleteSession(req.user);
+    const result = await this.authService.deleteSession(
+      req.user['userId'],
+      req.user['deviceId'],
+    );
     if (!result) throw new BadRequestException();
     return;
   }
