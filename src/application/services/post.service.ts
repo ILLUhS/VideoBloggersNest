@@ -4,7 +4,7 @@ import { PostCreateDto } from '../types/post.create.dto';
 import { BlogRepository } from '../../infrastructure/repositories/blog.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostModelType } from '../../domain/schemas/post.schema';
-import { PostUpdateDtoType } from '../types/post.update.dto.type';
+import { PostUpdateDto } from '../types/post.update.dto';
 
 @Injectable()
 export class PostService {
@@ -45,7 +45,7 @@ export class PostService {
       postId,
     );
   }*/
-  async updatePost(id: string, postDto: PostUpdateDtoType) {
+  async updatePost(id: string, postDto: PostUpdateDto) {
     const foundBlog = await this.blogRepository.findById(postDto.blogId);
     if (!foundBlog) return false;
     const post = await this.postRepository.findById(id);

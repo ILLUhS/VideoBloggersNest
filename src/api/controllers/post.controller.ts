@@ -20,7 +20,7 @@ import { QueryParamsType } from '../types/query.params.type';
 import { queryParamsValidation } from '../helpers';
 import { Request } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';
-import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
+import { PostUpdateDto } from '../../application/types/post.update.dto';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { CommentInputDto } from '../types/comment.input.dto';
@@ -111,7 +111,7 @@ export class PostController {
   @Put(':id')
   async updatePostById(
     @Param('id') id: string,
-    @Body() postDto: PostUpdateDtoType,
+    @Body() postDto: PostUpdateDto,
   ) {
     const result = await this.postService.updatePost(id, postDto);
     if (!result) throw new NotFoundException();

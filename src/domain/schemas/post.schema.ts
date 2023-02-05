@@ -2,13 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument, Model } from 'mongoose';
 import { PostCreateDto } from '../../application/types/post.create.dto';
-import { PostUpdateDtoType } from '../../application/types/post.update.dto.type';
+import { PostUpdateDto } from '../../application/types/post.update.dto';
 import { Reaction, ReactionDocument } from './reaction.schema';
 
 export type PostDocument = HydratedDocument<Post>;
 
 export type PostModelMethods = {
-  updateProperties(postDto: PostUpdateDtoType, blogName: string): void;
+  updateProperties(postDto: PostUpdateDto, blogName: string): void;
   updateBlogName(blogName: string): void;
 };
 export type PostModelStaticMethods = {
@@ -66,7 +66,7 @@ export class Post {
     });
   }
 
-  updateProperties(postDto: PostUpdateDtoType, blogName: string) {
+  updateProperties(postDto: PostUpdateDto, blogName: string) {
     this.title = postDto.title;
     this.shortDescription = postDto.shortDescription;
     this.content = postDto.content;

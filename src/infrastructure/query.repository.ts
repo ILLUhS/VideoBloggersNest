@@ -291,7 +291,7 @@ export class QueryRepository {
       reactions.forEach((r) => {
         if (r.userId === userId) myStatus = r.reaction;
         if (r.reaction === 'Like') likesCount++;
-        else dislikesCount++;
+        else if (r.reaction === 'Dislike') dislikesCount++;
       });
     }
     return {
