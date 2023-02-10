@@ -15,15 +15,18 @@ export class BlogService {
     protected blogRepository: BlogRepository,
     protected postRepository: PostRepository,
   ) {}
+
   async findBlogById(id: string): Promise<string | null> {
     const blog = await this.blogRepository.findById(id);
     return blog ? blog.id : null;
   }
+
   async createBlog(blogDto: BlogCreateDto): Promise<string | null> {
     const newBlog = this.blogModel.makeInstance(blogDto, this.blogModel);
     const result = await this.blogRepository.save(newBlog);
     return result ? newBlog.id : null;
   }
+
   async updateBlog(id: string, blogDto: BlogUpdateDto) {
     const blog = await this.blogRepository.findById(id);
     if (!blog) return false;
@@ -37,9 +40,11 @@ export class BlogService {
     }
     return await this.blogRepository.save(blog);
   }
+
   async deleteBlogByTd(id: string) {
     return await this.blogRepository.deleteById(id);
   }
+
   async deleteAllBlogs() {
     return await this.blogRepository.deleteAll();
   }

@@ -30,7 +30,7 @@ export class UserService {
       },
       this.userModel,
     );
-    await user.emailConfirm();
+    await user.confirmEmail();
     const result = await this.usersRepository.save(user);
     return result ? user.id : null;
   }

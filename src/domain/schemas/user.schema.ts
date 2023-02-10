@@ -7,10 +7,12 @@ import { UserCreateDtoType } from '../../application/types/user.create.dto.type'
 export type UserDocument = HydratedDocument<User>;
 
 export type UserModelMethods = {
-  emailConfirm(): Promise<boolean>;
+  confirmEmail(): Promise<boolean>;
   updEmailCode(): Promise<void>;
   setPassHash(newPassHash: string): Promise<void>;
   getEmailIsConfirmed(): Promise<boolean>;
+  ban(reason: string): Promise<void>;
+  unBan(): Promise<void>;
 };
 export type UserModelStaticMethods = {
   makeInstance(
@@ -57,7 +59,7 @@ export class User {
   @Prop({ default: null })
   banReason: string;
 
-  async emailConfirm(): Promise<boolean> {
+  async confirmEmail(): Promise<boolean> {
     if (
       this.emailExpirationTime <= new Date() ||
       this.emailIsConfirmed === true
@@ -75,6 +77,14 @@ export class User {
   }
   async getEmailIsConfirmed(): Promise<boolean> {
     return this.emailIsConfirmed;
+  }
+  async ban(reason: string): Promise<void> {
+    this.isBanned = true;
+    this.banDate = new Date().toISOString();
+    this.banReason = reason;
+  }
+  async unBan(): Promise<void> {
+    this.isBanned = false;
   }
 
   static async makeInstance(
@@ -99,8 +109,10 @@ UserSchema.statics = {
   makeInstance: User.makeInstance,
 };
 UserSchema.methods = {
-  emailConfirm: User.prototype.emailConfirm,
+  confirmEmail: User.prototype.confirmEmail,
   updEmailCode: User.prototype.updEmailCode,
   setPassHash: User.prototype.setPassHash,
   getEmailIsConfirmed: User.prototype.getEmailIsConfirmed,
+  ban: User.prototype.ban,
+  unBan: User.prototype.unBan,
 };

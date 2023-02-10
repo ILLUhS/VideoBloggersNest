@@ -169,7 +169,7 @@ export class AuthService {
       code,
     );
     if (!user) return false;
-    const result = await user.emailConfirm();
+    const result = await user.confirmEmail();
     if (!result) return false;
     return await this.usersRepository.save(user);
   }
