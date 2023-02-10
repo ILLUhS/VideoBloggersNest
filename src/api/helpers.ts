@@ -1,5 +1,5 @@
 import { SortOrder } from 'mongoose';
-import { QueryParamsType } from './types/query.params.type';
+import { QueryParamsType } from './types/queryParamsType';
 
 export const queryParamsValidation = async (query: QueryParamsType) => {
   const searchNameTerm = query.searchNameTerm || '';

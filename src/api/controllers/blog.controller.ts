@@ -14,7 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { QueryParamsType } from '../types/query.params.type';
+import { QueryParamsType } from '../types/queryParamsType';
 import { queryParamsValidation } from '../helpers';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { BlogCreateDto } from '../../application/types/blog.create.dto';

@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   RefreshTokenMeta,
   RefreshTokenMetaModelType,
-} from '../../../domain/schemas/refreshTokenMetaSchema';
+} from '../../../domain/schemas/refresh-token-meta.schema';
 import { RefreshTokenMetaRepository } from '../../ifrastructure/repositories/refresh.token.meta.repository';
 import {
   User,
@@ -22,7 +22,7 @@ import {
   PasswordRecovery,
   PasswordRecoveryDocument,
   PasswordRecoveryModelType,
-} from '../../../domain/schemas/password.recovery.schema';
+} from '../../../domain/schemas/password-recovery.schema';
 import { NewPassDto } from '../../types/new.pass.dto';
 
 @Injectable()

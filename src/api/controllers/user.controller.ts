@@ -10,14 +10,16 @@ import {
   Post,
   Query,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { UserService } from '../../application/services/user.service';
-import { QueryParamsType } from '../types/query.params.type';
+import { QueryParamsType } from '../types/queryParamsType';
 import { queryParamsValidation } from '../helpers';
 import { UserInputDto } from '../../application/types/user.input.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { SkipThrottle } from '@nestjs/throttler';
+import { QueryTransformPipe } from '../../auth/api/controllers/query-transform.pipe';
 
 @SkipThrottle()
 @Controller('users')
@@ -29,9 +31,10 @@ export class UserController {
 
   @UseGuards(AuthGuard('basic'))
   @Get()
+  @UsePipes(new QueryTransformPipe())
   async findAll(@Query() query: QueryParamsType) {
-    const searchParams = await queryParamsValidation(query);
-    return await this.queryRepository.getUsersWithQueryParam(searchParams);
+    //const searchParams = await queryParamsValidation(query);
+    return await this.queryRepository.getUsersWithQueryParam(query);
   }
 
   @UseGuards(AuthGuard('basic'))

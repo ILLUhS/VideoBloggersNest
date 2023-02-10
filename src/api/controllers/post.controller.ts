@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { PostService } from '../../application/services/post.service';
-import { QueryParamsType } from '../types/query.params.type';
+import { QueryParamsType } from '../types/queryParamsType';
 import { queryParamsValidation } from '../helpers';
 import { Request } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';

@@ -19,7 +19,7 @@ import { JwtStrategy } from './api/controllers/guards/strategies/jwt.strategy';
 import {
   RefreshTokenMeta,
   RefreshTokenMetaSchema,
-} from '../domain/schemas/refreshTokenMetaSchema';
+} from '../domain/schemas/refresh-token-meta.schema';
 import { RefreshTokenMetaRepository } from './ifrastructure/repositories/refresh.token.meta.repository';
 import { LoginMiddleware } from './api/controllers/middlewares/login.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -31,7 +31,7 @@ import { PasswordRecoveryRepository } from './ifrastructure/repositories/passwor
 import {
   PasswordRecovery,
   PasswordRecoverySchema,
-} from '../domain/schemas/password.recovery.schema';
+} from '../domain/schemas/password-recovery.schema';
 import { SecurityDevicesController } from './api/controllers/security.devices.controller';
 import { AuthQueryRepository } from './ifrastructure/repositories/auth.query.repository';
 import { CheckOwnerDeviceInterceptor } from './api/controllers/interceptors/check.owner.device.interceptor';

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   RefreshTokenMeta,
   RefreshTokenMetaModelType,
-} from '../../../domain/schemas/refreshTokenMetaSchema';
+} from '../../../domain/schemas/refresh-token-meta.schema';
 import { User, UserModelType } from '../../../domain/schemas/user.schema';
 
 @Injectable()
