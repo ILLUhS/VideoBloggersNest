@@ -48,6 +48,15 @@ export class User {
   @Prop({ required: true })
   emailIsConfirmed: boolean;
 
+  @Prop({ required: true, default: false })
+  isBanned: boolean;
+
+  @Prop({ default: null })
+  banDate: string;
+
+  @Prop({ default: null })
+  banReason: string;
+
   async emailConfirm(): Promise<boolean> {
     if (
       this.emailExpirationTime <= new Date() ||
