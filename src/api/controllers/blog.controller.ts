@@ -14,8 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { QueryParamsType } from '../types/queryParamsType';
-import { queryParamsValidation } from '../helpers';
+import { QueryParamsType } from '../types/query-params.type';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { BlogCreateDto } from '../../application/types/blog.create.dto';
 import { BlogService } from '../../application/services/blog.service';
@@ -27,6 +26,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { BlogPostInputDto } from '../types/blog.post.input.dto';
 import { SkipThrottle } from '@nestjs/throttler';
+import { QueryTransformPipe } from '../../auth/api/controllers/query-transform.pipe';
 
 @SkipThrottle()
 @Controller('blogs')
@@ -38,9 +38,8 @@ export class BlogController {
   ) {}
 
   @Get()
-  async findAll(@Query() query: QueryParamsType) {
-    const searchParams = await queryParamsValidation(query);
-    return await this.queryRepository.getBlogsWithQueryParam(searchParams);
+  async findAll(@Query(new QueryTransformPipe()) query: QueryParamsType) {
+    return await this.queryRepository.getBlogsWithQueryParam(query);
   }
 
   @Get(':id')
@@ -54,19 +53,18 @@ export class BlogController {
   @Get(':id/posts')
   async findPostsByBlogId(
     @Param('id') id: string,
-    @Query() query: QueryParamsType,
+    @Query(new QueryTransformPipe()) query: QueryParamsType,
     @Req() req: Request,
   ) {
-    const searchParams = await queryParamsValidation(query);
     const blog = await this.queryRepository.findBlogById(id);
     if (!blog) throw new NotFoundException();
     if (req.user)
       return await this.queryRepository.getPotsWithQueryParam(
-        searchParams,
+        query,
         { blogId: id },
         req.user['userId'],
       );
-    return await this.queryRepository.getPotsWithQueryParam(searchParams, {
+    return await this.queryRepository.getPotsWithQueryParam(query, {
       blogId: id,
     });
   }

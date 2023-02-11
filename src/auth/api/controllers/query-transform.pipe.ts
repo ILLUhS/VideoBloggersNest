@@ -1,5 +1,5 @@
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
-import { QueryParamsType } from '../../../api/types/queryParamsType';
+import { QueryParamsType } from '../../../api/types/query-params.type';
 import { SortOrder } from 'mongoose';
 
 @Injectable()

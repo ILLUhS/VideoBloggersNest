@@ -16,8 +16,7 @@ import {
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { PostService } from '../../application/services/post.service';
-import { QueryParamsType } from '../types/queryParamsType';
-import { queryParamsValidation } from '../helpers';
+import { QueryParamsType } from '../types/query-params.type';
 import { Request } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDto } from '../../application/types/post.update.dto';
@@ -29,6 +28,7 @@ import { CommentCreateDtoType } from '../../application/types/comment.create.dto
 import { LikeStatusInputDto } from '../types/like.status.input.dto';
 import { LikeService } from '../../application/services/like.service';
 import { SkipThrottle } from '@nestjs/throttler';
+import { QueryTransformPipe } from '../../auth/api/controllers/query-transform.pipe';
 
 @SkipThrottle()
 @Controller('posts')
@@ -42,15 +42,17 @@ export class PostController {
 
   @UseInterceptors(AuthHeaderInterceptor)
   @Get()
-  async findAll(@Query() query: QueryParamsType, @Req() req: Request) {
-    const searchParams = await queryParamsValidation(query);
+  async findAll(
+    @Query(new QueryTransformPipe()) query: QueryParamsType,
+    @Req() req: Request,
+  ) {
     if (req.user)
       return await this.queryRepository.getPotsWithQueryParam(
-        searchParams,
+        query,
         {},
         req.user['userId'],
       );
-    return await this.queryRepository.getPotsWithQueryParam(searchParams);
+    return await this.queryRepository.getPotsWithQueryParam(query);
   }
 
   @UseInterceptors(AuthHeaderInterceptor)
@@ -68,21 +70,20 @@ export class PostController {
   @Get(':id/comments')
   async findCommentsByPostId(
     @Param('id') id: string,
-    @Query() query: QueryParamsType,
+    @Query(new QueryTransformPipe()) query: QueryParamsType,
     @Req() req: Request,
   ) {
-    const searchParams = await queryParamsValidation(query);
     const post = await this.queryRepository.findPostById(id);
     if (!post) throw new NotFoundException();
     if (req.user)
       return await this.queryRepository.getCommentsWithQueryParam(
-        searchParams,
+        query,
         {
           postId: id,
         },
         req.user['userId'],
       );
-    return await this.queryRepository.getCommentsWithQueryParam(searchParams, {
+    return await this.queryRepository.getCommentsWithQueryParam(query, {
       postId: id,
     });
   }
