@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { PostService } from '../../application/services/post.service';
-import { QueryParamsType } from '../types/query-params.type';
+import { QueryParamsDto } from '../types/query-params.dto';
 import { Request } from 'express';
 import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostUpdateDto } from '../../application/types/post.update.dto';
@@ -43,7 +43,7 @@ export class PostController {
   @UseInterceptors(AuthHeaderInterceptor)
   @Get()
   async findAll(
-    @Query(new QueryTransformPipe()) query: QueryParamsType,
+    @Query(new QueryTransformPipe()) query: QueryParamsDto,
     @Req() req: Request,
   ) {
     if (req.user)
@@ -70,7 +70,7 @@ export class PostController {
   @Get(':id/comments')
   async findCommentsByPostId(
     @Param('id') id: string,
-    @Query(new QueryTransformPipe()) query: QueryParamsType,
+    @Query(new QueryTransformPipe()) query: QueryParamsDto,
     @Req() req: Request,
   ) {
     const post = await this.queryRepository.findPostById(id);

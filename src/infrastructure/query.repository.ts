@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogModelType } from '../domain/schemas/blog.schema';
 import { Post, PostModelType } from '../domain/schemas/post.schema';
-import { QueryParamsType } from '../api/types/query-params.type';
+import { QueryParamsDto } from '../api/types/query-params.dto';
 import { BlogsViewType } from '../api/types/blog.view.type';
 import { FilterQueryType } from '../api/types/filter.query.type';
 import { ReactionDocument } from '../domain/schemas/reaction.schema';
@@ -19,7 +19,7 @@ export class QueryRepository {
     @InjectModel(Comment.name) private commentModel: CommentModelType,
     @InjectModel(User.name) private userModel: UserModelType,
   ) {}
-  async getBlogsWithQueryParam(searchParams: QueryParamsType) {
+  async getBlogsWithQueryParam(searchParams: QueryParamsDto) {
     const blogs = await this.blogModel
       .find({
         name: { $regex: searchParams.searchNameTerm, $options: 'i' },
@@ -72,7 +72,7 @@ export class QueryRepository {
       .exec();
   }
   async getPotsWithQueryParam(
-    searchParams: QueryParamsType,
+    searchParams: QueryParamsDto,
     filter: FilterQueryType = {}, //установка дефолтного значения
     userId = '',
   ) {
@@ -143,7 +143,7 @@ export class QueryRepository {
       },
     };
   }
-  async getUsersWithQueryParam(searchParams: QueryParamsType) {
+  async getUsersWithQueryParam(searchParams: QueryParamsDto) {
     const users = await this.userModel
       .find()
       .or([
@@ -244,7 +244,7 @@ export class QueryRepository {
     };
   }
   async getCommentsWithQueryParam(
-    searchParams: QueryParamsType,
+    searchParams: QueryParamsDto,
     filter: FilterQueryType = {},
     userId = '',
   ) {

@@ -1,11 +1,19 @@
 import { SortOrder } from 'mongoose';
+import { Allow } from 'class-validator';
 
-export type QueryParamsType = {
+export class QueryParamsDto {
+  @Allow()
   searchNameTerm: string;
+  @Allow()
   searchLoginTerm: string;
+  @Allow()
   searchEmailTerm: string;
+  @Allow()
   pageNumber: number;
+  @Allow()
   pageSize: number;
+  @Allow()
   sortBy: string;
+  @Allow()
   sortDirection: SortOrder;
-};
+}

@@ -1,15 +1,12 @@
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
-import { QueryParamsType } from '../../../api/types/query-params.type';
+import { QueryParamsDto } from '../../../api/types/query-params.dto';
 import { SortOrder } from 'mongoose';
 
 @Injectable()
 export class QueryTransformPipe
-  implements PipeTransform<QueryParamsType, QueryParamsType>
+  implements PipeTransform<QueryParamsDto, QueryParamsDto>
 {
-  transform(
-    query: QueryParamsType,
-    metadata: ArgumentMetadata,
-  ): QueryParamsType {
+  transform(query: QueryParamsDto, metadata: ArgumentMetadata): QueryParamsDto {
     const searchNameTerm = query.searchNameTerm || '';
     const searchLoginTerm = query.searchLoginTerm || '';
     const searchEmailTerm = query.searchEmailTerm || '';

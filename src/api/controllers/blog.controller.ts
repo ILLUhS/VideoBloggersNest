@@ -14,7 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { QueryParamsType } from '../types/query-params.type';
+import { QueryParamsDto } from '../types/query-params.dto';
 import { QueryRepository } from '../../infrastructure/query.repository';
 import { BlogCreateDto } from '../../application/types/blog.create.dto';
 import { BlogService } from '../../application/services/blog.service';
@@ -38,7 +38,7 @@ export class BlogController {
   ) {}
 
   @Get()
-  async findAll(@Query(new QueryTransformPipe()) query: QueryParamsType) {
+  async findAll(@Query(new QueryTransformPipe()) query: QueryParamsDto) {
     return await this.queryRepository.getBlogsWithQueryParam(query);
   }
 
@@ -53,7 +53,7 @@ export class BlogController {
   @Get(':id/posts')
   async findPostsByBlogId(
     @Param('id') id: string,
-    @Query(new QueryTransformPipe()) query: QueryParamsType,
+    @Query(new QueryTransformPipe()) query: QueryParamsDto,
     @Req() req: Request,
   ) {
     const blog = await this.queryRepository.findBlogById(id);
