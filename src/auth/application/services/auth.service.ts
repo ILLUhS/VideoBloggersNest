@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../../../application/services/user.service';
+import { SaUsersService } from '../../../super-admin/application/services/sa-users.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,7 +15,7 @@ import {
   UserModelType,
 } from '../../../domain/schemas/user.schema';
 import { UserInputDto } from '../../../application/types/user.input.dto';
-import { UserRepository } from '../../../infrastructure/repositories/user.repository';
+import { SaUsersRepository } from '../../../super-admin/infrastructure/repositories/sa-users.repository';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PasswordRecoveryRepository } from '../../ifrastructure/repositories/password.recovery.repository';
 import {
@@ -35,8 +35,8 @@ export class AuthService {
     private passRecModel: PasswordRecoveryModelType,
     private refreshTokenMetaRepository: RefreshTokenMetaRepository,
     private passRecRepository: PasswordRecoveryRepository,
-    private usersRepository: UserRepository,
-    private usersService: UserService,
+    private usersRepository: SaUsersRepository,
+    private usersService: SaUsersService,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
   ) {}

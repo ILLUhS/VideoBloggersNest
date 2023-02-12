@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from './commands/bind-blog-with-user.command';
-import { UserRepository } from '../../../infrastructure/repositories/user.repository';
+import { SaUsersRepository } from '../../infrastructure/repositories/sa-users.repository';
 import { BlogRepository } from '../../../infrastructure/repositories/blog.repository';
 import { BadRequestException } from '@nestjs/common';
 
@@ -9,7 +9,7 @@ export class BindBlogWithUserUseCase
   implements ICommandHandler<BindBlogWithUserCommand>
 {
   constructor(
-    private usersRepository: UserRepository,
+    private usersRepository: SaUsersRepository,
     private blogsRepository: BlogRepository,
   ) {}
   async execute(command: BindBlogWithUserCommand): Promise<void> {

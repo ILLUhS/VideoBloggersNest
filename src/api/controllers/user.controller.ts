@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { QueryRepository } from '../../infrastructure/query.repository';
-import { UserService } from '../../application/services/user.service';
+import { SaUsersService } from '../../super-admin/application/services/sa-users.service';
 import { QueryParamsDto } from '../types/query-params.dto';
 import { UserInputDto } from '../../application/types/user.input.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,13 +24,12 @@ import { QueryTransformPipe } from '../../auth/api/controllers/query-transform.p
 export class UserController {
   constructor(
     protected queryRepository: QueryRepository,
-    protected userService: UserService,
+    protected userService: SaUsersService,
   ) {}
 
   @UseGuards(AuthGuard('basic'))
   @Get()
   async findAll(@Query(new QueryTransformPipe()) query: QueryParamsDto) {
-    //const searchParams = await queryParamsValidation(query);
     return await this.queryRepository.getUsersWithQueryParam(query);
   }
 

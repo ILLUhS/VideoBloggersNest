@@ -6,12 +6,15 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from '../auth/application/configs/email.config';
 import { Blog, BlogSchema } from '../domain/schemas/blog.schema';
 import { BlogRepository } from '../infrastructure/repositories/blog.repository';
-import { UserRepository } from '../infrastructure/repositories/user.repository';
+import { SaUsersRepository } from './infrastructure/repositories/sa-users.repository';
 import { SaBlogsController } from './api/controllers/sa-blogs.controller';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UserService } from '../application/services/user.service';
+import { SaUsersService } from './application/services/sa-users.service';
 import { UserIdValidator } from './api/validators/user-id.validator';
 import { BindBlogWithUserUseCase } from './application/use-cases/bind-blog-with-user.use-case';
+import { SaBlogsQueryRepository } from './infrastructure/query.repositories/sa-blogs-query.repository';
+import { SaUsersController } from './api/controllers/sa-users.controller';
+import { SaUsersQueryRepository } from './infrastructure/query.repositories/sa-users-query.repository';
 
 @Module({
   imports: [
@@ -27,10 +30,12 @@ import { BindBlogWithUserUseCase } from './application/use-cases/bind-blog-with-
       useFactory: getMailConfig,
     }),
   ],
-  controllers: [SaBlogsController],
+  controllers: [SaBlogsController, SaUsersController],
   providers: [
-    UserService,
-    UserRepository,
+    SaUsersService,
+    SaUsersRepository,
+    SaBlogsQueryRepository,
+    SaUsersQueryRepository,
     BlogRepository,
     UserIdValidator,
     BindBlogWithUserUseCase,

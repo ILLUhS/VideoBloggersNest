@@ -8,6 +8,7 @@ import {
 
 @Injectable()
 export class SaUsersRepository {
+  //объект с методами управления данными
   constructor(@InjectModel(User.name) private userModel: UserModelType) {}
 
   async findById(id: string): Promise<UserDocument | null> {

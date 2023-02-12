@@ -14,14 +14,20 @@ import { BlogIdAndUserIdInputDto } from '../dto/blog-id-and-user-id-input.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../../application/use-cases/commands/bind-blog-with-user.command';
 import { BasicAuthGuard } from '../guards/basic-auth.guard';
+import { SaBlogsQueryRepository } from '../../infrastructure/query.repositories/sa-blogs-query.repository';
 
 @SkipThrottle()
 @Controller('sa/blogs')
 export class SaBlogsController {
-  constructor(private commandBus: CommandBus) {}
+  constructor(
+    private commandBus: CommandBus,
+    private saBlogsQueryRepository: SaBlogsQueryRepository,
+  ) {}
+
+  @UseGuards(BasicAuthGuard)
   @Get()
   async findAll(@Query(new QueryTransformPipe()) query: QueryParamsDto) {
-    //return await this.queryRepository.getBlogsWithQueryParam(query);
+    return await this.saBlogsQueryRepository.getBlogsWithOwnerInfo(query);
   }
 
   @UseGuards(BasicAuthGuard)

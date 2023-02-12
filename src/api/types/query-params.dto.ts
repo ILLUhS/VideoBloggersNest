@@ -3,6 +3,8 @@ import { Allow } from 'class-validator';
 
 export class QueryParamsDto {
   @Allow()
+  banStatus: string;
+  @Allow()
   searchNameTerm: string;
   @Allow()
   searchLoginTerm: string;

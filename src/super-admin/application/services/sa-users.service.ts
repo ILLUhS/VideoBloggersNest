@@ -4,16 +4,16 @@ import {
   User,
   UserDocument,
   UserModelType,
-} from '../../domain/schemas/user.schema';
-import { UserRepository } from '../../infrastructure/repositories/user.repository';
-import { UserInputDto } from '../types/user.input.dto';
+} from '../../../domain/schemas/user.schema';
+import { SaUsersRepository } from '../../infrastructure/repositories/sa-users.repository';
+import { UserInputDto } from '../../../application/types/user.input.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UserService {
+export class SaUsersService {
   constructor(
     @InjectModel(User.name) private userModel: UserModelType,
-    protected usersRepository: UserRepository,
+    protected usersRepository: SaUsersRepository,
   ) {}
 
   async createUser(userDto: UserInputDto): Promise<string | null> {
