@@ -11,6 +11,7 @@ export type BlogModelMethods = {
 };
 export type BlogModelStaticMethods = {
   makeInstance(blogDto: BlogCreateDto, BlogModel: BlogModelType): BlogDocument;
+  setOwner(userId: string, userLogin: string): void;
 };
 export type BlogModelType = Model<BlogDocument> &
   BlogModelMethods &
@@ -36,6 +37,12 @@ export class Blog {
   @Prop({ required: true })
   isMembership: boolean;
 
+  @Prop({ required: true })
+  userId: string;
+
+  @Prop({ required: true })
+  userLogin: string;
+
   static makeInstance(
     blogDto: BlogCreateDto,
     BlogModel: BlogModelType,
@@ -55,8 +62,16 @@ export class Blog {
     this.description = blogDto.description;
     this.websiteUrl = blogDto.websiteUrl;
   }
+
+  setOwner(userId: string, userLogin: string) {
+    this.userId = userId;
+    this.userLogin = userLogin;
+  }
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 BlogSchema.statics = { makeInstance: Blog.makeInstance };
-BlogSchema.methods = { updateProperties: Blog.prototype.updateProperties };
+BlogSchema.methods = {
+  updateProperties: Blog.prototype.updateProperties,
+  setOwner: Blog.prototype.setOwner,
+};

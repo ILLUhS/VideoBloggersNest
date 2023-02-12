@@ -5,9 +5,9 @@ import {
 import { Injectable } from '@nestjs/common';
 import { BlogService } from '../../../application/services/blog.service';
 
-@ValidatorConstraint({ name: 'blogId', async: true })
+@ValidatorConstraint({ async: true })
 @Injectable()
-export class BlogIdValidate implements ValidatorConstraintInterface {
+export class BlogIdValidator implements ValidatorConstraintInterface {
   constructor(private blogService: BlogService) {}
 
   async validate(blogId: string): Promise<boolean> {

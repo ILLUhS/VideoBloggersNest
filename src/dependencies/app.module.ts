@@ -27,11 +27,13 @@ import { CommentService } from '../application/services/comment.service';
 import { CheckOwnerCommentInterceptor } from '../api/controllers/interceptors/check.owner.comment.interceptor';
 import { ReactionsRepository } from '../infrastructure/repositories/reaction.repository';
 import { LikeService } from '../application/services/like.service';
-import { BlogIdValidate } from '../api/controllers/validators/blog.id.validate';
+import { BlogIdValidator } from '../api/controllers/validators/blog.id.validator';
+import { SaModule } from '../super-admin/sa.module';
 
 @Module({
   imports: [
     AuthModule,
+    SaModule,
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URL),
     MongooseModule.forFeature([
@@ -65,7 +67,7 @@ import { BlogIdValidate } from '../api/controllers/validators/blog.id.validate';
     QueryRepository,
     AuthHeaderInterceptor,
     CheckOwnerCommentInterceptor,
-    BlogIdValidate,
+    BlogIdValidator,
   ],
 })
 export class AppModule {}

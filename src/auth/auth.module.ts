@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BasicStrategy } from './api/controllers/guards/strategies/basic.strategy';
+import { BasicStrategy } from '../super-admin/api/guards/strategies/basic.strategy';
 import { LocalStrategy } from './api/controllers/guards/strategies/local.strategy';
 import { AuthService } from './application/services/auth.service';
 import { AuthController } from './api/controllers/auth.controller';
