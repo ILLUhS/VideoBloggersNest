@@ -5,6 +5,7 @@ import { User, UserModelType } from '../../../../domain/schemas/user.schema';
 import { SaUsersRepository } from '../../../infrastructure/repositories/sa-users.repository';
 import { SaUsersService } from '../../services/sa-users.service';
 import { BadRequestException } from '@nestjs/common';
+import { SaRefreshTokenMetaRepository } from '../../../infrastructure/repositories/sa-refresh-token-meta.repository';
 
 @CommandHandler(BanUnbanUserCommand)
 export class BanUnbanUserUseCase
@@ -14,6 +15,7 @@ export class BanUnbanUserUseCase
     @InjectModel(User.name) private userModel: UserModelType,
     private usersRepository: SaUsersRepository,
     private usersService: SaUsersService,
+    private refreshTokenMetaRepository: SaRefreshTokenMetaRepository,
   ) {}
   async execute(command: BanUnbanUserCommand) {
     const { id, isBanned, banReason } = command.banUserDto;
@@ -24,6 +26,7 @@ export class BanUnbanUserUseCase
       });
     await user.switchBanStatus(isBanned, banReason);
     await this.usersRepository.save(user);
+    await this.refreshTokenMetaRepository.deleteByUserId(id);
     return;
   }
 }

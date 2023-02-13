@@ -3,9 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../domain/schemas/user.schema';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { getMailConfig } from '../auth/application/configs/email.config';
 import { Blog, BlogSchema } from '../domain/schemas/blog.schema';
-import { BlogRepository } from '../infrastructure/repositories/blog.repository';
 import { SaUsersRepository } from './infrastructure/repositories/sa-users.repository';
 import { SaBlogsController } from './api/controllers/sa-blogs.controller';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -16,7 +14,29 @@ import { SaBlogsQueryRepository } from './infrastructure/query.repositories/sa-b
 import { SaUsersController } from './api/controllers/sa-users.controller';
 import { SaUsersQueryRepository } from './infrastructure/query.repositories/sa-users-query.repository';
 import { CreateUserUseCase } from './application/use-cases/users/create-user.use-case';
-import { BanUnbanUserUseCase } from './application/use-cases/users/banUnbanUser.use-case';
+import { BanUnbanUserUseCase } from './application/use-cases/users/ban-unban-user.use-case';
+import { SaBlogsRepository } from './infrastructure/repositories/sa-blogs.repository';
+import { BlogIdValidator } from './api/validators/blog.id.validator';
+import { SaBlogsService } from './application/services/sa-blogs.service';
+import {
+  RefreshTokenMeta,
+  RefreshTokenMetaSchema,
+} from '../domain/schemas/refresh-token-meta.schema';
+import { SaRefreshTokenMetaRepository } from './infrastructure/repositories/sa-refresh-token-meta.repository';
+
+const useCases = [
+  BindBlogWithUserUseCase,
+  CreateUserUseCase,
+  BanUnbanUserUseCase,
+];
+const services = [SaUsersService, SaBlogsService];
+const repositories = [
+  SaUsersRepository,
+  SaBlogsRepository,
+  SaRefreshTokenMetaRepository,
+];
+const queryRepositories = [SaBlogsQueryRepository, SaUsersQueryRepository];
+const validators = [UserIdValidator, BlogIdValidator];
 
 @Module({
   imports: [
@@ -25,24 +45,20 @@ import { BanUnbanUserUseCase } from './application/use-cases/users/banUnbanUser.
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Blog.name, schema: BlogSchema },
+      { name: RefreshTokenMeta.name, schema: RefreshTokenMetaSchema },
     ]),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: getMailConfig,
     }),
   ],
   controllers: [SaBlogsController, SaUsersController],
   providers: [
-    SaUsersService,
-    SaUsersRepository,
-    SaBlogsQueryRepository,
-    SaUsersQueryRepository,
-    BlogRepository,
-    UserIdValidator,
-    BindBlogWithUserUseCase,
-    CreateUserUseCase,
-    BanUnbanUserUseCase,
+    ...validators,
+    ...services,
+    ...useCases,
+    ...repositories,
+    ...queryRepositories,
   ],
 })
 export class SaModule {}

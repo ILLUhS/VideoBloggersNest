@@ -16,10 +16,6 @@ import { Comment, CommentSchema } from '../domain/schemas/comment.schema';
 import { PostController } from '../api/controllers/post.controller';
 import { CommentController } from '../api/controllers/comment.controller';
 import { TestingAllDataController } from '../api/controllers/testing.all.data.controller';
-import { User, UserSchema } from '../domain/schemas/user.schema';
-import { SaUsersService } from '../super-admin/application/services/sa-users.service';
-import { SaUsersRepository } from '../super-admin/infrastructure/repositories/sa-users.repository';
-import { UserController } from '../api/controllers/user.controller';
 import { AuthModule } from '../auth/auth.module';
 import { AuthHeaderInterceptor } from '../api/controllers/interceptors/auth.header.interceptor';
 import { CommentRepository } from '../infrastructure/repositories/comment.repository';
@@ -41,7 +37,6 @@ import { SaModule } from '../super-admin/sa.module';
       { name: Post.name, schema: PostSchema },
       { name: Reaction.name, schema: ReactionSchema },
       { name: Comment.name, schema: CommentSchema },
-      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [
@@ -49,19 +44,16 @@ import { SaModule } from '../super-admin/sa.module';
     BlogController,
     PostController,
     CommentController,
-    UserController,
     TestingAllDataController,
   ],
   providers: [
     AppService,
     BlogService,
     PostService,
-    SaUsersService,
     CommentService,
     LikeService,
     BlogRepository,
     PostRepository,
-    SaUsersRepository,
     CommentRepository,
     ReactionsRepository,
     QueryRepository,

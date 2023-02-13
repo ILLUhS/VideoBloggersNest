@@ -10,7 +10,6 @@ import { BasicStrategy } from '../super-admin/api/guards/strategies/basic.strate
 import { LocalStrategy } from './api/controllers/guards/strategies/local.strategy';
 import { AuthService } from './application/services/auth.service';
 import { AuthController } from './api/controllers/auth.controller';
-import { SaUsersService } from '../super-admin/application/services/sa-users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../domain/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
@@ -60,7 +59,6 @@ import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check
     LocalStrategy,
     JwtStrategy,
     RefreshStrategy,
-    SaUsersService,
     JwtService,
     SaUsersRepository,
     RefreshTokenMetaRepository,

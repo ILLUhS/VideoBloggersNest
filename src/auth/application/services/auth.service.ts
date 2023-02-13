@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SaUsersService } from '../../../super-admin/application/services/sa-users.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -36,7 +35,6 @@ export class AuthService {
     private refreshTokenMetaRepository: RefreshTokenMetaRepository,
     private passRecRepository: PasswordRecoveryRepository,
     private usersRepository: SaUsersRepository,
-    private usersService: SaUsersService,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
   ) {}
