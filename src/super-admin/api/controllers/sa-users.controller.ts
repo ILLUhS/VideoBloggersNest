@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -45,6 +46,11 @@ export class SaUsersController {
     if (!userId) throw new InternalServerErrorException();
     return await this.saUsersQueryRepository.findUserById(userId);
   }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
+  @Put(':id/ban')
+  async banUnbanUser(@Param('id') id: string) {}
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
