@@ -16,6 +16,7 @@ import { SaBlogsQueryRepository } from './infrastructure/query.repositories/sa-b
 import { SaUsersController } from './api/controllers/sa-users.controller';
 import { SaUsersQueryRepository } from './infrastructure/query.repositories/sa-users-query.repository';
 import { CreateUserUseCase } from './application/use-cases/users/create-user.use-case';
+import { BanUnbanUserUseCase } from './application/use-cases/users/banUnbanUser.use-case';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CreateUserUseCase } from './application/use-cases/users/create-user.use
     UserIdValidator,
     BindBlogWithUserUseCase,
     CreateUserUseCase,
+    BanUnbanUserUseCase,
   ],
 })
 export class SaModule {}

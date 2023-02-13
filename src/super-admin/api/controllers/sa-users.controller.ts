@@ -21,6 +21,8 @@ import { SaUsersQueryRepository } from '../../infrastructure/query.repositories/
 import { UserInputDto } from '../../../application/types/user.input.dto';
 import { CreateUserCommand } from '../../application/use-cases/users/commands/create-user.command';
 import { DeleteUserCommand } from '../../application/use-cases/users/commands/delete-user.command';
+import { BanUnbanUserCommand } from '../../application/use-cases/users/commands/ban-unban-user.command';
+import { BanUserInputDto } from '../dto/ban-user-input.dto';
 
 @SkipThrottle()
 @Controller('sa/users')
@@ -50,7 +52,18 @@ export class SaUsersController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Put(':id/ban')
-  async banUnbanUser(@Param('id') id: string) {}
+  async banUnbanUser(
+    @Param('id') id: string,
+    @Body() banUserInputDto: BanUserInputDto,
+  ) {
+    return await this.commandBus.execute(
+      new BanUnbanUserCommand({
+        id: id,
+        isBanned: banUserInputDto.isBanned,
+        banReason: banUserInputDto.banReason,
+      }),
+    );
+  }
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)

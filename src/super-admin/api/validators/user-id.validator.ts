@@ -11,8 +11,8 @@ export class UserIdValidator implements ValidatorConstraintInterface {
   constructor(private usersService: SaUsersService) {}
 
   async validate(userId: string): Promise<boolean> {
-    const foundUserId = await this.usersService.findUserById(userId);
-    return !!foundUserId;
+    const user = await this.usersService.findUserById(userId);
+    return !!user;
   }
   defaultMessage() {
     return `userId incorrect`;

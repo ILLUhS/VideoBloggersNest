@@ -11,8 +11,7 @@ export type UserModelMethods = {
   updEmailCode(): Promise<void>;
   setPassHash(newPassHash: string): Promise<void>;
   getEmailIsConfirmed(): Promise<boolean>;
-  ban(reason: string): Promise<void>;
-  unBan(): Promise<void>;
+  switchBanStatus(isBanned: boolean, reason: string): Promise<void>;
 };
 export type UserModelStaticMethods = {
   makeInstance(
@@ -78,13 +77,10 @@ export class User {
   async getEmailIsConfirmed(): Promise<boolean> {
     return this.emailIsConfirmed;
   }
-  async ban(reason: string): Promise<void> {
-    this.isBanned = true;
+  async switchBanStatus(isBanned: boolean, reason: string): Promise<void> {
+    this.isBanned = isBanned;
     this.banDate = new Date().toISOString();
     this.banReason = reason;
-  }
-  async unBan(): Promise<void> {
-    this.isBanned = false;
   }
 
   static async makeInstance(
@@ -113,6 +109,5 @@ UserSchema.methods = {
   updEmailCode: User.prototype.updEmailCode,
   setPassHash: User.prototype.setPassHash,
   getEmailIsConfirmed: User.prototype.getEmailIsConfirmed,
-  ban: User.prototype.ban,
-  unBan: User.prototype.unBan,
+  switchBanStatus: User.prototype.switchBanStatus,
 };
