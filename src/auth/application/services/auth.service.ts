@@ -14,7 +14,6 @@ import {
   UserModelType,
 } from '../../../domain/schemas/user.schema';
 import { UserInputDto } from '../../../application/types/user.input.dto';
-import { SaUsersRepository } from '../../../super-admin/infrastructure/repositories/sa-users.repository';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PasswordRecoveryRepository } from '../../ifrastructure/repositories/password.recovery.repository';
 import {
@@ -23,6 +22,7 @@ import {
   PasswordRecoveryModelType,
 } from '../../../domain/schemas/password-recovery.schema';
 import { NewPassDto } from '../../types/new.pass.dto';
+import { UsersRepository } from '../../ifrastructure/repositories/users.repository';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +34,7 @@ export class AuthService {
     private passRecModel: PasswordRecoveryModelType,
     private refreshTokenMetaRepository: RefreshTokenMetaRepository,
     private passRecRepository: PasswordRecoveryRepository,
-    private usersRepository: SaUsersRepository,
+    private usersRepository: UsersRepository,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
   ) {}

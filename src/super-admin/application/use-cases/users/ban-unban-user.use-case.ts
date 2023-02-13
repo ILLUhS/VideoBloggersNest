@@ -6,7 +6,9 @@ import { SaUsersRepository } from '../../../infrastructure/repositories/sa-users
 import { SaUsersService } from '../../services/sa-users.service';
 import { BadRequestException } from '@nestjs/common';
 import { SaRefreshTokenMetaRepository } from '../../../infrastructure/repositories/sa-refresh-token-meta.repository';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @CommandHandler(BanUnbanUserCommand)
 export class BanUnbanUserUseCase
   implements ICommandHandler<BanUnbanUserCommand>

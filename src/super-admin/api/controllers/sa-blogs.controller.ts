@@ -13,7 +13,7 @@ import { QueryParamsDto } from '../../../api/types/query-params.dto';
 import { BlogIdAndUserIdInputDto } from '../dto/blog-id-and-user-id-input.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../../application/use-cases/blogs/commands/bind-blog-with-user.command';
-import { BasicAuthGuard } from '../guards/basic-auth.guard';
+import { BasicAuthGuard } from '../../../auth/api/controllers/guards/basic-auth.guard';
 import { SaBlogsQueryRepository } from '../../infrastructure/query.repositories/sa-blogs-query.repository';
 
 @SkipThrottle()

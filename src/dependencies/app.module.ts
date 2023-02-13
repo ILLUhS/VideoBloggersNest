@@ -25,6 +25,8 @@ import { ReactionsRepository } from '../infrastructure/repositories/reaction.rep
 import { LikeService } from '../application/services/like.service';
 import { BlogIdValidator } from '../api/controllers/validators/blog.id.validator';
 import { SaModule } from '../super-admin/sa.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -38,6 +40,7 @@ import { SaModule } from '../super-admin/sa.module';
       { name: Reaction.name, schema: ReactionSchema },
       { name: Comment.name, schema: CommentSchema },
     ]),
+    ThrottlerModule.forRootAsync({ useFactory: () => ({ ttl: 10, limit: 5 }) }),
   ],
   controllers: [
     AppController,
@@ -60,6 +63,10 @@ import { SaModule } from '../super-admin/sa.module';
     AuthHeaderInterceptor,
     CheckOwnerCommentInterceptor,
     BlogIdValidator,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

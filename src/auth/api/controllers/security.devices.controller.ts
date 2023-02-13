@@ -14,7 +14,7 @@ import { AuthService } from '../../application/services/auth.service';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { AuthQueryRepository } from '../../ifrastructure/repositories/auth.query.repository';
+import { AuthQueryRepository } from '../../ifrastructure/query.repositories/auth.query.repository';
 import { CheckOwnerDeviceInterceptor } from './interceptors/check.owner.device.interceptor';
 
 @SkipThrottle()

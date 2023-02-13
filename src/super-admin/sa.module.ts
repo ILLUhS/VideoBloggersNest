@@ -23,6 +23,7 @@ import {
   RefreshTokenMetaSchema,
 } from '../domain/schemas/refresh-token-meta.schema';
 import { SaRefreshTokenMetaRepository } from './infrastructure/repositories/sa-refresh-token-meta.repository';
+import { AuthModule } from '../auth/auth.module';
 
 const useCases = [
   BindBlogWithUserUseCase,
@@ -40,6 +41,7 @@ const validators = [UserIdValidator, BlogIdValidator];
 
 @Module({
   imports: [
+    AuthModule,
     CqrsModule,
     ConfigModule,
     MongooseModule.forFeature([
@@ -47,10 +49,6 @@ const validators = [UserIdValidator, BlogIdValidator];
       { name: Blog.name, schema: BlogSchema },
       { name: RefreshTokenMeta.name, schema: RefreshTokenMetaSchema },
     ]),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-    }),
   ],
   controllers: [SaBlogsController, SaUsersController],
   providers: [

@@ -6,14 +6,13 @@ import {
 } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BasicStrategy } from '../super-admin/api/guards/strategies/basic.strategy';
+import { BasicStrategy } from './api/controllers/guards/strategies/basic.strategy';
 import { LocalStrategy } from './api/controllers/guards/strategies/local.strategy';
 import { AuthService } from './application/services/auth.service';
 import { AuthController } from './api/controllers/auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../domain/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
-import { SaUsersRepository } from '../super-admin/infrastructure/repositories/sa-users.repository';
 import { JwtStrategy } from './api/controllers/guards/strategies/jwt.strategy';
 import {
   RefreshTokenMeta,
@@ -24,17 +23,18 @@ import { LoginMiddleware } from './api/controllers/middlewares/login.middleware'
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from './application/configs/email.config';
 import { RefreshStrategy } from './api/controllers/guards/strategies/refresh.strategy';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { PasswordRecoveryRepository } from './ifrastructure/repositories/password.recovery.repository';
 import {
   PasswordRecovery,
   PasswordRecoverySchema,
 } from '../domain/schemas/password-recovery.schema';
 import { SecurityDevicesController } from './api/controllers/security.devices.controller';
-import { AuthQueryRepository } from './ifrastructure/repositories/auth.query.repository';
+import { AuthQueryRepository } from './ifrastructure/query.repositories/auth.query.repository';
 import { CheckOwnerDeviceInterceptor } from './api/controllers/interceptors/check.owner.device.interceptor';
 import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check.login.email.interceptor';
+import { UsersRepository } from './ifrastructure/repositories/users.repository';
+import { BearerAuthGuard } from './api/controllers/guards/bearer-auth.guard';
+import { BasicAuthGuard } from './api/controllers/guards/basic-auth.guard';
 
 @Module({
   imports: [
@@ -50,7 +50,6 @@ import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check
       inject: [ConfigService],
       useFactory: getMailConfig,
     }),
-    ThrottlerModule.forRootAsync({ useFactory: () => ({ ttl: 10, limit: 5 }) }),
   ],
   controllers: [AuthController, SecurityDevicesController],
   providers: [
@@ -60,17 +59,16 @@ import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check
     JwtStrategy,
     RefreshStrategy,
     JwtService,
-    SaUsersRepository,
+    UsersRepository,
     RefreshTokenMetaRepository,
     PasswordRecoveryRepository,
     AuthQueryRepository,
     CheckOwnerDeviceInterceptor,
     CheckLoginEmailInterceptor,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    BearerAuthGuard,
+    BasicAuthGuard,
   ],
+  exports: [BearerAuthGuard, BasicAuthGuard],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

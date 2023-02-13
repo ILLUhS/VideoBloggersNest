@@ -19,7 +19,7 @@ import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
 import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.interceptor';
-import { AuthQueryRepository } from '../../ifrastructure/repositories/auth.query.repository';
+import { AuthQueryRepository } from '../../ifrastructure/query.repositories/auth.query.repository';
 
 @Controller('auth')
 export class AuthController {

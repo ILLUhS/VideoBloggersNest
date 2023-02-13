@@ -13,7 +13,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { BasicAuthGuard } from '../guards/basic-auth.guard';
+import { BasicAuthGuard } from '../../../auth/api/controllers/guards/basic-auth.guard';
 import { QueryTransformPipe } from '../../../auth/api/controllers/query-transform.pipe';
 import { QueryParamsDto } from '../../../api/types/query-params.dto';
 import { CommandBus } from '@nestjs/cqrs';
