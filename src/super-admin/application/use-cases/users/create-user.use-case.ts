@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserModelType } from '../../../domain/schemas/user.schema';
-import { SaUsersRepository } from '../../infrastructure/repositories/sa-users.repository';
+import { User, UserModelType } from '../../../../domain/schemas/user.schema';
+import { SaUsersRepository } from '../../../infrastructure/repositories/sa-users.repository';
 import { CreateUserCommand } from './commands/create-user.command';
 import * as bcrypt from 'bcrypt';
 

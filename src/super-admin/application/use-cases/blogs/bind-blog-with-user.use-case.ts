@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from './commands/bind-blog-with-user.command';
-import { SaUsersRepository } from '../../infrastructure/repositories/sa-users.repository';
-import { BlogRepository } from '../../../infrastructure/repositories/blog.repository';
+import { SaUsersRepository } from '../../../infrastructure/repositories/sa-users.repository';
+import { BlogRepository } from '../../../../infrastructure/repositories/blog.repository';
 import { BadRequestException } from '@nestjs/common';
 
 @CommandHandler(BindBlogWithUserCommand)

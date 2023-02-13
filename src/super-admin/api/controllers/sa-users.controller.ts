@@ -18,7 +18,8 @@ import { QueryParamsDto } from '../../../api/types/query-params.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { SaUsersQueryRepository } from '../../infrastructure/query.repositories/sa-users-query.repository';
 import { UserInputDto } from '../../../application/types/user.input.dto';
-import { CreateUserCommand } from '../../application/use-cases/commands/create-user.command';
+import { CreateUserCommand } from '../../application/use-cases/users/commands/create-user.command';
+import { DeleteUserCommand } from '../../application/use-cases/users/commands/delete-user.command';
 
 @SkipThrottle()
 @Controller('sa/users')
@@ -45,12 +46,15 @@ export class SaUsersController {
     return await this.saUsersQueryRepository.findUserById(userId);
   }
 
-  /*@UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Delete(':id')
   async deleteUserById(@Param('id') id: string) {
-    const result = await this.userService.deleteUserById(id);
+    const result = await this.commandBus.execute<
+      DeleteUserCommand,
+      Promise<boolean>
+    >(new DeleteUserCommand(id));
     if (!result) throw new NotFoundException();
     return;
-  }*/
+  }
 }

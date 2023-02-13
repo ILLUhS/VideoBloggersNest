@@ -11,11 +11,11 @@ import { SaBlogsController } from './api/controllers/sa-blogs.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { SaUsersService } from './application/services/sa-users.service';
 import { UserIdValidator } from './api/validators/user-id.validator';
-import { BindBlogWithUserUseCase } from './application/use-cases/bind-blog-with-user.use-case';
+import { BindBlogWithUserUseCase } from './application/use-cases/blogs/bind-blog-with-user.use-case';
 import { SaBlogsQueryRepository } from './infrastructure/query.repositories/sa-blogs-query.repository';
 import { SaUsersController } from './api/controllers/sa-users.controller';
 import { SaUsersQueryRepository } from './infrastructure/query.repositories/sa-users-query.repository';
-import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
+import { CreateUserUseCase } from './application/use-cases/users/create-user.use-case';
 
 @Module({
   imports: [
