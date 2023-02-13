@@ -15,6 +15,7 @@ import { BindBlogWithUserUseCase } from './application/use-cases/bind-blog-with-
 import { SaBlogsQueryRepository } from './infrastructure/query.repositories/sa-blogs-query.repository';
 import { SaUsersController } from './api/controllers/sa-users.controller';
 import { SaUsersQueryRepository } from './infrastructure/query.repositories/sa-users-query.repository';
+import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SaUsersQueryRepository } from './infrastructure/query.repositories/sa-u
     BlogRepository,
     UserIdValidator,
     BindBlogWithUserUseCase,
+    CreateUserUseCase,
   ],
 })
 export class SaModule {}

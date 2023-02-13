@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserModelType } from '../../../domain/schemas/user.schema';
 import { QueryParamsDto } from '../../../api/types/query-params.dto';
+import { UserViewType } from '../../../api/types/user.view.type';
 
 @Injectable()
 export class SaUsersQueryRepository {
@@ -47,6 +48,9 @@ export class SaUsersQueryRepository {
         login: 1,
         email: 1,
         createdAt: 1,
+        isBanned: 1,
+        banDate: 1,
+        banReason: 1,
       })
       .exec();
     const usersCount = await this.userModel
@@ -83,5 +87,34 @@ export class SaUsersQueryRepository {
         },
       })),
     };
+  }
+
+  async findUserById(id: string): Promise<UserViewType | null> {
+    const user = await this.userModel
+      .findOne({ id: id })
+      .select({
+        _id: 0,
+        id: 1,
+        login: 1,
+        email: 1,
+        createdAt: 1,
+        isBanned: 1,
+        banDate: 1,
+        banReason: 1,
+      })
+      .exec();
+    return user
+      ? {
+          id: user.id,
+          login: user.login,
+          email: user.email,
+          createdAt: user.createdAt,
+          banInfo: {
+            isBanned: user.isBanned,
+            banDate: user.banDate,
+            banReason: user.banReason,
+          },
+        }
+      : null;
   }
 }

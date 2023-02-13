@@ -9,7 +9,6 @@ import { ReactionDocument } from '../domain/schemas/reaction.schema';
 import { Comment, CommentModelType } from '../domain/schemas/comment.schema';
 import { CommentsViewType } from '../api/types/comment.view.type';
 import { User, UserModelType } from '../domain/schemas/user.schema';
-import { UserViewType } from '../api/types/user.view.type';
 
 @Injectable()
 export class QueryRepository {
@@ -201,7 +200,7 @@ export class QueryRepository {
       })),
     };
   }
-  async findUserById(id: string): Promise<UserViewType | null> {
+  async findUserById(id: string) /*: Promise<UserViewType | null>*/ {
     const user = await this.userModel
       .findOne({ id: id })
       .select({
