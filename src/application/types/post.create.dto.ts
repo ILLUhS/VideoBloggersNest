@@ -1,6 +1,6 @@
 import { IsString, IsUUID, Length, Validate } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { BlogIdValidator } from '../../api/controllers/validators/blog.id.validator';
+import { PostIdValidator } from '../../blogger/api/controllers/validators/post-id.validator';
 
 export class PostCreateDto {
   @IsString()
@@ -19,6 +19,6 @@ export class PostCreateDto {
   content: string;
 
   @IsUUID(4)
-  @Validate(BlogIdValidator)
+  @Validate(PostIdValidator)
   blogId: string;
 }

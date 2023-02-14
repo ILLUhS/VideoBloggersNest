@@ -23,7 +23,7 @@ import { CommentService } from '../application/services/comment.service';
 import { CheckOwnerCommentInterceptor } from '../api/controllers/interceptors/check.owner.comment.interceptor';
 import { ReactionsRepository } from '../infrastructure/repositories/reaction.repository';
 import { LikeService } from '../application/services/like.service';
-import { BlogIdValidator } from '../api/controllers/validators/blog.id.validator';
+import { PostIdValidator } from '../blogger/api/controllers/validators/post-id.validator';
 import { SaModule } from '../super-admin/sa.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -62,7 +62,7 @@ import { APP_GUARD } from '@nestjs/core';
     QueryRepository,
     AuthHeaderInterceptor,
     CheckOwnerCommentInterceptor,
-    BlogIdValidator,
+    PostIdValidator,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

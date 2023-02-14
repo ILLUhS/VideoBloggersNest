@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   InternalServerErrorException,
@@ -30,6 +31,10 @@ import { BlogPostInputDto } from '../../../api/types/blog.post.input.dto';
 import { PostCreateDto } from '../../../application/types/post.create.dto';
 import { CreatePostCommand } from '../../application/use-cases/posts/commands/create-post.command';
 import { BPostsQueryRepository } from '../../infrastructure/query.repositories/b-posts-query.repository';
+import { BlogIdPostIdInputDto } from '../input.dto/blog-id-post-id-input-dto';
+import { UpdatePostCommand } from '../../application/use-cases/posts/commands/update-post.command';
+import { PostUpdateDto } from '../../../application/types/post.update.dto';
+import { DeletePostCommand } from '../../application/use-cases/posts/commands/delete-post.command';
 
 @SkipThrottle()
 @Controller('blogger/blogs')
@@ -104,6 +109,35 @@ export class BlogsPostsController {
       UpdateBlogCommand,
       Promise<boolean>
     >(new UpdateBlogCommand(id, blogDto));
+    if (!result) throw new InternalServerErrorException();
+    return;
+  }
+
+  @UseGuards(BearerAuthGuard)
+  @UseInterceptors(CheckOwnerBlogInterceptor)
+  @HttpCode(204)
+  @Put(':blogId/posts/:postId')
+  async updatePostByBlogId(
+    @Param() BlogIdPostIdDto: BlogIdPostIdInputDto,
+    @Body() postDto: PostUpdateDto,
+  ) {
+    const result = await this.commandBus.execute<
+      UpdatePostCommand,
+      Promise<boolean>
+    >(new UpdatePostCommand(BlogIdPostIdDto, postDto));
+    if (!result) throw new InternalServerErrorException();
+    return;
+  }
+
+  @UseGuards(BearerAuthGuard)
+  @UseInterceptors(CheckOwnerBlogInterceptor)
+  @HttpCode(204)
+  @Delete(':id')
+  async deleteBlogById(@Param('id') id: string) {
+    const result = await this.commandBus.execute<
+      DeleteBlogCommand,
+      Promise<boolean>
+    >(new DeleteBlogCommand(id));
     if (!result) throw new NotFoundException();
     return;
   }
@@ -111,12 +145,12 @@ export class BlogsPostsController {
   @UseGuards(BearerAuthGuard)
   @UseInterceptors(CheckOwnerBlogInterceptor)
   @HttpCode(204)
-  @Put(':id')
-  async deleteBlogById(@Param('id') id: string) {
+  @Delete(':blogId/posts/:postId')
+  async deletePostByBlogId(@Param() BlogIdPostIdDto: BlogIdPostIdInputDto) {
     const result = await this.commandBus.execute<
-      DeleteBlogCommand,
+      DeletePostCommand,
       Promise<boolean>
-    >(new DeleteBlogCommand(id));
+    >(new DeletePostCommand(BlogIdPostIdDto));
     if (!result) throw new NotFoundException();
     return;
   }
