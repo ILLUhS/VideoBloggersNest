@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { BlogCreateDto } from '../../application/types/blog.create.dto';
 import { BlogUpdateDto } from '../../application/types/blog.update.dto';
+import { UserInfoType } from '../../blogger/types/user-info.type';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
@@ -10,7 +11,11 @@ export type BlogModelMethods = {
   updateProperties(blogDto: BlogUpdateDto): void;
 };
 export type BlogModelStaticMethods = {
-  makeInstance(blogDto: BlogCreateDto, BlogModel: BlogModelType): BlogDocument;
+  makeInstance(
+    blogDto: BlogCreateDto,
+    userInfo: UserInfoType,
+    BlogModel: BlogModelType,
+  ): BlogDocument;
   setOwner(userId: string, userLogin: string): void;
 };
 export type BlogModelType = Model<BlogDocument> &
@@ -45,6 +50,7 @@ export class Blog {
 
   static makeInstance(
     blogDto: BlogCreateDto,
+    userInfo: UserInfoType,
     BlogModel: BlogModelType,
   ): BlogDocument {
     return new BlogModel({
@@ -54,6 +60,8 @@ export class Blog {
       websiteUrl: blogDto.websiteUrl,
       createdAt: new Date().toISOString(),
       isMembership: false,
+      userId: userInfo.userId,
+      userLogin: userInfo.login,
     });
   }
 
