@@ -2,7 +2,7 @@ import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ReactionDocument } from './reaction.schema';
 import { v4 as uuidv4 } from 'uuid';
-import { CommentCreateDtoType } from '../../application/types/comment.create.dto.type';
+import { CommentCreateDtoType } from '../../modules/public/application/types/comment.create.dto.type';
 
 export type CommentDocument = HydratedDocument<Comment>;
 

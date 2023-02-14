@@ -1,7 +1,7 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { RefreshTokenMetaCreateDto } from '../../auth/types/refresh.token.meta.create.dto';
-import { RefreshTokenMetaUpdateDto } from '../../auth/types/refresh.token.meta.update.dto';
+import { RefreshTokenMetaCreateDto } from '../../modules/auth/types/refresh.token.meta.create.dto';
+import { RefreshTokenMetaUpdateDto } from '../../modules/auth/types/refresh.token.meta.update.dto';
 
 export type RefreshTokenMetaDocument = HydratedDocument<RefreshTokenMeta>;
 

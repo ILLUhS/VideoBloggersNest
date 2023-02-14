@@ -2,7 +2,7 @@ import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
-import { PasswordRecoveryCreateDtoType } from '../../application/types/password.recovery.create.dto.type';
+import { PasswordRecoveryCreateDtoType } from '../../modules/public/application/types/password.recovery.create.dto.type';
 
 export type PasswordRecoveryDocument = HydratedDocument<PasswordRecovery>;
 

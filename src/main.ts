@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './dependencies/app.module';
+import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import cookieParser = require('cookie-parser');
 import { BadExceptionFilter } from './api/exception.filters/bad.exception.filter';

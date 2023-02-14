@@ -1,9 +1,9 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { BlogCreateDto } from '../../application/types/blog.create.dto';
-import { BlogUpdateDto } from '../../application/types/blog.update.dto';
-import { UserInfoType } from '../../blogger/types/user-info.type';
+import { BlogCreateDto } from '../../modules/public/application/types/blog.create.dto';
+import { BlogUpdateDto } from '../../modules/public/application/types/blog.update.dto';
+import { UserInfoType } from '../../modules/blogger/types/user-info.type';
 
 export type BlogDocument = HydratedDocument<Blog>;
 

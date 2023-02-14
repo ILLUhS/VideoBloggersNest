@@ -1,6 +1,6 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ReactionCreateDtoType } from '../../application/types/reaction.create.dto.type';
+import { ReactionCreateDtoType } from '../../modules/public/application/types/reaction.create.dto.type';
 import { v4 as uuidv4 } from 'uuid';
 
 export type ReactionDocument = HydratedDocument<Reaction>;

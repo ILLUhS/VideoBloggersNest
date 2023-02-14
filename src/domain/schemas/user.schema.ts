@@ -2,7 +2,7 @@ import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
-import { UserCreateDtoType } from '../../application/types/user.create.dto.type';
+import { UserCreateDtoType } from '../../modules/public/application/types/user.create.dto.type';
 
 export type UserDocument = HydratedDocument<User>;
 
