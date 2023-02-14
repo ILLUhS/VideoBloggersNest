@@ -9,7 +9,7 @@ import { BlogService } from './modules/public/application/services/blog.service'
 import { PostRepository } from './modules/public/infrastructure/repositories/post.repository';
 import { PostService } from './modules/public/application/services/post.service';
 import { Post, PostSchema } from './domain/schemas/post.schema';
-import { QueryRepository } from './modules/public/infrastructure/query.repository';
+import { QueryMapHelpers } from './modules/public/infrastructure/query.repositories/query-map.helpers';
 import { BlogController } from './modules/public/api/controllers/blog.controller';
 import { Reaction, ReactionSchema } from './domain/schemas/reaction.schema';
 import { Comment, CommentSchema } from './domain/schemas/comment.schema';
@@ -59,7 +59,7 @@ import { APP_GUARD } from '@nestjs/core';
     PostRepository,
     CommentRepository,
     ReactionsRepository,
-    QueryRepository,
+    QueryMapHelpers,
     AuthHeaderInterceptor,
     CheckOwnerCommentInterceptor,
     PostIdValidator,

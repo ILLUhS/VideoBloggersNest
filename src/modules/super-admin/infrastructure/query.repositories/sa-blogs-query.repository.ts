@@ -6,6 +6,7 @@ import { Blog, BlogModelType } from '../../../../domain/schemas/blog.schema';
 @Injectable()
 export class SaBlogsQueryRepository {
   constructor(@InjectModel(Blog.name) private blogModel: BlogModelType) {}
+
   async getBlogsWithOwnerInfo(searchParams: QueryParamsDto) {
     const blogs = await this.blogModel
       .find({

@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { QueryRepository } from '../../infrastructure/query.repository';
+import { QueryMapHelpers } from '../../infrastructure/query.repositories/query-map.helpers';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { CommentUpdateDto } from '../../application/types/comment.update.dto';
 import { CommentService } from '../../application/services/comment.service';
@@ -27,7 +27,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 @Controller('comments')
 export class CommentController {
   constructor(
-    protected queryRepository: QueryRepository,
+    protected queryRepository: QueryMapHelpers,
     protected commentService: CommentService,
     protected likeService: LikeService,
   ) {}

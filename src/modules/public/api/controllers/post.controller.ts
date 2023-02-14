@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   InternalServerErrorException,
@@ -14,12 +13,10 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { QueryRepository } from '../../infrastructure/query.repository';
+import { QueryMapHelpers } from '../../infrastructure/query.repositories/query-map.helpers';
 import { PostService } from '../../application/services/post.service';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
 import { Request } from 'express';
-import { PostCreateDto } from '../../application/types/post.create.dto';
-import { PostUpdateDto } from '../../application/types/post.update.dto';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { CommentInputDto } from '../types/comment.input.dto';
@@ -34,7 +31,7 @@ import { QueryTransformPipe } from '../../../super-admin/api/pipes/query-transfo
 @Controller('posts')
 export class PostController {
   constructor(
-    protected queryRepository: QueryRepository,
+    protected queryRepository: QueryMapHelpers,
     protected postService: PostService,
     protected commentService: CommentService,
     protected likeService: LikeService,

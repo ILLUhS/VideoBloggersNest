@@ -17,6 +17,7 @@ import { BPostsRepository } from './infrastructure/repositories/b-posts.reposito
 import { BBlogsQueryRepository } from './infrastructure/query.repositories/b-blogs-query.repository';
 import { BPostsQueryRepository } from './infrastructure/query.repositories/b-posts-query.repository';
 import { BlogsPostsController } from './api/controllers/blogs-posts.controller';
+import { PublicModule } from '../public/public.module';
 
 const useCases = [
   CreateBlogUseCase,
@@ -33,6 +34,7 @@ const queryRepositories = [BBlogsQueryRepository, BPostsQueryRepository];
 @Module({
   imports: [
     AuthModule,
+    PublicModule,
     CqrsModule,
     ConfigModule,
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),

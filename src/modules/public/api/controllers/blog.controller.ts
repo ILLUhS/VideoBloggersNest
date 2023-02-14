@@ -1,30 +1,18 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  HttpCode,
-  InternalServerErrorException,
   NotFoundException,
   Param,
-  Post,
-  Put,
   Query,
   Req,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
-import { QueryRepository } from '../../infrastructure/query.repository';
-import { BlogCreateDto } from '../../application/types/blog.create.dto';
+import { QueryMapHelpers } from '../../infrastructure/query.repositories/query-map.helpers';
 import { BlogService } from '../../application/services/blog.service';
-import { BlogUpdateDto } from '../../application/types/blog.update.dto';
 import { Request } from 'express';
-import { PostCreateDto } from '../../application/types/post.create.dto';
 import { PostService } from '../../application/services/post.service';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
-import { BlogPostInputDto } from '../types/blog.post.input.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { QueryTransformPipe } from '../../../super-admin/api/pipes/query-transform.pipe';
 
@@ -32,7 +20,7 @@ import { QueryTransformPipe } from '../../../super-admin/api/pipes/query-transfo
 @Controller('blogs')
 export class BlogController {
   constructor(
-    protected queryRepository: QueryRepository,
+    protected queryRepository: QueryMapHelpers,
     protected blogService: BlogService,
     protected postService: PostService,
   ) {}
