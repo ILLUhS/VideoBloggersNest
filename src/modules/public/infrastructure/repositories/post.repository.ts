@@ -9,7 +9,7 @@ import {
 @Injectable()
 export class PostRepository {
   //объект с методами управления данными
-  constructor(@InjectModel(Post.name) private postModel: PostModelType) {}
+  constructor(@InjectModel(Post.name) protected postModel: PostModelType) {}
   async deleteById(id: string): Promise<boolean> {
     return (
       (await this.postModel.deleteOne({ id: id }).exec()).deletedCount === 1

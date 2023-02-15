@@ -8,6 +8,7 @@ export type CommentDocument = HydratedDocument<Comment>;
 
 export type CommentModelMethods = {
   setContent(content: string): void;
+  setBanStatus(isBanned: boolean): void;
 };
 export type CommentModelStaticMethods = {
   makeInstance(
@@ -42,6 +43,9 @@ export class Comment {
   @Prop({ required: true })
   postId: string;
 
+  @Prop({ required: true })
+  isBanned: boolean;
+
   reactions: ReactionDocument[];
 
   static makeInstance(
@@ -55,11 +59,16 @@ export class Comment {
       userLogin: commentDto.userLogin,
       postId: commentDto.postId,
       createdAt: new Date().toISOString(),
+      isBanned: false,
     });
   }
 
   setContent(content: string) {
     this.content = content;
+  }
+
+  setBanStatus(isBanned: boolean) {
+    this.isBanned = isBanned;
   }
 }
 
@@ -67,6 +76,7 @@ export const CommentSchema = SchemaFactory.createForClass(Comment);
 CommentSchema.statics = { makeInstance: Comment.makeInstance };
 CommentSchema.methods = {
   setContent: Comment.prototype.setContent,
+  setBanStatus: Comment.prototype.setBanStatus,
 };
 CommentSchema.virtual('reactions', {
   ref: 'Reaction',

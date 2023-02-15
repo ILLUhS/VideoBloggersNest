@@ -7,6 +7,9 @@ import { SaUsersService } from '../../services/sa-users.service';
 import { BadRequestException } from '@nestjs/common';
 import { SaRefreshTokenMetaRepository } from '../../../infrastructure/repositories/sa-refresh-token-meta.repository';
 import { SkipThrottle } from '@nestjs/throttler';
+import { SaPostsRepository } from '../../../infrastructure/repositories/sa-posts.repository';
+import { SaCommentsRepository } from '../../../infrastructure/repositories/sa-comments.repository';
+import { SaReactionsRepository } from '../../../infrastructure/repositories/sa-reactions.repository';
 
 @SkipThrottle()
 @CommandHandler(BanUnbanUserCommand)
@@ -15,8 +18,11 @@ export class BanUnbanUserUseCase
 {
   constructor(
     @InjectModel(User.name) private userModel: UserModelType,
-    private usersRepository: SaUsersRepository,
     private usersService: SaUsersService,
+    private usersRepository: SaUsersRepository,
+    private postsRepository: SaPostsRepository,
+    private commentsRepository: SaCommentsRepository,
+    private reactionsRepository: SaReactionsRepository,
     private refreshTokenMetaRepository: SaRefreshTokenMetaRepository,
   ) {}
   async execute(command: BanUnbanUserCommand) {
@@ -26,8 +32,36 @@ export class BanUnbanUserUseCase
       throw new BadRequestException({
         message: [{ field: 'id', message: 'invalid id' }],
       });
+    //ищем все посты, комменты и лайки пользоателя
+    const postsByUser = await this.postsRepository.findByUserId(id);
+    const commentByUsers = await this.commentsRepository.findByUserId(id);
+    const reactionsByUser = await this.reactionsRepository.findByUserId(id);
+    //выставляем всем сущностям бан статус
     await user.switchBanStatus(isBanned, banReason);
     await this.usersRepository.save(user);
+
+    if (postsByUser) {
+      postsByUser.forEach((p) => {
+        p.setBanStatus(isBanned);
+        this.postsRepository.save(p);
+      });
+    }
+
+    if (commentByUsers) {
+      commentByUsers.forEach((c) => {
+        c.setBanStatus(isBanned);
+        this.commentsRepository.save(c);
+      });
+    }
+
+    if (reactionsByUser) {
+      reactionsByUser.forEach((r) => {
+        r.setBanStatus(isBanned);
+        this.reactionsRepository.save(r);
+      });
+    }
+
+    //delete all sessions by user
     await this.refreshTokenMetaRepository.deleteByUserId(id);
     return;
   }

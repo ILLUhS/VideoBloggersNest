@@ -82,6 +82,7 @@ export class BlogsPostsController {
   async createPostByBlogId(
     @Param('blogId') id: string,
     @Body() postDto: BlogPostInputDto,
+    @Req() req: RequestWithUser,
   ) {
     const postCreateDto: PostCreateDto = {
       title: postDto.title,
@@ -92,7 +93,7 @@ export class BlogsPostsController {
     const postId = await this.commandBus.execute<
       CreatePostCommand,
       Promise<string | null>
-    >(new CreatePostCommand(postCreateDto));
+    >(new CreatePostCommand(postCreateDto, req.user.userId));
     if (!postId) throw new InternalServerErrorException();
     return await this.postsQueryRepository.findPostById(postId);
   }

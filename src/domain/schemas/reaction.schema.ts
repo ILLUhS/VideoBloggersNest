@@ -7,6 +7,7 @@ export type ReactionDocument = HydratedDocument<Reaction>;
 
 export type ReactionModelMethods = {
   setStatus(reaction: string): void;
+  setBanStatus(isBanned: boolean): void;
 };
 export type ReactionModelStaticMethods = {
   makeInstance(
@@ -38,8 +39,15 @@ export class Reaction {
   @Prop({ required: true })
   createdAt: Date;
 
+  @Prop({ required: true })
+  isBanned: boolean;
+
   setStatus(reaction: string): void {
     this.reaction = reaction;
+  }
+
+  setBanStatus(isBanned: boolean): void {
+    this.isBanned = isBanned;
   }
 
   static makeInstance(
@@ -53,6 +61,7 @@ export class Reaction {
       login: reactionDto.login,
       reaction: reactionDto.reaction,
       createdAt: new Date(),
+      isBanned: false,
     });
   }
 }
@@ -61,4 +70,5 @@ export const ReactionSchema = SchemaFactory.createForClass(Reaction);
 ReactionSchema.statics = { makeInstance: Reaction.makeInstance };
 ReactionSchema.methods = {
   setStatus: Reaction.prototype.setStatus,
+  setBanStatus: Reaction.prototype.setBanStatus,
 };

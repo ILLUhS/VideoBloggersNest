@@ -8,31 +8,29 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
-import { QueryMapHelpers } from '../../infrastructure/query.repositories/query-map.helpers';
-import { BlogService } from '../../application/services/blog.service';
-import { Request } from 'express';
-import { PostService } from '../../application/services/post.service';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { SkipThrottle } from '@nestjs/throttler';
 import { QueryTransformPipe } from '../../../super-admin/api/pipes/query-transform.pipe';
+import { BlogsQueryRepository } from '../../infrastructure/query.repositories/blogs-query.repository';
+import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';
+import { PostsQueryRepository } from '../../infrastructure/query.repositories/posts-query.repository';
 
 @SkipThrottle()
 @Controller('blogs')
 export class BlogController {
   constructor(
-    protected queryRepository: QueryMapHelpers,
-    protected blogService: BlogService,
-    protected postService: PostService,
+    private blogsQueryRepository: BlogsQueryRepository,
+    protected postsQueryRepository: PostsQueryRepository,
   ) {}
 
   @Get()
   async findAll(@Query(new QueryTransformPipe()) query: QueryParamsDto) {
-    return await this.queryRepository.getBlogsWithQueryParam(query);
+    return await this.blogsQueryRepository.getBlogsWithQueryParam(query);
   }
 
   @Get(':id')
   async findById(@Param('id') id: string) {
-    const blog = await this.queryRepository.findBlogById(id);
+    const blog = await this.blogsQueryRepository.findBlogById(id);
     if (!blog) throw new NotFoundException();
     return blog;
   }
@@ -42,18 +40,16 @@ export class BlogController {
   async findPostsByBlogId(
     @Param('id') id: string,
     @Query(new QueryTransformPipe()) query: QueryParamsDto,
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
   ) {
-    const blog = await this.queryRepository.findBlogById(id);
+    const blog = await this.blogsQueryRepository.findBlogById(id);
     if (!blog) throw new NotFoundException();
-    if (req.user)
-      return await this.queryRepository.getPotsWithQueryParam(
-        query,
-        { blogId: id },
-        req.user['userId'],
-      );
-    return await this.queryRepository.getPotsWithQueryParam(query, {
-      blogId: id,
-    });
+    return await this.postsQueryRepository.getPotsWithQueryParam(
+      query,
+      {
+        blogId: id,
+      },
+      req.user.userId,
+    );
   }
 }

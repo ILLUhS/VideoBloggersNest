@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class ReactionsRepository {
   constructor(
-    @InjectModel(Reaction.name) private reactionModel: ReactionModelType,
+    @InjectModel(Reaction.name) protected reactionModel: ReactionModelType,
   ) {}
   async save(like: ReactionDocument) {
     return !!(await like.save());

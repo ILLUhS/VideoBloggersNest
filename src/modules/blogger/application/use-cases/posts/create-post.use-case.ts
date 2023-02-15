@@ -15,13 +15,14 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
   ) {}
 
   async execute(command: CreatePostCommand): Promise<string | null> {
-    const { postDto } = command;
+    const { postDto, userId } = command;
     const currentBlog = await this.blogsRepository.findById(postDto.blogId);
     if (!currentBlog) throw new NotFoundException();
     const newPost = this.postModel.makeInstance(
       postDto,
-      this.postModel,
       currentBlog.name,
+      userId,
+      this.postModel,
     );
     const result = await this.postsRepository.save(newPost);
     return result ? newPost.id : null;

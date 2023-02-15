@@ -8,14 +8,16 @@ import { Reaction, ReactionDocument } from './reaction.schema';
 export type PostDocument = HydratedDocument<Post>;
 
 export type PostModelMethods = {
-  updateProperties(postDto: PostUpdateDto, blogName: string): void;
+  updateProperties(postDto: PostUpdateDto): void;
   updateBlogName(blogName: string): void;
+  setBanStatus(isBanned: boolean): void;
 };
 export type PostModelStaticMethods = {
   makeInstance(
     postDto: PostCreateDto,
-    PostModel: PostModelType,
     blogName: string,
+    userId: string,
+    PostModel: PostModelType,
   ): PostDocument;
 };
 export type PostModelType = Model<PostDocument> &
@@ -48,12 +50,19 @@ export class Post {
   @Prop({ required: true })
   createdAt: string;
 
+  @Prop({ required: true })
+  userId: string;
+
+  @Prop({ required: true })
+  isBanned: boolean;
+
   reactions: ReactionDocument[];
 
   static makeInstance(
     postDto: PostCreateDto,
-    PostModel: PostModelType,
     blogName: string,
+    userId: string,
+    PostModel: PostModelType,
   ): PostDocument {
     return new PostModel({
       id: uuidv4(),
@@ -63,19 +72,23 @@ export class Post {
       blogId: postDto.blogId,
       blogName: blogName,
       createdAt: new Date().toISOString(),
+      userId: userId,
+      isBanned: false,
     });
   }
 
-  updateProperties(postDto: PostUpdateDto, blogName: string) {
+  updateProperties(postDto: PostUpdateDto) {
     this.title = postDto.title;
     this.shortDescription = postDto.shortDescription;
     this.content = postDto.content;
-    this.blogId = postDto.blogId;
-    this.blogName = blogName;
   }
 
   updateBlogName(blogName: string) {
     this.blogName = blogName;
+  }
+
+  setBanStatus(isBanned: boolean) {
+    this.isBanned = isBanned;
   }
 }
 
@@ -84,6 +97,7 @@ PostSchema.statics = { makeInstance: Post.makeInstance };
 PostSchema.methods = {
   updateProperties: Post.prototype.updateProperties,
   updateBlogName: Post.prototype.updateBlogName,
+  setBanStatus: Post.prototype.setBanStatus,
 };
 PostSchema.virtual('reactions', {
   ref: Reaction.name,
