@@ -11,8 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthService } from '../../application/services/auth.service';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { UserInputDto } from '../../../public/application/types/user.input.dto';
 import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
@@ -28,12 +27,18 @@ import { TokensType } from '../../application/types/tokens.type';
 import { BearerAuthGuard } from './guards/bearer-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-auth.guard';
 import { CreateNewPairTokensCommand } from '../../application/use-cases/auth/commands/create-new-pair-tokens.command';
+import { RegistrationCommand } from '../../application/use-cases/auth/commands/registration.command';
+import { ConfirmRegistrationCommand } from '../../application/use-cases/auth/commands/confirm-registration.command';
+import { ResendEmailCommand } from '../../application/use-cases/auth/commands/resend-email.command';
+import { DeleteSessionCommand } from '../../application/use-cases/security-devices/commands/delete-session.command';
+import { PassRecoveryCommand } from '../../application/use-cases/auth/commands/pass-recovery.command';
+import { NewPassCommand } from '../../application/use-cases/auth/commands/new-pass.command';
 
+@SkipThrottle()
 @Controller('auth')
 export class AuthController {
   constructor(
     private commandBus: CommandBus,
-    protected authService: AuthService,
     protected authQueryRepository: AuthQueryRepository,
   ) {}
 
@@ -67,9 +72,9 @@ export class AuthController {
   @SkipThrottle()
   @UseGuards(BearerAuthGuard)
   @Get('/me')
-  async getAuthUser(@Req() req: Request) {
+  async getAuthUser(@Req() req: RequestWithUser) {
     const user = await this.authQueryRepository.findAuthUserById(
-      req.user['userId'],
+      req.user.userId,
     );
     if (!user) throw new InternalServerErrorException();
     return user;
@@ -79,13 +84,17 @@ export class AuthController {
   @HttpCode(204)
   @Post('/registration')
   async regUser(@Body() userDto: UserInputDto) {
-    return await this.authService.createUser(userDto);
+    await this.commandBus.execute(new RegistrationCommand(userDto));
+    return;
   }
 
   @HttpCode(204)
   @Post('/registration-confirmation')
   async confirmUser(@Body('code') code: string) {
-    const result = await this.authService.confirmEmail(code);
+    const result = await this.commandBus.execute<
+      ConfirmRegistrationCommand,
+      Promise<boolean>
+    >(new ConfirmRegistrationCommand(code));
     if (!result)
       throw new BadRequestException({
         message: [{ field: 'code', message: 'invalid code' }],
@@ -96,7 +105,10 @@ export class AuthController {
   @HttpCode(204)
   @Post('/registration-email-resending')
   async resendRegEmail(@Body() emailDto: EmailDto) {
-    const result = await this.authService.resendEmail(emailDto.email);
+    const result = await this.commandBus.execute<
+      ResendEmailCommand,
+      Promise<boolean>
+    >(new ResendEmailCommand(emailDto.email));
     if (!result)
       throw new BadRequestException({
         message: [
@@ -113,11 +125,11 @@ export class AuthController {
   @UseGuards(RefreshAuthGuard)
   @HttpCode(204)
   @Post('/logout')
-  async logout(@Req() req: Request) {
-    const result = await this.authService.deleteSession(
-      req.user['userId'],
-      req.user['deviceId'],
-    );
+  async logout(@Req() req: RequestWithUser) {
+    const result = await this.commandBus.execute<
+      DeleteSessionCommand,
+      Promise<boolean>
+    >(new DeleteSessionCommand(req.user.userId, req.user.deviceId));
     if (!result) throw new InternalServerErrorException();
     return;
   }
@@ -151,7 +163,10 @@ export class AuthController {
   @HttpCode(204)
   @Post('/password-recovery')
   async passRecovery(@Body() emailDto: EmailDto) {
-    const result = await this.authService.createPassRecovery(emailDto.email);
+    const result = await this.commandBus.execute<
+      PassRecoveryCommand,
+      Promise<boolean>
+    >(new PassRecoveryCommand(emailDto.email));
     if (!result)
       throw new BadRequestException({
         message: [
@@ -167,7 +182,10 @@ export class AuthController {
   @HttpCode(204)
   @Post('/new-password')
   async newPass(@Body() newPassDto: NewPassDto) {
-    const result = await this.authService.createNewPass(newPassDto);
+    const result = await this.commandBus.execute<
+      NewPassCommand,
+      Promise<boolean>
+    >(new NewPassCommand(newPassDto));
     if (!result)
       throw new BadRequestException({
         message: [

@@ -13,9 +13,8 @@ import {
   UserDocument,
   UserModelType,
 } from '../../../../domain/schemas/user.schema';
-import { UserInputDto } from '../../../public/application/types/user.input.dto';
 import { MailerService } from '@nestjs-modules/mailer';
-import { PasswordRecoveryRepository } from '../../ifrastructure/repositories/password.recovery.repository';
+import { PasswordRecoveriesRepository } from '../../ifrastructure/repositories/password-recoveries.repository';
 import {
   PasswordRecovery,
   PasswordRecoveryDocument,
@@ -32,29 +31,16 @@ export class AuthService {
     private refreshTokenMetaModel: RefreshTokenMetaModelType,
     @InjectModel(PasswordRecovery.name)
     private passRecModel: PasswordRecoveryModelType,
-    private refreshTokenMetaRepository: RefreshTokenMetasRepository,
-    private passRecRepository: PasswordRecoveryRepository,
+    private refreshTokenMetasRepository: RefreshTokenMetasRepository,
+    private passRecRepository: PasswordRecoveriesRepository,
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
   ) {}
 
-  async createUser(userDto: UserInputDto) {
+  async getPassHash(password: string): Promise<string> {
     const passwordSalt = await bcrypt.genSalt(10);
-    const passwordHash = await this.generateHash(
-      userDto.password,
-      passwordSalt,
-    );
-    const user = await this.userModel.makeInstance(
-      {
-        login: userDto.login,
-        passwordHash: passwordHash,
-        email: userDto.email,
-      },
-      this.userModel,
-    );
-    await this.sendConfirmEmail(user);
-    await this.usersRepository.save(user);
+    return await this.generateHash(password, passwordSalt);
   }
   async findUserByField(
     field: string,
@@ -90,48 +76,27 @@ export class AuthService {
       Buffer.from(token.split('.')[1], 'base64').toString('ascii'),
     );
   }
-  async reCreateRefreshToken(payload: any, deviceIp: string) {
-    const token = this.jwtService.sign(payload, {
-      secret: process.env.REFRESH_JWT_SECRET,
-      expiresIn: '20s',
-    });
-    const getPayload = JSON.parse(
-      Buffer.from(token.split('.')[1], 'base64').toString('ascii'),
-    );
-    const tokenModel =
-      await this.refreshTokenMetaRepository.findByUserIdAndDeviceId(
-        payload.userId,
-        payload.deviceId,
-      );
-    tokenModel.updateProperties({
-      issuedAt: getPayload.iat,
-      expirationAt: getPayload.exp,
-      deviceIp,
-    });
-    await this.refreshTokenMetaRepository.save(tokenModel);
-    return token;
-  }
   async checkPayloadRefreshToken(payload: any): Promise<boolean> {
-    return await this.refreshTokenMetaRepository.find(
+    return await this.refreshTokenMetasRepository.find(
       payload.iat,
       payload.deviceId,
       payload.userId,
     );
   }
   async findSession(deviceId: string): Promise<string | null> {
-    const session = await this.refreshTokenMetaRepository.findByDeviceId(
+    const session = await this.refreshTokenMetasRepository.findByDeviceId(
       deviceId,
     );
     return session ? session.userId : null;
   }
   async deleteSession(userId: string, deviceId: string) {
-    return await this.refreshTokenMetaRepository.deleteByUserIdAndDeviceId(
+    return await this.refreshTokenMetasRepository.deleteByUserIdAndDeviceId(
       userId,
       deviceId,
     );
   }
   async deleteAllSessionsExcludeCurrent(userId: string, deviceId: string) {
-    return await this.refreshTokenMetaRepository.deleteAllExceptCurrent(
+    return await this.refreshTokenMetasRepository.deleteAllExceptCurrent(
       userId,
       deviceId,
     );
@@ -149,37 +114,6 @@ export class AuthService {
     const confirmed = user.emailIsConfirmed;
     if (!confirmed) return null;
     return user.passwordHash === passwordHash ? user : null;
-  }
-  async confirmEmail(code: string): Promise<boolean> {
-    const user = await this.usersRepository.findByField(
-      'emailConfirmationCode',
-      code,
-    );
-    if (!user) return false;
-    const result = await user.confirmEmail();
-    if (!result) return false;
-    return await this.usersRepository.save(user);
-  }
-  async resendEmail(email: string) {
-    const user = await this.usersRepository.findByField('email', email);
-    if (!user) return false;
-    await user.updEmailCode();
-    if (await user.getEmailIsConfirmed()) return false;
-    await this.sendConfirmEmail(user);
-    await this.usersRepository.save(user);
-    return true;
-  }
-  async createPassRecovery(email: string): Promise<boolean> {
-    const user = await this.usersRepository.findByField('email', email);
-    if (!user) return false;
-    let passRec = await this.passRecRepository.findByUserId(user.id);
-    if (!passRec)
-      passRec = await this.passRecModel.makeInstance(
-        { userId: user.id, email: email },
-        this.passRecModel,
-      );
-    await this.sendRecoveryEmail(passRec);
-    return this.passRecRepository.save(passRec);
   }
   async createNewPass(newPassDto: NewPassDto): Promise<boolean> {
     const passRec = await this.passRecRepository.findByCode(
@@ -199,7 +133,7 @@ export class AuthService {
     return await this.usersRepository.save(user);
   }
   async sendConfirmEmail(user: UserDocument) {
-    const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
+    //const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
     const link = `https://video-bloggers.vercel.app/confirm-email?code=${user.emailConfirmationCode}`;
     // Отправка почты
     return await this.mailerService
@@ -229,7 +163,7 @@ export class AuthService {
       });
   }
   async sendRecoveryEmail(passRec: PasswordRecoveryDocument) {
-    const urlConfirmAddress = `https://video-bloggers-nest.app/password-recovery?recoveryCode=`;
+    //const urlConfirmAddress = `https://video-bloggers-nest.app/password-recovery?recoveryCode=`;
     const link = `https://video-bloggers.vercel.app/password-recovery?recoveryCode=${passRec.recoveryCode}`;
     // Отправка почты
     return await this.mailerService
@@ -256,12 +190,6 @@ export class AuthService {
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       });
-  }
-  async deleteAllRefreshTokMeta(): Promise<boolean> {
-    return await this.refreshTokenMetaRepository.deleteAll();
-  }
-  async deleteAllPassRec(): Promise<boolean> {
-    return await this.passRecRepository.deleteAll();
   }
   private async generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);

@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginCommand } from './commands/login.command';
-import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenMetasRepository } from '../../../ifrastructure/repositories/refresh.token.metas.repository';
 import { AuthService } from '../../services/auth.service';
 import { TokensType } from '../../types/tokens.type';
@@ -8,7 +7,6 @@ import { TokensType } from '../../types/tokens.type';
 @CommandHandler(LoginCommand)
 export class LoginUseCase implements ICommandHandler<LoginCommand> {
   constructor(
-    private jwtService: JwtService,
     private authService: AuthService,
     private refreshTokenMetaRepository: RefreshTokenMetasRepository,
   ) {}

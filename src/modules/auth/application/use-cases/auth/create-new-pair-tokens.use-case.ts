@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateNewPairTokensCommand } from './commands/create-new-pair-tokens.command';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../services/auth.service';
 import { RefreshTokenMetasRepository } from '../../../ifrastructure/repositories/refresh.token.metas.repository';
 import { TokensType } from '../../types/tokens.type';
@@ -10,7 +9,6 @@ export class CreateNewPairTokensUseCase
   implements ICommandHandler<CreateNewPairTokensCommand>
 {
   constructor(
-    private jwtService: JwtService,
     private authService: AuthService,
     private refreshTokenMetaRepository: RefreshTokenMetasRepository,
   ) {}

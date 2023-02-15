@@ -5,14 +5,23 @@ import {
   PasswordRecoveryModelType,
 } from '../../../../domain/schemas/password-recovery.schema';
 import { Injectable } from '@nestjs/common';
+import { PasswordRecoveryCreateDtoType } from '../../../public/application/types/password.recovery.create.dto.type';
 
 @Injectable()
-export class PasswordRecoveryRepository {
+export class PasswordRecoveriesRepository {
   constructor(
     @InjectModel(PasswordRecovery.name)
     private passRecModel: PasswordRecoveryModelType,
   ) {}
 
+  async create(
+    PasswordRecoveryDto: PasswordRecoveryCreateDtoType,
+  ): Promise<PasswordRecoveryDocument> {
+    return await this.passRecModel.makeInstance(
+      PasswordRecoveryDto,
+      this.passRecModel,
+    );
+  }
   async findByUserId(userId: string): Promise<PasswordRecoveryDocument | null> {
     return this.passRecModel.findOne({ userId: userId });
   }

@@ -23,12 +23,12 @@ import { LoginMiddleware } from './api/controllers/middlewares/login.middleware'
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from './application/configs/email.config';
 import { RefreshStrategy } from './api/controllers/guards/strategies/refresh.strategy';
-import { PasswordRecoveryRepository } from './ifrastructure/repositories/password.recovery.repository';
+import { PasswordRecoveriesRepository } from './ifrastructure/repositories/password-recoveries.repository';
 import {
   PasswordRecovery,
   PasswordRecoverySchema,
 } from '../../domain/schemas/password-recovery.schema';
-import { SecurityDevicesController } from './api/controllers/security.devices.controller';
+import { SecurityDevicesController } from './api/controllers/security-devices.controller';
 import { AuthQueryRepository } from './ifrastructure/query.repositories/auth.query.repository';
 import { CheckOwnerDeviceInterceptor } from './api/controllers/interceptors/check.owner.device.interceptor';
 import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check.login.email.interceptor';
@@ -41,13 +41,27 @@ import { RefreshAuthGuard } from './api/controllers/guards/refresh-auth.guard';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoginUseCase } from './application/use-cases/auth/login.use-case';
 import { CreateNewPairTokensUseCase } from './application/use-cases/auth/create-new-pair-tokens.use-case';
+import { RegistrationUseCase } from './application/use-cases/auth/registration.use-case';
+import { ConfirmRegistrationUseCase } from './application/use-cases/auth/confirm-registration.use-case';
+import { SecurityDevicesService } from './application/services/security-devices.service';
+import { DeleteSessionUseCase } from './application/use-cases/security-devices/delete-session.use-case';
+import { PassRecoveryUseCase } from './application/use-cases/auth/pass-recovery.use-case';
+import { NewPassUseCase } from './application/use-cases/auth/new-pass.use-case';
 
-const useCases = [LoginUseCase, CreateNewPairTokensUseCase];
-const services = [AuthService, JwtService];
+const useCases = [
+  LoginUseCase,
+  CreateNewPairTokensUseCase,
+  RegistrationUseCase,
+  ConfirmRegistrationUseCase,
+  PassRecoveryUseCase,
+  NewPassUseCase,
+  DeleteSessionUseCase,
+];
+const services = [AuthService, JwtService, SecurityDevicesService];
 const repositories = [
   UsersRepository,
   RefreshTokenMetasRepository,
-  PasswordRecoveryRepository,
+  PasswordRecoveriesRepository,
 ];
 const queryRepositories = [AuthQueryRepository];
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, RefreshStrategy];
