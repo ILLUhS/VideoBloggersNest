@@ -12,79 +12,86 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { QueryMapHelpers } from '../../infrastructure/query.repositories/query-map.helpers';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { CommentUpdateDto } from '../../application/types/comment.update.dto';
-import { CommentService } from '../../application/services/comment.service';
-import { AuthGuard } from '@nestjs/passport';
 import { CheckOwnerCommentInterceptor } from './interceptors/check.owner.comment.interceptor';
 import { LikeStatusInputDto } from '../types/like.status.input.dto';
 import { LikeService } from '../../application/services/like.service';
-import { Request } from 'express';
 import { SkipThrottle } from '@nestjs/throttler';
+import { CommentsQueryRepository } from '../../infrastructure/query.repositories/comments-query.repository';
+import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';
+import { BearerAuthGuard } from '../../../auth/api/controllers/guards/bearer-auth.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { UpdateCommentCommand } from '../../application/use-cases/commenst/commands/update-comment.command';
+import { DeleteCommentCommand } from '../../application/use-cases/commenst/commands/delete-comment.command';
+import { CreateLikeDislikeCommand } from '../../application/use-cases/reactions/commands/create-like-dislike.command';
 
 @SkipThrottle()
 @Controller('comments')
 export class CommentController {
   constructor(
-    protected queryRepository: QueryMapHelpers,
-    protected commentService: CommentService,
+    private commandBus: CommandBus,
+    protected commentsQueryRepository: CommentsQueryRepository,
+    protected commentService: CommentsQueryRepository,
     protected likeService: LikeService,
   ) {}
 
   @UseInterceptors(AuthHeaderInterceptor)
   @Get(':id')
-  async findCommentById(@Param('id') id: string, @Req() req: Request) {
-    let comment;
-    if (req.user)
-      comment = await this.queryRepository.findCommentById(
-        id,
-        req.user['userId'],
-      );
-    else comment = await this.queryRepository.findCommentById(id);
+  async findCommentById(@Param('id') id: string, @Req() req: RequestWithUser) {
+    const comment = await this.commentsQueryRepository.findCommentById(
+      id,
+      req.user.userId,
+    );
     if (!comment) throw new NotFoundException();
     return comment;
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BearerAuthGuard)
   @UseInterceptors(CheckOwnerCommentInterceptor)
   @HttpCode(204)
   @Put(':id')
   async updComment(
     @Param('id') id: string,
-    @Body() commentUpdateDto: CommentUpdateDto,
+    @Body() commentDto: CommentUpdateDto,
   ) {
-    const result = this.commentService.updateComment(id, commentUpdateDto);
-    if (!result) throw new NotFoundException();
+    const result = await this.commandBus.execute<
+      UpdateCommentCommand,
+      Promise<boolean>
+    >(new UpdateCommentCommand(id, commentDto));
+    if (!result) throw new InternalServerErrorException();
     return;
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BearerAuthGuard)
   @HttpCode(204)
   @Put(':id/like-status')
   async setLikeDislike(
     @Param('id') id: string,
     @Body() likeStatusInputDto: LikeStatusInputDto,
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
   ) {
-    const commentUserId = await this.commentService.findComment(id);
-    if (!commentUserId) throw new NotFoundException();
-    const result = await this.likeService.createLikeDislike({
-      userId: req.user['userId'],
-      login: req.user['login'],
-      reaction: likeStatusInputDto.likeStatus,
-      entityId: id,
-    });
+    const result = await this.commandBus.execute(
+      new CreateLikeDislikeCommand({
+        userId: req.user.userId,
+        login: req.user.login,
+        reaction: likeStatusInputDto.likeStatus,
+        entityId: id,
+      }),
+    );
     if (!result) throw new InternalServerErrorException();
     return;
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BearerAuthGuard)
   @UseInterceptors(CheckOwnerCommentInterceptor)
   @HttpCode(204)
   @Delete(':id')
   async deleteComment(@Param('id') id: string) {
-    const result = this.commentService.deleteCommentByTd(id);
+    const result = this.commandBus.execute<
+      DeleteCommentCommand,
+      Promise<boolean>
+    >(new DeleteCommentCommand(id));
     if (!result) throw new NotFoundException();
     return;
   }

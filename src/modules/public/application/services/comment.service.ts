@@ -5,14 +5,14 @@ import {
 } from '../../../../domain/schemas/comment.schema';
 import { Injectable } from '@nestjs/common';
 import { CommentCreateDtoType } from '../types/comment.create.dto.type';
-import { CommentRepository } from '../../infrastructure/repositories/comment.repository';
+import { CommentsRepository } from '../../infrastructure/repositories/comments.repository';
 import { CommentUpdateDto } from '../types/comment.update.dto';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectModel(Comment.name) private commentModel: CommentModelType,
-    private commentRepository: CommentRepository,
+    private commentRepository: CommentsRepository,
   ) {}
 
   async createComment(

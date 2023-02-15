@@ -5,10 +5,10 @@ import {
   CommentDocument,
   CommentModelType,
 } from '../../../../domain/schemas/comment.schema';
-import { CommentRepository } from '../../../public/infrastructure/repositories/comment.repository';
+import { CommentsRepository } from '../../../public/infrastructure/repositories/comments.repository';
 
 @Injectable()
-export class SaCommentsRepository extends CommentRepository {
+export class SaCommentsRepository extends CommentsRepository {
   constructor(
     @InjectModel(Comment.name) protected commentModel: CommentModelType,
   ) {

@@ -18,7 +18,7 @@ import { CommentController } from './modules/public/api/controllers/comment.cont
 import { TestingAllDataController } from './api/controllers/testing.all.data.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthHeaderInterceptor } from './modules/public/api/controllers/interceptors/auth.header.interceptor';
-import { CommentRepository } from './modules/public/infrastructure/repositories/comment.repository';
+import { CommentsRepository } from './modules/public/infrastructure/repositories/comments.repository';
 import { CommentService } from './modules/public/application/services/comment.service';
 import { CheckOwnerCommentInterceptor } from './modules/public/api/controllers/interceptors/check.owner.comment.interceptor';
 import { ReactionsRepository } from './modules/public/infrastructure/repositories/reaction.repository';
@@ -57,7 +57,7 @@ import { APP_GUARD } from '@nestjs/core';
     LikeService,
     BlogRepository,
     PostRepository,
-    CommentRepository,
+    CommentsRepository,
     ReactionsRepository,
     QueryMapHelpers,
     AuthHeaderInterceptor,

@@ -7,7 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class CommentRepository {
+export class CommentsRepository {
   constructor(
     @InjectModel(Comment.name) protected commentModel: CommentModelType,
   ) {}
