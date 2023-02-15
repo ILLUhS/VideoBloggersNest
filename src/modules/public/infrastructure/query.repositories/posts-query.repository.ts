@@ -18,7 +18,8 @@ export class PostsQueryRepository extends QueryMapHelpers {
   ) {
     const posts = await this.postModel
       .find(filter)
-      .populate('reactions')
+      .where({ isBanned: false })
+      .populate({ path: 'reactions', match: { isBanned: false } })
       .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
       .limit(searchParams.pageSize)
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
@@ -61,7 +62,8 @@ export class PostsQueryRepository extends QueryMapHelpers {
   async findPostById(id: string, userId = '') {
     const post = await this.postModel
       .findOne({ id: id })
-      .populate('reactions')
+      .where({ isBanned: false })
+      .populate({ path: 'reactions', match: { isBanned: false } })
       .select({ _id: 0, __v: 0 })
       .exec();
     if (!post) return null;
