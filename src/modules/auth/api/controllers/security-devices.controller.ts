@@ -4,57 +4,69 @@ import {
   Get,
   HttpCode,
   InternalServerErrorException,
-  NotFoundException,
   Param,
   Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthService } from '../../application/services/auth.service';
 import { SkipThrottle } from '@nestjs/throttler';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
-import { AuthQueryRepository } from '../../ifrastructure/query.repositories/auth.query.repository';
 import { CheckOwnerDeviceInterceptor } from './interceptors/check.owner.device.interceptor';
+import { SecurityDevicesQueryRepository } from '../../ifrastructure/query.repositories/security-devices-query.repository';
+import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';
+import { CommandBus } from '@nestjs/cqrs';
+import { RefreshAuthGuard } from './guards/refresh-auth.guard';
+import { DeleteSessionsExcludeCurrentCommand } from '../../application/use-cases/security-devices/commands/delete-sessions-exclude-current.command';
+import { DeleteSessionCommand } from '../../application/use-cases/security-devices/commands/delete-session.command';
 
 @SkipThrottle()
 @Controller('/security/devices')
 export class SecurityDevicesController {
   constructor(
-    protected authService: AuthService,
-    protected authQueryRepository: AuthQueryRepository,
+    private commandBus: CommandBus,
+    protected securityDevicesQueryRepository: SecurityDevicesQueryRepository,
   ) {}
 
   @SkipThrottle()
-  @UseGuards(AuthGuard('refresh'))
+  @UseGuards(RefreshAuthGuard)
   @Get()
-  async getSessions(@Req() req: Request) {
-    return await this.authQueryRepository.findSessionsByUserId(
-      req.user['userId'],
+  async getSessions(@Req() req: RequestWithUser) {
+    return await this.securityDevicesQueryRepository.findSessionsByUserId(
+      req.user.userId,
     );
   }
 
   @SkipThrottle()
-  @UseGuards(AuthGuard('refresh'))
+  @UseGuards(RefreshAuthGuard)
   @HttpCode(204)
   @Delete()
-  async deleteAllSessionsExcludeCurrent(@Req() req: Request) {
-    const result = await this.authService.deleteAllSessionsExcludeCurrent(
-      req.user['userId'],
-      req.user['deviceId'],
+  async deleteAllSessionsExcludeCurrent(@Req() req: RequestWithUser) {
+    const result = await this.commandBus.execute<
+      DeleteSessionsExcludeCurrentCommand,
+      Promise<boolean>
+    >(
+      new DeleteSessionsExcludeCurrentCommand(
+        req.user.userId,
+        req.user.deviceId,
+      ),
     );
     if (!result) throw new InternalServerErrorException();
     return;
   }
 
   @SkipThrottle()
-  @UseGuards(AuthGuard('refresh'))
+  @UseGuards(RefreshAuthGuard)
   @UseInterceptors(CheckOwnerDeviceInterceptor)
   @HttpCode(204)
   @Delete(':id')
-  async deleteSessionById(@Param('id') id: string, @Req() req: Request) {
-    const result = await this.authService.deleteSession(req.user['userId'], id);
-    if (!result) throw new NotFoundException();
+  async deleteSessionById(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ) {
+    const result = await this.commandBus.execute<
+      DeleteSessionCommand,
+      Promise<boolean>
+    >(new DeleteSessionCommand(req.user.userId, id));
+    if (!result) throw new InternalServerErrorException();
     return;
   }
 }

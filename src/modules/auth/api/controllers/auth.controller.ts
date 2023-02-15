@@ -17,7 +17,7 @@ import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
 import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.interceptor';
-import { AuthQueryRepository } from '../../ifrastructure/query.repositories/auth.query.repository';
+import { AuthQueryRepository } from '../../ifrastructure/query.repositories/auth-query.repository';
 import { CheckBanUserInterceptor } from './interceptors/check-ban-user.interceptor';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';

@@ -29,7 +29,7 @@ import {
   PasswordRecoverySchema,
 } from '../../domain/schemas/password-recovery.schema';
 import { SecurityDevicesController } from './api/controllers/security-devices.controller';
-import { AuthQueryRepository } from './ifrastructure/query.repositories/auth.query.repository';
+import { AuthQueryRepository } from './ifrastructure/query.repositories/auth-query.repository';
 import { CheckOwnerDeviceInterceptor } from './api/controllers/interceptors/check.owner.device.interceptor';
 import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check.login.email.interceptor';
 import { UsersRepository } from './ifrastructure/repositories/users.repository';
@@ -47,6 +47,8 @@ import { SecurityDevicesService } from './application/services/security-devices.
 import { DeleteSessionUseCase } from './application/use-cases/security-devices/delete-session.use-case';
 import { PassRecoveryUseCase } from './application/use-cases/auth/pass-recovery.use-case';
 import { NewPassUseCase } from './application/use-cases/auth/new-pass.use-case';
+import { SecurityDevicesQueryRepository } from './ifrastructure/query.repositories/security-devices-query.repository';
+import { DeleteSessionsExcludeCurrentUseCase } from './application/use-cases/security-devices/delete-sessions-exclude-current.use-case';
 
 const useCases = [
   LoginUseCase,
@@ -56,6 +58,7 @@ const useCases = [
   PassRecoveryUseCase,
   NewPassUseCase,
   DeleteSessionUseCase,
+  DeleteSessionsExcludeCurrentUseCase,
 ];
 const services = [AuthService, JwtService, SecurityDevicesService];
 const repositories = [
@@ -63,7 +66,7 @@ const repositories = [
   RefreshTokenMetasRepository,
   PasswordRecoveriesRepository,
 ];
-const queryRepositories = [AuthQueryRepository];
+const queryRepositories = [AuthQueryRepository, SecurityDevicesQueryRepository];
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, RefreshStrategy];
 const guards = [
   BearerAuthGuard,

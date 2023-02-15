@@ -2,40 +2,21 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  RefreshTokenMeta,
-  RefreshTokenMetaModelType,
-} from '../../../../domain/schemas/refresh-token-meta.schema';
 import { RefreshTokenMetasRepository } from '../../ifrastructure/repositories/refresh.token.metas.repository';
-import {
-  User,
-  UserDocument,
-  UserModelType,
-} from '../../../../domain/schemas/user.schema';
+import { UserDocument } from '../../../../domain/schemas/user.schema';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PasswordRecoveriesRepository } from '../../ifrastructure/repositories/password-recoveries.repository';
-import {
-  PasswordRecovery,
-  PasswordRecoveryDocument,
-  PasswordRecoveryModelType,
-} from '../../../../domain/schemas/password-recovery.schema';
-import { NewPassDto } from '../../types/new.pass.dto';
+import { PasswordRecoveryDocument } from '../../../../domain/schemas/password-recovery.schema';
 import { UsersRepository } from '../../ifrastructure/repositories/users.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private userModel: UserModelType,
-    @InjectModel(RefreshTokenMeta.name)
-    private refreshTokenMetaModel: RefreshTokenMetaModelType,
-    @InjectModel(PasswordRecovery.name)
-    private passRecModel: PasswordRecoveryModelType,
-    private refreshTokenMetasRepository: RefreshTokenMetasRepository,
-    private passRecRepository: PasswordRecoveriesRepository,
-    private usersRepository: UsersRepository,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
+    private usersRepository: UsersRepository,
+    private passRecRepository: PasswordRecoveriesRepository,
+    private refreshTokenMetasRepository: RefreshTokenMetasRepository,
   ) {}
 
   async getPassHash(password: string): Promise<string> {
@@ -55,7 +36,7 @@ export class AuthService {
     };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '10s',
+      expiresIn: '15m',
     });
   }
   async createRefreshToken(userId: string, login: string, deviceId = uuidv4()) {
@@ -67,7 +48,7 @@ export class AuthService {
       },
       {
         secret: process.env.REFRESH_JWT_SECRET,
-        expiresIn: '20s',
+        expiresIn: '1h',
       },
     );
   }
@@ -89,18 +70,6 @@ export class AuthService {
     );
     return session ? session.userId : null;
   }
-  async deleteSession(userId: string, deviceId: string) {
-    return await this.refreshTokenMetasRepository.deleteByUserIdAndDeviceId(
-      userId,
-      deviceId,
-    );
-  }
-  async deleteAllSessionsExcludeCurrent(userId: string, deviceId: string) {
-    return await this.refreshTokenMetasRepository.deleteAllExceptCurrent(
-      userId,
-      deviceId,
-    );
-  }
   async cechCredentials(loginOrEmail: string, password: string) {
     const user = await this.usersRepository.findByField(
       await this.isLoginOrEmail(loginOrEmail),
@@ -114,23 +83,6 @@ export class AuthService {
     const confirmed = user.emailIsConfirmed;
     if (!confirmed) return null;
     return user.passwordHash === passwordHash ? user : null;
-  }
-  async createNewPass(newPassDto: NewPassDto): Promise<boolean> {
-    const passRec = await this.passRecRepository.findByCode(
-      newPassDto.recoveryCode,
-    );
-    if (!passRec) return false;
-    const result = await passRec.recoveryConfirm();
-    if (!result) return false;
-    const user = await this.usersRepository.findById(passRec.userId);
-    if (!user) return false;
-    const passwordSalt = await bcrypt.genSalt(10);
-    const newPassHash = await this.generateHash(
-      newPassDto.newPassword,
-      passwordSalt,
-    );
-    await user.setPassHash(newPassHash);
-    return await this.usersRepository.save(user);
   }
   async sendConfirmEmail(user: UserDocument) {
     //const urlConfirmAddress = `https://video-bloggers-nest.app/confirm-email?code=`;
