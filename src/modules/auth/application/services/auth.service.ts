@@ -7,7 +7,7 @@ import {
   RefreshTokenMeta,
   RefreshTokenMetaModelType,
 } from '../../../../domain/schemas/refresh-token-meta.schema';
-import { RefreshTokenMetaRepository } from '../../ifrastructure/repositories/refresh.token.meta.repository';
+import { RefreshTokenMetasRepository } from '../../ifrastructure/repositories/refresh.token.metas.repository';
 import {
   User,
   UserDocument,
@@ -32,7 +32,7 @@ export class AuthService {
     private refreshTokenMetaModel: RefreshTokenMetaModelType,
     @InjectModel(PasswordRecovery.name)
     private passRecModel: PasswordRecoveryModelType,
-    private refreshTokenMetaRepository: RefreshTokenMetaRepository,
+    private refreshTokenMetaRepository: RefreshTokenMetasRepository,
     private passRecRepository: PasswordRecoveryRepository,
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
@@ -60,49 +60,35 @@ export class AuthService {
     field: string,
     value: string,
   ): Promise<UserDocument | null> {
-    const user = await this.usersRepository.findByField(field, value);
-    return user;
+    return await this.usersRepository.findByField(field, value);
   }
-  async createAccessToken(user: any) {
+  async createAccessToken(userId: string, login: string) {
     const payload = {
-      userId: user.userId,
-      login: user.login,
+      userId: userId,
+      login: login,
     };
-    return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: process.env.JWT_SECRET,
-        expiresIn: '10s',
-      }),
-    };
-  }
-  async createRefreshToken(user: any, deviceName: string, deviceIp: string) {
-    const payload = {
-      deviceId: uuidv4(),
-      userId: user.userId,
-      login: user.login,
-    };
-    const token = this.jwtService.sign(payload, {
-      secret: process.env.REFRESH_JWT_SECRET,
-      expiresIn: '20s',
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '10s',
     });
-    const getPayload = JSON.parse(
+  }
+  async createRefreshToken(userId: string, login: string, deviceId = uuidv4()) {
+    return this.jwtService.sign(
+      {
+        deviceId: deviceId,
+        userId: userId,
+        login: login,
+      },
+      {
+        secret: process.env.REFRESH_JWT_SECRET,
+        expiresIn: '20s',
+      },
+    );
+  }
+  async getPayload(token: string) {
+    return JSON.parse(
       Buffer.from(token.split('.')[1], 'base64').toString('ascii'),
     );
-
-    await this.refreshTokenMetaRepository.save(
-      await this.refreshTokenMetaModel.makeInstance(
-        {
-          issuedAt: getPayload.iat,
-          expirationAt: getPayload.exp,
-          deviceId: getPayload.deviceId,
-          deviceIp: deviceIp,
-          deviceName: deviceName,
-          userId: getPayload.userId,
-        },
-        this.refreshTokenMetaModel,
-      ),
-    );
-    return token;
   }
   async reCreateRefreshToken(payload: any, deviceIp: string) {
     const token = this.jwtService.sign(payload, {

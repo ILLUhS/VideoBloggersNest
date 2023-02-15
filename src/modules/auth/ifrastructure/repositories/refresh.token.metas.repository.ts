@@ -5,14 +5,23 @@ import {
   RefreshTokenMetaDocument,
   RefreshTokenMetaModelType,
 } from '../../../../domain/schemas/refresh-token-meta.schema';
+import { RefreshTokenMetaCreateDto } from '../../types/refresh.token.meta.create.dto';
 
 @Injectable()
-export class RefreshTokenMetaRepository {
+export class RefreshTokenMetasRepository {
   constructor(
     @InjectModel(RefreshTokenMeta.name)
     private refreshTokenMetaModel: RefreshTokenMetaModelType,
   ) {}
 
+  async create(
+    refreshTokenMetaModelDto: RefreshTokenMetaCreateDto,
+  ): Promise<RefreshTokenMetaDocument> {
+    return this.refreshTokenMetaModel.makeInstance(
+      refreshTokenMetaModelDto,
+      this.refreshTokenMetaModel,
+    );
+  }
   async find(
     issuedAt: number,
     deviceId: string,

@@ -18,7 +18,7 @@ import {
   RefreshTokenMeta,
   RefreshTokenMetaSchema,
 } from '../../domain/schemas/refresh-token-meta.schema';
-import { RefreshTokenMetaRepository } from './ifrastructure/repositories/refresh.token.meta.repository';
+import { RefreshTokenMetasRepository } from './ifrastructure/repositories/refresh.token.metas.repository';
 import { LoginMiddleware } from './api/controllers/middlewares/login.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from './application/configs/email.config';
@@ -37,14 +37,26 @@ import { BearerAuthGuard } from './api/controllers/guards/bearer-auth.guard';
 import { BasicAuthGuard } from './api/controllers/guards/basic-auth.guard';
 import { CheckBanUserInterceptor } from './api/controllers/interceptors/check-ban-user.interceptor';
 import { LocalAuthGuard } from './api/controllers/guards/local-auth.guard';
+import { RefreshAuthGuard } from './api/controllers/guards/refresh-auth.guard';
+import { CqrsModule } from '@nestjs/cqrs';
+import { LoginUseCase } from './application/use-cases/auth/login.use-case';
+import { CreateNewPairTokensUseCase } from './application/use-cases/auth/create-new-pair-tokens.use-case';
 
+const useCases = [LoginUseCase, CreateNewPairTokensUseCase];
+const services = [AuthService, JwtService];
 const repositories = [
   UsersRepository,
-  RefreshTokenMetaRepository,
+  RefreshTokenMetasRepository,
   PasswordRecoveryRepository,
 ];
+const queryRepositories = [AuthQueryRepository];
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, RefreshStrategy];
-const guards = [BearerAuthGuard, BasicAuthGuard, LocalAuthGuard];
+const guards = [
+  BearerAuthGuard,
+  BasicAuthGuard,
+  LocalAuthGuard,
+  RefreshAuthGuard,
+];
 const interceptors = [
   CheckOwnerDeviceInterceptor,
   CheckLoginEmailInterceptor,
@@ -53,6 +65,7 @@ const interceptors = [
 
 @Module({
   imports: [
+    CqrsModule,
     PassportModule,
     ConfigModule,
     MongooseModule.forFeature([
@@ -68,10 +81,10 @@ const interceptors = [
   ],
   controllers: [AuthController, SecurityDevicesController],
   providers: [
-    AuthService,
-    JwtService,
+    ...useCases,
+    ...services,
     ...repositories,
-    AuthQueryRepository,
+    ...queryRepositories,
     ...strategies,
     ...interceptors,
     ...guards,

@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from '../../application/services/auth.service';
 import { Request, Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { UserInputDto } from '../../../public/application/types/user.input.dto';
 import { EmailDto } from '../../types/email.dto';
 import { SkipThrottle } from '@nestjs/throttler';
@@ -22,10 +21,18 @@ import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.int
 import { AuthQueryRepository } from '../../ifrastructure/query.repositories/auth.query.repository';
 import { CheckBanUserInterceptor } from './interceptors/check-ban-user.interceptor';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';
+import { CommandBus } from '@nestjs/cqrs';
+import { LoginCommand } from '../../application/use-cases/auth/commands/login.command';
+import { TokensType } from '../../application/types/tokens.type';
+import { BearerAuthGuard } from './guards/bearer-auth.guard';
+import { RefreshAuthGuard } from './guards/refresh-auth.guard';
+import { CreateNewPairTokensCommand } from '../../application/use-cases/auth/commands/create-new-pair-tokens.command';
 
 @Controller('auth')
 export class AuthController {
   constructor(
+    private commandBus: CommandBus,
     protected authService: AuthService,
     protected authQueryRepository: AuthQueryRepository,
   ) {}
@@ -35,25 +42,30 @@ export class AuthController {
   @UseInterceptors(CheckBanUserInterceptor)
   @HttpCode(200)
   @Post('/login')
-  async login(@Req() req: Request, @Res() res: Response) {
-    const accessToken = await this.authService.createAccessToken(req.user);
-    const refreshToken = await this.authService.createRefreshToken(
-      req.user,
-      String(req.headers['user-agent']),
-      req.ip,
+  async login(@Req() req: RequestWithUser, @Res() res: Response) {
+    const tokens = await this.commandBus.execute<
+      LoginCommand,
+      Promise<TokensType>
+    >(
+      new LoginCommand(
+        req.user.userId,
+        req.user.login,
+        String(req.headers['user-agent']),
+        req.ip,
+      ),
     );
     return res
       .status(200)
-      .cookie('refreshToken', refreshToken, {
+      .cookie('refreshToken', tokens.refreshToken, {
         httpOnly: true,
         secure: true,
         path: '/auth/refresh-token',
       })
-      .json(accessToken);
+      .json({ accessToken: tokens.accessToken });
   }
 
   @SkipThrottle()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BearerAuthGuard)
   @Get('/me')
   async getAuthUser(@Req() req: Request) {
     const user = await this.authQueryRepository.findAuthUserById(
@@ -98,7 +110,7 @@ export class AuthController {
   }
 
   @SkipThrottle()
-  @UseGuards(AuthGuard('refresh'))
+  @UseGuards(RefreshAuthGuard)
   @HttpCode(204)
   @Post('/logout')
   async logout(@Req() req: Request) {
@@ -111,23 +123,29 @@ export class AuthController {
   }
 
   @SkipThrottle()
-  @UseGuards(AuthGuard('refresh'))
+  @UseGuards(RefreshAuthGuard)
   @HttpCode(200)
   @Post('/refresh-token')
-  async getNewRefreshToken(@Req() req: Request, @Res() res: Response) {
-    const accessToken = await this.authService.createAccessToken(req.user);
-    const refreshToken = await this.authService.reCreateRefreshToken(
-      req.user,
-      req.ip,
+  async getNewRefreshToken(@Req() req: RequestWithUser, @Res() res: Response) {
+    const tokens = await this.commandBus.execute<
+      CreateNewPairTokensCommand,
+      Promise<TokensType>
+    >(
+      new CreateNewPairTokensCommand(
+        req.user.userId,
+        req.user.login,
+        req.user.deviceId,
+        req.ip,
+      ),
     );
     return res
       .status(200)
-      .cookie('refreshToken', refreshToken, {
+      .cookie('refreshToken', tokens.refreshToken, {
         httpOnly: true,
         secure: true,
         path: '/auth/refresh-token',
       })
-      .json(accessToken);
+      .json({ accessToken: tokens.accessToken });
   }
 
   @HttpCode(204)
