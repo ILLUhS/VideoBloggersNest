@@ -35,6 +35,8 @@ import { CheckLoginEmailInterceptor } from './api/controllers/interceptors/check
 import { UsersRepository } from './ifrastructure/repositories/users.repository';
 import { BearerAuthGuard } from './api/controllers/guards/bearer-auth.guard';
 import { BasicAuthGuard } from './api/controllers/guards/basic-auth.guard';
+import { CheckBanUserInterceptor } from './api/controllers/interceptors/check-ban-user.interceptor';
+import { LocalAuthGuard } from './api/controllers/guards/local-auth.guard';
 
 const repositories = [
   UsersRepository,
@@ -42,8 +44,12 @@ const repositories = [
   PasswordRecoveryRepository,
 ];
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, RefreshStrategy];
-const guards = [BearerAuthGuard, BasicAuthGuard];
-const interceptors = [CheckOwnerDeviceInterceptor, CheckLoginEmailInterceptor];
+const guards = [BearerAuthGuard, BasicAuthGuard, LocalAuthGuard];
+const interceptors = [
+  CheckOwnerDeviceInterceptor,
+  CheckLoginEmailInterceptor,
+  CheckBanUserInterceptor,
+];
 
 @Module({
   imports: [
@@ -70,7 +76,7 @@ const interceptors = [CheckOwnerDeviceInterceptor, CheckLoginEmailInterceptor];
     ...interceptors,
     ...guards,
   ],
-  exports: [BearerAuthGuard, BasicAuthGuard],
+  exports: [BearerAuthGuard, BasicAuthGuard, MongooseModule],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

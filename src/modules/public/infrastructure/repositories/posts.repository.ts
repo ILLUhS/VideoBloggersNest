@@ -7,7 +7,7 @@ import {
 } from '../../../../domain/schemas/post.schema';
 
 @Injectable()
-export class PostRepository {
+export class PostsRepository {
   //объект с методами управления данными
   constructor(@InjectModel(Post.name) protected postModel: PostModelType) {}
   async deleteById(id: string): Promise<boolean> {

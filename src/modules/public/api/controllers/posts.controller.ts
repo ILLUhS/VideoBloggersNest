@@ -18,7 +18,7 @@ import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { CommentInputDto } from '../types/comment.input.dto';
 import { LikeStatusInputDto } from '../types/like.status.input.dto';
 import { SkipThrottle } from '@nestjs/throttler';
-import { QueryTransformPipe } from '../../../super-admin/api/pipes/query-transform.pipe';
+import { QueryTransformPipe } from '../pipes/query-transform.pipe';
 import { CommandBus } from '@nestjs/cqrs';
 import { PostsQueryRepository } from '../../infrastructure/query.repositories/posts-query.repository';
 import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';

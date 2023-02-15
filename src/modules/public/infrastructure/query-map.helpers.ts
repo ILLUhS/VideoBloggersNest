@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ReactionDocument } from '../../../../domain/schemas/reaction.schema';
+import { ReactionDocument } from '../../../domain/schemas/reaction.schema';
 
 @Injectable()
 export class QueryMapHelpers {

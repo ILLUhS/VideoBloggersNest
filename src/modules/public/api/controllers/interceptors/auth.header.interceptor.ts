@@ -1,8 +1,8 @@
 import {
+  CallHandler,
+  ExecutionContext,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
@@ -18,7 +18,7 @@ export class AuthHeaderInterceptor implements NestInterceptor {
         );
         req.user = { userId: payload.userId };
       }
-    }
+    } else req.user = {};
     return next.handle().pipe();
   }
 }

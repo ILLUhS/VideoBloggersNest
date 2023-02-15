@@ -1,9 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../domain/schemas/user.schema';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { Blog, BlogSchema } from '../../domain/schemas/blog.schema';
+import { ConfigModule } from '@nestjs/config';
 import { SaUsersRepository } from './infrastructure/repositories/sa-users.repository';
 import { SaBlogsController } from './api/controllers/sa-blogs.controller';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -18,13 +14,12 @@ import { BanUnbanUserUseCase } from './application/use-cases/users/ban-unban-use
 import { SaBlogsRepository } from './infrastructure/repositories/sa-blogs.repository';
 import { BlogIdValidator } from './api/validators/blog.id.validator';
 import { SaBlogsService } from './application/services/sa-blogs.service';
-import {
-  RefreshTokenMeta,
-  RefreshTokenMetaSchema,
-} from '../../domain/schemas/refresh-token-meta.schema';
 import { SaRefreshTokenMetaRepository } from './infrastructure/repositories/sa-refresh-token-meta.repository';
 import { AuthModule } from '../auth/auth.module';
-import { QueryTransformPipe } from './api/pipes/query-transform.pipe';
+import { SaPostsRepository } from './infrastructure/repositories/sa-posts.repository';
+import { SaCommentsRepository } from './infrastructure/repositories/sa-comments.repository';
+import { SaReactionsRepository } from './infrastructure/repositories/sa-reactions.repository';
+import { PublicModule } from '../public/public.module';
 
 const useCases = [
   BindBlogWithUserUseCase,
@@ -35,22 +30,16 @@ const services = [SaUsersService, SaBlogsService];
 const repositories = [
   SaUsersRepository,
   SaBlogsRepository,
+  SaPostsRepository,
+  SaCommentsRepository,
+  SaReactionsRepository,
   SaRefreshTokenMetaRepository,
 ];
 const queryRepositories = [SaBlogsQueryRepository, SaUsersQueryRepository];
 const validators = [UserIdValidator, BlogIdValidator];
 
 @Module({
-  imports: [
-    AuthModule,
-    CqrsModule,
-    ConfigModule,
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Blog.name, schema: BlogSchema },
-      { name: RefreshTokenMeta.name, schema: RefreshTokenMetaSchema },
-    ]),
-  ],
+  imports: [AuthModule, PublicModule, CqrsModule, ConfigModule],
   controllers: [SaBlogsController, SaUsersController],
   providers: [
     ...validators,
@@ -58,8 +47,6 @@ const validators = [UserIdValidator, BlogIdValidator];
     ...useCases,
     ...repositories,
     ...queryRepositories,
-    QueryTransformPipe,
   ],
-  exports: [QueryTransformPipe],
 })
 export class SaModule {}

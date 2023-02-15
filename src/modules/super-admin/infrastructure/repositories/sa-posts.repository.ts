@@ -5,10 +5,10 @@ import {
   PostDocument,
   PostModelType,
 } from '../../../../domain/schemas/post.schema';
-import { PostRepository } from '../../../public/infrastructure/repositories/post.repository';
+import { PostsRepository } from '../../../public/infrastructure/repositories/posts.repository';
 
 @Injectable()
-export class SaPostsRepository extends PostRepository {
+export class SaPostsRepository extends PostsRepository {
   constructor(@InjectModel(Post.name) protected postModel: PostModelType) {
     super(postModel);
   }

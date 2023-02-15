@@ -10,7 +10,7 @@ import {
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
 import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { SkipThrottle } from '@nestjs/throttler';
-import { QueryTransformPipe } from '../../../super-admin/api/pipes/query-transform.pipe';
+import { QueryTransformPipe } from '../pipes/query-transform.pipe';
 import { BlogsQueryRepository } from '../../infrastructure/query.repositories/blogs-query.repository';
 import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';
 import { PostsQueryRepository } from '../../infrastructure/query.repositories/posts-query.repository';

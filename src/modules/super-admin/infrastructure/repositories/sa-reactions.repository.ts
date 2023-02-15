@@ -5,7 +5,7 @@ import {
   ReactionDocument,
   ReactionModelType,
 } from '../../../../domain/schemas/reaction.schema';
-import { ReactionsRepository } from '../../../public/infrastructure/repositories/reaction.repository';
+import { ReactionsRepository } from '../../../public/infrastructure/repositories/reactions.repository';
 
 @Injectable()
 export class SaReactionsRepository extends ReactionsRepository {

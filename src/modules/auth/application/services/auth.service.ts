@@ -56,9 +56,12 @@ export class AuthService {
     await this.sendConfirmEmail(user);
     await this.usersRepository.save(user);
   }
-  async findUserByField(field: string, value: string) {
+  async findUserByField(
+    field: string,
+    value: string,
+  ): Promise<UserDocument | null> {
     const user = await this.usersRepository.findByField(field, value);
-    return user ? user.id : null;
+    return user;
   }
   async createAccessToken(user: any) {
     const payload = {

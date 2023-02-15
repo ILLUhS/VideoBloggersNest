@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateLikeDislikeCommand } from './commands/create-like-dislike.command';
-import { ReactionsRepository } from '../../../infrastructure/repositories/reaction.repository';
+import { ReactionsRepository } from '../../../infrastructure/repositories/reactions.repository';
 
 @CommandHandler(CreateLikeDislikeCommand)
 export class CreateLikeDislikeUseCase

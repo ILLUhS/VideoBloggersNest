@@ -14,7 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../auth/api/controllers/guards/basic-auth.guard';
-import { QueryTransformPipe } from '../pipes/query-transform.pipe';
+import { QueryTransformPipe } from '../../../public/api/pipes/query-transform.pipe';
 import { QueryParamsDto } from '../dto/query-params.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { SaUsersQueryRepository } from '../../infrastructure/query.repositories/sa-users-query.repository';

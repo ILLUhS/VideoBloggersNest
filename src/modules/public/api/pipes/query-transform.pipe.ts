@@ -1,5 +1,5 @@
-import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
-import { QueryParamsDto } from '../dto/query-params.dto';
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
+import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
 import { SortOrder } from 'mongoose';
 
 enum banSearch {

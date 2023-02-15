@@ -1,9 +1,9 @@
 import {
+  BadRequestException,
+  CallHandler,
+  ExecutionContext,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  BadRequestException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../application/services/auth.service';
@@ -19,14 +19,11 @@ export class CheckLoginEmailInterceptor implements NestInterceptor {
     let loginInvalid = false;
     let emailInvalid = false;
 
-    let userId = await this.authService.findUserByField(
-      'login',
-      req.body.login,
-    );
-    if (userId) loginInvalid = true;
+    let user = await this.authService.findUserByField('login', req.body.login);
+    if (user) loginInvalid = true;
 
-    userId = await this.authService.findUserByField('email', req.body.email);
-    if (userId) emailInvalid = true;
+    user = await this.authService.findUserByField('email', req.body.email);
+    if (user) emailInvalid = true;
 
     if (loginInvalid && emailInvalid)
       throw new BadRequestException({

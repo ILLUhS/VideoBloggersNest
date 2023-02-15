@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostModelType } from '../../../../domain/schemas/post.schema';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
 import { FilterQueryType } from '../../api/types/filter.query.type';
-import { QueryMapHelpers } from './query-map.helpers';
+import { QueryMapHelpers } from '../query-map.helpers';
 
 @Injectable()
 export class PostsQueryRepository extends QueryMapHelpers {
@@ -25,7 +25,10 @@ export class PostsQueryRepository extends QueryMapHelpers {
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
       .select({ _id: 0, __v: 0 })
       .exec();
-    const postsCount = await this.postModel.countDocuments(filter).exec();
+    const postsCount = await this.postModel
+      .countDocuments(filter)
+      .where({ isBanned: false })
+      .exec();
     return {
       pagesCount: Math.ceil(postsCount / searchParams.pageSize),
       page: searchParams.pageNumber,

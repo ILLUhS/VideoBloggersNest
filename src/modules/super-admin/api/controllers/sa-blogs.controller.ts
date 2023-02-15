@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { QueryTransformPipe } from '../pipes/query-transform.pipe';
+import { QueryTransformPipe } from '../../../public/api/pipes/query-transform.pipe';
 import { QueryParamsDto } from '../dto/query-params.dto';
 import { BlogIdAndUserIdInputDto } from '../dto/blog-id-and-user-id-input.dto';
 import { CommandBus } from '@nestjs/cqrs';

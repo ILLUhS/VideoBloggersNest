@@ -1,17 +1,17 @@
 import {
+  CallHandler,
+  ExecutionContext,
+  ForbiddenException,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
   NotFoundException,
-  ForbiddenException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { CommentService } from '../../../application/services/comment.service';
+import { CommentsService } from '../../../application/services/comments.service';
 
 @Injectable()
 export class CheckOwnerCommentInterceptor implements NestInterceptor {
-  constructor(private commentService: CommentService) {}
+  constructor(private commentService: CommentsService) {}
   async intercept(
     context: ExecutionContext,
     next: CallHandler,

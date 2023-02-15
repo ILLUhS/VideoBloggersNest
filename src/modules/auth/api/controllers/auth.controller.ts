@@ -20,6 +20,8 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { NewPassDto } from '../../types/new.pass.dto';
 import { CheckLoginEmailInterceptor } from './interceptors/check.login.email.interceptor';
 import { AuthQueryRepository } from '../../ifrastructure/query.repositories/auth.query.repository';
+import { CheckBanUserInterceptor } from './interceptors/check-ban-user.interceptor';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,7 +31,8 @@ export class AuthController {
   ) {}
 
   //LoginMiddleware - validate login and pass
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
+  @UseInterceptors(CheckBanUserInterceptor)
   @HttpCode(200)
   @Post('/login')
   async login(@Req() req: Request, @Res() res: Response) {

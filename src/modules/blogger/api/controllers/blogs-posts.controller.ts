@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { BearerAuthGuard } from '../../../auth/api/controllers/guards/bearer-auth.guard';
 import { SkipThrottle } from '@nestjs/throttler';
-import { QueryTransformPipe } from '../../../super-admin/api/pipes/query-transform.pipe';
+import { QueryTransformPipe } from '../../../public/api/pipes/query-transform.pipe';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
 import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';
 import { BBlogsQueryRepository } from '../../infrastructure/query.repositories/b-blogs-query.repository';

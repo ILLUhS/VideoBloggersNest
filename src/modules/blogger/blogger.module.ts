@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfigModule } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from '../../domain/schemas/blog.schema';
 import { CreateBlogUseCase } from './application/use-cases/blogs/create-blog.use-case';
 import { DeleteBlogUseCase } from './application/use-cases/blogs/delete-blog.use-case';
 import { UpdateBlogUseCase } from './application/use-cases/blogs/update-blog.use-case';
@@ -32,15 +30,8 @@ const repositories = [BBlogsRepository, BPostsRepository];
 const queryRepositories = [BBlogsQueryRepository, BPostsQueryRepository];
 
 @Module({
-  imports: [
-    AuthModule,
-    PublicModule,
-    CqrsModule,
-    ConfigModule,
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
-  ],
+  imports: [AuthModule, PublicModule, CqrsModule, ConfigModule],
   controllers: [BlogsPostsController],
   providers: [...useCases, ...services, ...repositories, ...queryRepositories],
-  exports: [...queryRepositories],
 })
 export class BloggerModule {}

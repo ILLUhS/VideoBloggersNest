@@ -7,7 +7,7 @@ import {
 import { CommentsViewType } from '../../api/types/comment.view.type';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
 import { FilterQueryType } from '../../api/types/filter.query.type';
-import { QueryMapHelpers } from './query-map.helpers';
+import { QueryMapHelpers } from '../query-map.helpers';
 
 @Injectable()
 export class CommentsQueryRepository extends QueryMapHelpers {
@@ -32,7 +32,10 @@ export class CommentsQueryRepository extends QueryMapHelpers {
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
       .select({ _id: 0, __v: 0 })
       .exec();
-    const commentsCount = await this.commentModel.countDocuments(filter).exec();
+    const commentsCount = await this.commentModel
+      .countDocuments(filter)
+      .where({ isBanned: false })
+      .exec();
     return {
       pagesCount: Math.ceil(commentsCount / searchParams.pageSize),
       page: searchParams.pageNumber,

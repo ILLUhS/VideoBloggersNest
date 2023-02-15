@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateCommentCommand } from './commands/create-comment.command';
 import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 import { NotFoundException } from '@nestjs/common';
-import { PostRepository } from '../../../infrastructure/repositories/post.repository';
+import { PostsRepository } from '../../../infrastructure/repositories/posts.repository';
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentUseCase
@@ -10,7 +10,7 @@ export class CreateCommentUseCase
 {
   constructor(
     private commentsRepository: CommentsRepository,
-    private postRepository: PostRepository,
+    private postRepository: PostsRepository,
   ) {}
 
   async execute(command: CreateCommentCommand): Promise<string | null> {
