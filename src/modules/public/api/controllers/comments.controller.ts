@@ -16,7 +16,6 @@ import { AuthHeaderInterceptor } from './interceptors/auth.header.interceptor';
 import { CommentUpdateDto } from '../../application/types/comment.update.dto';
 import { CheckOwnerCommentInterceptor } from './interceptors/check.owner.comment.interceptor';
 import { LikeStatusInputDto } from '../types/like.status.input.dto';
-import { LikeService } from '../../application/services/like.service';
 import { SkipThrottle } from '@nestjs/throttler';
 import { CommentsQueryRepository } from '../../infrastructure/query.repositories/comments-query.repository';
 import RequestWithUser from '../../../../api/interfaces/request-with-user.interface';
@@ -28,12 +27,10 @@ import { CreateLikeDislikeCommand } from '../../application/use-cases/reactions/
 
 @SkipThrottle()
 @Controller('comments')
-export class CommentController {
+export class CommentsController {
   constructor(
     private commandBus: CommandBus,
     protected commentsQueryRepository: CommentsQueryRepository,
-    protected commentService: CommentsQueryRepository,
-    protected likeService: LikeService,
   ) {}
 
   @UseInterceptors(AuthHeaderInterceptor)
@@ -71,6 +68,8 @@ export class CommentController {
     @Body() likeStatusInputDto: LikeStatusInputDto,
     @Req() req: RequestWithUser,
   ) {
+    const comment = await this.commentsQueryRepository.findCommentById(id);
+    if (!comment) throw new NotFoundException();
     const result = await this.commandBus.execute(
       new CreateLikeDislikeCommand({
         userId: req.user.userId,

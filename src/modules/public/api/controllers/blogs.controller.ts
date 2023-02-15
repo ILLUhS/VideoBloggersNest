@@ -17,7 +17,7 @@ import { PostsQueryRepository } from '../../infrastructure/query.repositories/po
 
 @SkipThrottle()
 @Controller('blogs')
-export class BlogController {
+export class BlogsController {
   constructor(
     private blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,

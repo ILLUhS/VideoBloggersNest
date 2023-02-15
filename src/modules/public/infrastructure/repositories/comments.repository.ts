@@ -5,6 +5,7 @@ import {
   CommentModelType,
 } from '../../../../domain/schemas/comment.schema';
 import { Injectable } from '@nestjs/common';
+import { CommentCreateDtoType } from '../../application/types/comment.create.dto.type';
 
 @Injectable()
 export class CommentsRepository {
@@ -12,6 +13,9 @@ export class CommentsRepository {
     @InjectModel(Comment.name) protected commentModel: CommentModelType,
   ) {}
 
+  async create(commentDto: CommentCreateDtoType): Promise<CommentDocument> {
+    return this.commentModel.makeInstance(commentDto, this.commentModel);
+  }
   async save(comment: CommentDocument) {
     return !!(await comment.save());
   }

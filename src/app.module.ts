@@ -10,11 +10,11 @@ import { PostRepository } from './modules/public/infrastructure/repositories/pos
 import { PostService } from './modules/public/application/services/post.service';
 import { Post, PostSchema } from './domain/schemas/post.schema';
 import { QueryMapHelpers } from './modules/public/infrastructure/query.repositories/query-map.helpers';
-import { BlogController } from './modules/public/api/controllers/blog.controller';
+import { BlogsController } from './modules/public/api/controllers/blogs.controller';
 import { Reaction, ReactionSchema } from './domain/schemas/reaction.schema';
 import { Comment, CommentSchema } from './domain/schemas/comment.schema';
-import { PostController } from './modules/public/api/controllers/post.controller';
-import { CommentController } from './modules/public/api/controllers/comment.controller';
+import { PostsController } from './modules/public/api/controllers/posts.controller';
+import { CommentsController } from './modules/public/api/controllers/comments.controller';
 import { TestingAllDataController } from './api/controllers/testing.all.data.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthHeaderInterceptor } from './modules/public/api/controllers/interceptors/auth.header.interceptor';
@@ -44,9 +44,9 @@ import { APP_GUARD } from '@nestjs/core';
   ],
   controllers: [
     AppController,
-    BlogController,
-    PostController,
-    CommentController,
+    BlogsController,
+    PostsController,
+    CommentsController,
     TestingAllDataController,
   ],
   providers: [

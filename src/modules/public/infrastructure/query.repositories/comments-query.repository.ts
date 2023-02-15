@@ -17,28 +17,6 @@ export class CommentsQueryRepository extends QueryMapHelpers {
     super();
   }
 
-  async findCommentById(
-    id: string,
-    userId = '',
-  ): Promise<CommentsViewType | null> {
-    const comment = await this.commentModel
-      .findOne({ id: id })
-      .populate('reactions')
-      .select({ _id: 0, __v: 0 })
-      .exec();
-    if (!comment) return null;
-    const likesInfoMapped = await this.likesInfoMap(comment.reactions, userId);
-    return {
-      id: comment.id,
-      content: comment.content,
-      commentatorInfo: {
-        userId: comment.userId,
-        userLogin: comment.userLogin,
-      },
-      createdAt: comment.createdAt,
-      likesInfo: likesInfoMapped,
-    };
-  }
   async getCommentsWithQueryParam(
     searchParams: QueryParamsDto,
     filter: FilterQueryType = {},
@@ -47,7 +25,8 @@ export class CommentsQueryRepository extends QueryMapHelpers {
     if (!filter) filter = {};
     const comments = await this.commentModel
       .find(filter)
-      .populate('reactions')
+      .where({ isBanned: false })
+      .populate({ path: 'reactions', match: { isBanned: false } })
       .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
       .limit(searchParams.pageSize)
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
@@ -77,6 +56,29 @@ export class CommentsQueryRepository extends QueryMapHelpers {
           };
         }),
       ),
+    };
+  }
+  async findCommentById(
+    id: string,
+    userId = '',
+  ): Promise<CommentsViewType | null> {
+    const comment = await this.commentModel
+      .findOne({ id: id })
+      .where({ isBanned: false })
+      .populate({ path: 'reactions', match: { isBanned: false } })
+      .select({ _id: 0, __v: 0 })
+      .exec();
+    if (!comment) return null;
+    const likesInfoMapped = await this.likesInfoMap(comment.reactions, userId);
+    return {
+      id: comment.id,
+      content: comment.content,
+      commentatorInfo: {
+        userId: comment.userId,
+        userLogin: comment.userLogin,
+      },
+      createdAt: comment.createdAt,
+      likesInfo: likesInfoMapped,
     };
   }
 }

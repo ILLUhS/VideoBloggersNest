@@ -1,22 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateLikeDislikeCommand } from './commands/create-like-dislike.command';
 import { ReactionsRepository } from '../../../infrastructure/repositories/reaction.repository';
-import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
-import { NotFoundException } from '@nestjs/common';
 
 @CommandHandler(CreateLikeDislikeCommand)
 export class CreateLikeDislikeUseCase
   implements ICommandHandler<CreateLikeDislikeCommand>
 {
-  constructor(
-    private reactionsRepository: ReactionsRepository,
-    private commentsRepository: CommentsRepository,
-  ) {}
+  constructor(private reactionsRepository: ReactionsRepository) {}
 
   async execute(command: CreateLikeDislikeCommand): Promise<boolean> {
     const { entityId, reaction, userId, login } = command.reactionDto;
-    const commentUserId = await this.commentsRepository.findById(entityId);
-    if (!commentUserId) throw new NotFoundException();
     const alreadyLike = await this.reactionsRepository.find(entityId, userId);
     if (alreadyLike) {
       alreadyLike.setStatus(reaction);

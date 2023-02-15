@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { DeleteCommentCommand } from './delete-comment.command';
-import { CommentsRepository } from '../../../../infrastructure/repositories/comments.repository';
+import { DeleteCommentCommand } from './commands/delete-comment.command';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 
 @CommandHandler(DeleteCommentCommand)
 export class DeleteCommentUseCase
