@@ -20,6 +20,12 @@ export class BindBlogWithUserUseCase
       throw new BadRequestException({
         message: [{ field: 'blogId or userId', message: 'invalid id' }],
       });
+    if (blog.userId)
+      throw new BadRequestException({
+        message: [
+          { field: 'blogId', message: 'blog already bound to any user' },
+        ],
+      });
     blog.setOwner(user.id, user.login);
     await this.blogsRepository.save(blog);
   }

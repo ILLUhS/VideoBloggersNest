@@ -2,7 +2,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { SaBlogsService } from '../../application/services/sa-blogs.service';
 
 @ValidatorConstraint({ async: true })
@@ -12,7 +12,8 @@ export class BlogIdValidator implements ValidatorConstraintInterface {
 
   async validate(blogId: string): Promise<boolean> {
     const foundBlogId = await this.blogsService.findBlogById(blogId);
-    return !!foundBlogId;
+    if (!foundBlogId) throw new NotFoundException();
+    return true;
   }
   defaultMessage() {
     return `blogId incorrect`;
