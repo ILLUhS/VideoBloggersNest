@@ -16,6 +16,7 @@ import { BBlogsQueryRepository } from './infrastructure/query.repositories/b-blo
 import { BPostsQueryRepository } from './infrastructure/query.repositories/b-posts-query.repository';
 import { BlogsPostsController } from './api/controllers/blogs-posts.controller';
 import { PublicModule } from '../public/public.module';
+import { PostIdValidator } from './api/controllers/validators/post-id.validator';
 
 const useCases = [
   CreateBlogUseCase,
@@ -28,10 +29,17 @@ const useCases = [
 const services = [BBlogsService, BPostsService];
 const repositories = [BBlogsRepository, BPostsRepository];
 const queryRepositories = [BBlogsQueryRepository, BPostsQueryRepository];
+const validators = [PostIdValidator];
 
 @Module({
   imports: [AuthModule, PublicModule, CqrsModule, ConfigModule],
   controllers: [BlogsPostsController],
-  providers: [...useCases, ...services, ...repositories, ...queryRepositories],
+  providers: [
+    ...useCases,
+    ...services,
+    ...repositories,
+    ...queryRepositories,
+    ...validators,
+  ],
 })
 export class BloggerModule {}

@@ -7,6 +7,6 @@ export class BanUserInputDto {
 
   @IsString()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  @Length(1, 30)
+  @Length(20, 1000)
   banReason: string;
 }

@@ -37,7 +37,11 @@ export class BanUnbanUserUseCase
     const commentByUsers = await this.commentsRepository.findByUserId(id);
     const reactionsByUser = await this.reactionsRepository.findByUserId(id);
     //выставляем всем сущностям бан статус
-    await user.switchBanStatus(isBanned, banReason);
+    if (isBanned) {
+      await user.ban(banReason);
+      //delete all sessions by user
+      await this.refreshTokenMetaRepository.deleteByUserId(id);
+    } else await user.unban();
     await this.usersRepository.save(user);
 
     if (postsByUser) {
@@ -60,9 +64,6 @@ export class BanUnbanUserUseCase
         this.reactionsRepository.save(r);
       });
     }
-
-    //delete all sessions by user
-    await this.refreshTokenMetaRepository.deleteByUserId(id);
     return;
   }
 }

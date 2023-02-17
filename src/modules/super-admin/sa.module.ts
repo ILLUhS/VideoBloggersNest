@@ -20,10 +20,12 @@ import { SaPostsRepository } from './infrastructure/repositories/sa-posts.reposi
 import { SaCommentsRepository } from './infrastructure/repositories/sa-comments.repository';
 import { SaReactionsRepository } from './infrastructure/repositories/sa-reactions.repository';
 import { PublicModule } from '../public/public.module';
+import { DeleteUserUseCase } from './application/use-cases/users/delete-user.use-case';
 
 const useCases = [
   BindBlogWithUserUseCase,
   CreateUserUseCase,
+  DeleteUserUseCase,
   BanUnbanUserUseCase,
 ];
 const services = [SaUsersService, SaBlogsService];
