@@ -4,11 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { BlogCreateDto } from '../../modules/public/application/types/blog.create.dto';
 import { BlogUpdateDto } from '../../modules/public/application/types/blog.update.dto';
 import { UserInfoType } from '../../modules/blogger/types/user-info.type';
+import { BannedUsersType } from '../types/banned-users.type';
+import { BannedUserDtoType } from '../types/banned-user-dto.type';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
 export type BlogModelMethods = {
   updateProperties(blogDto: BlogUpdateDto): void;
+  setOwner(userId: string, userLogin: string): void;
+  banUser(bannedUser: BannedUserDtoType): void;
+  unbanUser(bannedUser: BannedUserDtoType): void;
 };
 export type BlogModelStaticMethods = {
   makeInstance(
@@ -16,7 +21,6 @@ export type BlogModelStaticMethods = {
     userInfo: UserInfoType,
     BlogModel: BlogModelType,
   ): BlogDocument;
-  setOwner(userId: string, userLogin: string): void;
 };
 export type BlogModelType = Model<BlogDocument> &
   BlogModelMethods &
@@ -48,6 +52,9 @@ export class Blog {
   @Prop({ required: true })
   userLogin: string;
 
+  @Prop({ default: [] })
+  bannedUsers: BannedUsersType[];
+
   static makeInstance(
     blogDto: BlogCreateDto,
     userInfo: UserInfoType,
@@ -75,6 +82,23 @@ export class Blog {
     this.userId = userId;
     this.userLogin = userLogin;
   }
+
+  banUser(bannedUser: BannedUserDtoType) {
+    this.bannedUsers.push({
+      userId: bannedUser.id,
+      userLogin: bannedUser.login,
+      isBanned: true,
+      banDate: new Date().toISOString(),
+      banReason: bannedUser.banReason,
+    });
+  }
+
+  unbanUser(bannedUser: BannedUserDtoType) {
+    const userIndex = this.bannedUsers.findIndex(
+      (e) => e.userId === bannedUser.id,
+    );
+    this.bannedUsers[userIndex].isBanned = false;
+  }
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
@@ -82,4 +106,6 @@ BlogSchema.statics = { makeInstance: Blog.makeInstance };
 BlogSchema.methods = {
   updateProperties: Blog.prototype.updateProperties,
   setOwner: Blog.prototype.setOwner,
+  banUser: Blog.prototype.banUser,
+  unbanUser: Blog.prototype.unbanUser,
 };

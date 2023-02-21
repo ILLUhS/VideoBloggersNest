@@ -3,7 +3,7 @@ import {
   Injectable,
   NestMiddleware,
 } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class LoginMiddleware implements NestMiddleware {
@@ -13,39 +13,15 @@ export class LoginMiddleware implements NestMiddleware {
     let errorPass = false;
     if (!loginOrEmail || typeof loginOrEmail !== 'string')
       errorLoginEmail = true;
-    /*throw new BadRequestException({
-        message: [
-          {
-            field: 'loginOrEmail',
-            message: 'invalid loginOrEmail',
-          },
-        ],
-      });*/
     if (loginOrEmail.includes('@')) {
       if (loginOrEmail.search('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$') === -1)
         errorLoginEmail = true;
-      /*throw new BadRequestException({
-          message: [
-            {
-              field: 'loginOrEmail',
-              message: 'invalid loginOrEmail',
-            },
-          ],
-        });*/
     } else if (
       loginOrEmail.search('^[a-zA-Z0-9_-]*$') === -1 ||
       loginOrEmail.length < 3 ||
       loginOrEmail.length > 10
     )
       errorLoginEmail = true;
-    /*throw new BadRequestException({
-        message: [
-          {
-            field: 'loginOrEmail',
-            message: 'invalid loginOrEmail',
-          },
-        ],
-      });*/
     if (
       !password ||
       typeof password !== 'string' ||
@@ -53,14 +29,6 @@ export class LoginMiddleware implements NestMiddleware {
       password.length > 20
     )
       errorPass = true;
-    /*throw new BadRequestException({
-        message: [
-          {
-            field: 'password',
-            message: 'invalid password',
-          },
-        ],
-      });*/
 
     if (errorLoginEmail && errorPass)
       throw new BadRequestException({

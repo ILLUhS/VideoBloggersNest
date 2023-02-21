@@ -36,28 +36,25 @@ export class BanUnbanUserUseCase
     const postsByUser = await this.postsRepository.findByUserId(id);
     const commentByUsers = await this.commentsRepository.findByUserId(id);
     const reactionsByUser = await this.reactionsRepository.findByUserId(id);
-    //выставляем всем сущностям бан статус
+    //delete all sessions by banned user
     if (isBanned) {
       await user.ban(banReason);
-      //delete all sessions by user
       await this.refreshTokenMetaRepository.deleteByUserId(id);
     } else await user.unban();
     await this.usersRepository.save(user);
-
+    //выставляем всем сущностям бан статус
     if (postsByUser) {
       postsByUser.forEach((p) => {
         p.setBanStatus(isBanned);
         this.postsRepository.save(p);
       });
     }
-
     if (commentByUsers) {
       commentByUsers.forEach((c) => {
         c.setBanStatus(isBanned);
         this.commentsRepository.save(c);
       });
     }
-
     if (reactionsByUser) {
       reactionsByUser.forEach((r) => {
         r.setBanStatus(isBanned);
