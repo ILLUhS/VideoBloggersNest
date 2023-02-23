@@ -1,25 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  User,
-  UserDocument,
-  UserModelType,
-} from '../../../../domain/schemas/user.schema';
+import { User, UserModelType } from '../../../../domain/schemas/user.schema';
+import { UsersRepository } from '../../../auth/ifrastructure/repositories/users.repository';
 
 @Injectable()
-export class SaUsersRepository {
+export class SaUsersRepository extends UsersRepository {
   //объект с методами управления данными
-  constructor(@InjectModel(User.name) private userModel: UserModelType) {}
+  constructor(@InjectModel(User.name) protected userModel: UserModelType) {
+    super(userModel);
+  }
 
-  async findById(id: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ id: id });
-  }
-  async findByField(
-    field: string,
-    value: string,
-  ): Promise<UserDocument | null> {
-    return this.userModel.findOne({ [field]: value });
-  }
   async deleteById(id: string): Promise<boolean> {
     return (
       (await this.userModel.deleteOne({ id: id }).exec()).deletedCount === 1
@@ -27,8 +17,5 @@ export class SaUsersRepository {
   }
   async deleteAll(): Promise<boolean> {
     return (await this.userModel.deleteMany().exec()).acknowledged;
-  }
-  async save(user: UserDocument): Promise<boolean> {
-    return !!(await user.save());
   }
 }

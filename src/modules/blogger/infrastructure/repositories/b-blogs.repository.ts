@@ -13,6 +13,9 @@ export class BBlogsRepository {
   async findById(id: string): Promise<BlogDocument | null> {
     return this.blogModel.findOne({ id: id });
   }
+  async findByUserId(userId: string): Promise<BlogDocument | null> {
+    return this.blogModel.findOne({ userId: userId });
+  }
   async deleteById(id: string): Promise<boolean> {
     return (
       (await this.blogModel.deleteOne({ id: id }).exec()).deletedCount === 1

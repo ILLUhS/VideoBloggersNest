@@ -9,7 +9,7 @@ import { UserCreateDtoType } from '../../../public/application/types/user.create
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectModel(User.name) private userModel: UserModelType) {}
+  constructor(@InjectModel(User.name) protected userModel: UserModelType) {}
 
   async create(userDto: UserCreateDtoType): Promise<UserDocument> {
     return await this.userModel.makeInstance(userDto, this.userModel);

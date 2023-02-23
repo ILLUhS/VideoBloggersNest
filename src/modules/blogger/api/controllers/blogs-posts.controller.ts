@@ -31,7 +31,7 @@ import { BlogPostInputDto } from '../../../public/api/types/blog.post.input.dto'
 import { PostCreateDto } from '../../../public/application/types/post.create.dto';
 import { CreatePostCommand } from '../../application/use-cases/posts/commands/create-post.command';
 import { BPostsQueryRepository } from '../../infrastructure/query.repositories/b-posts-query.repository';
-import { BlogIdPostIdInputDto } from '../input.dto/blog-id-post-id-input-dto';
+import { BlogIdPostIdInputDto } from '../input.dto/blog-id-post-id-input.dto';
 import { UpdatePostCommand } from '../../application/use-cases/posts/commands/update-post.command';
 import { PostUpdateDto } from '../../../public/application/types/post.update.dto';
 import { DeletePostCommand } from '../../application/use-cases/posts/commands/delete-post.command';

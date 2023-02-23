@@ -41,4 +41,47 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
       })),
     };
   }
+  async getBanUsersByBlogId(searchParams: QueryParamsDto, blogId: string) {
+    //ищем блог
+    const blog = await this.blogModel.findOne({ id: blogId }).exec();
+    //берём массив забаниных пользователей
+    let bannedUsers = blog.bannedUsers.filter(
+      (b) =>
+        b.isBanned === true &&
+        b.userLogin.match(new RegExp(searchParams.searchLoginTerm, 'i')),
+    );
+    const usersCount = bannedUsers.length;
+    //первый элемент на странице
+    const firstIndex = (searchParams.pageNumber - 1) * searchParams.pageSize;
+    //последний элемент на странице
+    const lastIndex = firstIndex + searchParams.pageSize - 1;
+    //берём нужную часть массива
+    bannedUsers = bannedUsers.slice(firstIndex, lastIndex);
+    bannedUsers.sort((a, b) => {
+      const elemA = a[searchParams.sortBy];
+      const elemB = b[searchParams.sortBy];
+      let result;
+      if (elemA < elemB) result = -1;
+      else if (elemA > elemB) result = 1;
+      else result = 0;
+      if (searchParams.sortDirection === 'desc') result = -result;
+      return result;
+    });
+
+    return {
+      pagesCount: Math.ceil(usersCount / searchParams.pageSize),
+      page: searchParams.pageNumber,
+      pageSize: searchParams.pageSize,
+      totalCount: usersCount,
+      items: bannedUsers.map((u) => ({
+        id: u.userId,
+        login: u.userLogin,
+        banInfo: {
+          isBanned: u.isBanned,
+          banDate: u.banDate,
+          banReason: u.banReason,
+        },
+      })),
+    };
+  }
 }

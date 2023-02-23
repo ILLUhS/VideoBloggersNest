@@ -17,6 +17,10 @@ import { BPostsQueryRepository } from './infrastructure/query.repositories/b-pos
 import { BlogsPostsController } from './api/controllers/blogs-posts.controller';
 import { PublicModule } from '../public/public.module';
 import { PostIdValidator } from './api/controllers/validators/post-id.validator';
+import { BUsersController } from './api/controllers/b-users.controller';
+import { BanUserFoBlogUseCase } from './application/use-cases/users/ban-user-fo-blog.use-case';
+import { BUsersRepository } from './infrastructure/repositories/b-users.repository';
+import { BBlogIdValidator } from './api/controllers/validators/b-blog.id.validator';
 
 const useCases = [
   CreateBlogUseCase,
@@ -25,15 +29,16 @@ const useCases = [
   CreatePostUseCase,
   UpdatePostUseCase,
   DeletePostUseCase,
+  BanUserFoBlogUseCase,
 ];
 const services = [BBlogsService, BPostsService];
-const repositories = [BBlogsRepository, BPostsRepository];
+const repositories = [BBlogsRepository, BPostsRepository, BUsersRepository];
 const queryRepositories = [BBlogsQueryRepository, BPostsQueryRepository];
-const validators = [PostIdValidator];
+const validators = [BBlogIdValidator, PostIdValidator];
 
 @Module({
   imports: [AuthModule, PublicModule, CqrsModule, ConfigModule],
-  controllers: [BlogsPostsController],
+  controllers: [BlogsPostsController, BUsersController],
   providers: [
     ...useCases,
     ...services,
