@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ReactionDocument } from './reaction.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { CommentCreateDtoType } from '../../modules/public/application/types/comment.create.dto.type';
+import { PostDocument } from './post.schema';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
@@ -48,6 +49,8 @@ export class Comment {
 
   reactions: ReactionDocument[];
 
+  post: PostDocument;
+
   static makeInstance(
     commentDto: CommentCreateDtoType,
     CommentModel: CommentModelType,
@@ -83,4 +86,11 @@ CommentSchema.virtual('reactions', {
   localField: 'id',
   foreignField: 'entityId',
   options: { lean: true },
+});
+CommentSchema.virtual('post', {
+  ref: 'Post',
+  localField: 'postId',
+  foreignField: 'id',
+  options: { lean: true },
+  justOne: true,
 });

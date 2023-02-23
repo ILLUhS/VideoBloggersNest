@@ -21,6 +21,7 @@ import { BUsersController } from './api/controllers/b-users.controller';
 import { BanUserFoBlogUseCase } from './application/use-cases/users/ban-user-fo-blog.use-case';
 import { BUsersRepository } from './infrastructure/repositories/b-users.repository';
 import { BBlogIdValidator } from './api/controllers/validators/b-blog.id.validator';
+import { BCommentsQueryRepository } from './infrastructure/query.repositories/b-comments-query.repository';
 
 const useCases = [
   CreateBlogUseCase,
@@ -33,7 +34,11 @@ const useCases = [
 ];
 const services = [BBlogsService, BPostsService];
 const repositories = [BBlogsRepository, BPostsRepository, BUsersRepository];
-const queryRepositories = [BBlogsQueryRepository, BPostsQueryRepository];
+const queryRepositories = [
+  BBlogsQueryRepository,
+  BPostsQueryRepository,
+  BCommentsQueryRepository,
+];
 const validators = [BBlogIdValidator, PostIdValidator];
 
 @Module({

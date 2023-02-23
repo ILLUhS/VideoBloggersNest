@@ -35,6 +35,7 @@ import { BlogIdPostIdInputDto } from '../input.dto/blog-id-post-id-input.dto';
 import { UpdatePostCommand } from '../../application/use-cases/posts/commands/update-post.command';
 import { PostUpdateDto } from '../../../public/application/types/post.update.dto';
 import { DeletePostCommand } from '../../application/use-cases/posts/commands/delete-post.command';
+import { BCommentsQueryRepository } from '../../infrastructure/query.repositories/b-comments-query.repository';
 
 @SkipThrottle()
 @Controller('blogger/blogs')
@@ -43,6 +44,7 @@ export class BlogsPostsController {
     private commandBus: CommandBus,
     private blogsQueryRepository: BBlogsQueryRepository,
     private postsQueryRepository: BPostsQueryRepository,
+    private commentsQueryRepository: BCommentsQueryRepository,
   ) {}
 
   @UseGuards(BearerAuthGuard)
@@ -52,6 +54,18 @@ export class BlogsPostsController {
     @Req() req: RequestWithUser,
   ) {
     return await this.blogsQueryRepository.getBlogsByUserId(
+      query,
+      req.user.userId,
+    );
+  }
+
+  @UseGuards(BearerAuthGuard)
+  @Get('comments')
+  async findCommentsByBlog(
+    @Query(new QueryTransformPipe()) query: QueryParamsDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return await this.commentsQueryRepository.getCommentsByBlog(
       query,
       req.user.userId,
     );
