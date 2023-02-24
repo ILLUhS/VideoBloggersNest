@@ -17,16 +17,19 @@ export class BCommentsQueryRepository {
   ) {}
 
   async getCommentsByBlog(searchParams: QueryParamsDto, userId: string) {
+    //берём все блоги юзера
     const blogs = await this.blogModel
       .find({ userId: userId })
       .where({ isBanned: false })
       .exec();
     const blogsId = blogs.map((b) => b.id);
+    //ищем все посты юзера
     const posts = await this.postModel
       .find({ blogId: blogsId })
       .where({ isBanned: false })
       .exec();
     const postsId = posts.map((p) => p.id);
+    //ищем все комментарии ко всем постам юзера
     const comments = await this.commentModel
       .find({ postId: postsId })
       .where({ isBanned: false })
