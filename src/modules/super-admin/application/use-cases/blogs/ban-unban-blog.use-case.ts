@@ -20,7 +20,8 @@ export class BanUnbanBlogUseCase
       throw new BadRequestException({
         message: [{ field: 'blogId', message: 'invalid id' }],
       });
-    blog.setBanStatus(isBanned);
+    if (isBanned) blog.ban();
+    else blog.unban();
     await this.blogsRepository.save(blog);
     const posts = await this.postsRepository.findPostsByBlogId(blogId);
     if (posts.length)

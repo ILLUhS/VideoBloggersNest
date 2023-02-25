@@ -48,6 +48,10 @@ export class SaBlogsQueryRepository {
           userId: blog.userId,
           userLogin: blog.userLogin,
         },
+        banInfo: {
+          isBanned: blog.isBanned,
+          banDate: blog.banDate,
+        },
       })),
     };
   }
