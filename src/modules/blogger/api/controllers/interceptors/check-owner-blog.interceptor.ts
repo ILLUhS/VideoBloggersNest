@@ -1,10 +1,10 @@
 import {
+  CallHandler,
+  ExecutionContext,
+  ForbiddenException,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
   NotFoundException,
-  ForbiddenException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { BBlogsService } from '../../../application/services/b-blogs.service';
@@ -18,7 +18,10 @@ export class CheckOwnerBlogInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<any>> {
     const req: RequestWithUser = context.switchToHttp().getRequest();
-    if (req.originalUrl.split('/')[2] === 'blogs') {
+    if (
+      req.originalUrl.split('/')[2] === 'blogs' ||
+      req.originalUrl.split('/')[3] === 'blog'
+    ) {
       let id: string;
       if (req.params.id) id = req.params.id;
       else if (req.params.blogId) id = req.params.blogId;
