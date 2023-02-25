@@ -57,13 +57,14 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
     const lastIndex = firstIndex + searchParams.pageSize - 1;
     //берём нужную часть массива
     bannedUsers = bannedUsers.slice(firstIndex, lastIndex);
+    if (searchParams.sortBy === 'createdAt') searchParams.sortBy = 'banDate';
     bannedUsers.sort((a, b) => {
       const elemA = a[searchParams.sortBy];
       const elemB = b[searchParams.sortBy];
       let result = elemA.localeCompare(elemB);
       /*if (elemA < elemB) result = -1;
-      else if (elemA > elemB) result = 1;
-      else result = 0;*/
+        else if (elemA > elemB) result = 1;
+        else result = 0;*/
       if (searchParams.sortDirection === 'desc') result = -result;
       return result;
     });
