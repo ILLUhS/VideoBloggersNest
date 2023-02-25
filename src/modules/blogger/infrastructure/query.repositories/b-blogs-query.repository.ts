@@ -56,20 +56,17 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
     bannedUsers.sort((a, b) => {
       const elemA: string = a[searchParams.sortBy];
       const elemB: string = b[searchParams.sortBy];
-      let result = elemA.localeCompare(elemB, undefined, {
-        localeMatcher: 'lookup',
-        caseFirst: 'upper',
-      });
-      /*if (elemA < elemB) result = -1;
-        else if (elemA > elemB) result = 1;
-        else result = 0;*/
+      let result;
+      if (elemA < elemB) result = -1;
+      else if (elemA > elemB) result = 1;
+      else result = 0;
       if (searchParams.sortDirection === 'desc') result = -result;
       return result;
     });
     //первый элемент на странице
     const firstIndex = (searchParams.pageNumber - 1) * searchParams.pageSize;
     //последний элемент на странице
-    const lastIndex = firstIndex + searchParams.pageSize - 1;
+    const lastIndex = firstIndex + searchParams.pageSize;
     //берём нужную часть массива
     bannedUsers = bannedUsers.slice(firstIndex, lastIndex);
 
