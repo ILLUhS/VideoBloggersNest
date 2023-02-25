@@ -21,12 +21,14 @@ import { SaCommentsRepository } from './infrastructure/repositories/sa-comments.
 import { SaReactionsRepository } from './infrastructure/repositories/sa-reactions.repository';
 import { PublicModule } from '../public/public.module';
 import { DeleteUserUseCase } from './application/use-cases/users/delete-user.use-case';
+import { BanUnbanBlogUseCase } from './application/use-cases/blogs/ban-unban-blog.use-case';
 
 const useCases = [
   BindBlogWithUserUseCase,
   CreateUserUseCase,
   DeleteUserUseCase,
   BanUnbanUserUseCase,
+  BanUnbanBlogUseCase,
 ];
 const services = [SaUsersService, SaBlogsService];
 const repositories = [

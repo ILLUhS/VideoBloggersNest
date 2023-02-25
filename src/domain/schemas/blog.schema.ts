@@ -14,6 +14,7 @@ export type BlogModelMethods = {
   setOwner(userId: string, userLogin: string): void;
   banUser(bannedUser: BannedUserDtoType): void;
   unbanUser(bannedUser: BannedUserDtoType): void;
+  setBanStatus(isBanned: boolean): void;
 };
 export type BlogModelStaticMethods = {
   makeInstance(
@@ -52,6 +53,9 @@ export class Blog {
   @Prop({ required: true })
   userLogin: string;
 
+  @Prop({ required: true })
+  isBanned: boolean;
+
   @Prop({ default: [] })
   bannedUsers: BannedUsersType[];
 
@@ -69,6 +73,7 @@ export class Blog {
       isMembership: false,
       userId: userInfo.userId,
       userLogin: userInfo.login,
+      isBanned: false,
     });
   }
 
@@ -99,6 +104,10 @@ export class Blog {
     );
     this.bannedUsers[userIndex].isBanned = false;
   }
+
+  setBanStatus(isBanned: boolean) {
+    this.isBanned = isBanned;
+  }
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
@@ -108,4 +117,5 @@ BlogSchema.methods = {
   setOwner: Blog.prototype.setOwner,
   banUser: Blog.prototype.banUser,
   unbanUser: Blog.prototype.unbanUser,
+  setBanStatus: Blog.prototype.setBanStatus,
 };
