@@ -21,7 +21,7 @@ export class CreateCommentUseCase
     if (!post) throw new NotFoundException();
     const blog = await this.blogRepository.findById(post.blogId);
     const userIsBanned = blog.bannedUsers.find(
-      (u) => u.userId === commentDto.userId && u.isBanned,
+      (u) => u.id === commentDto.userId && u.isBanned,
     );
     if (userIsBanned) throw new UnauthorizedException();
     const comment = await this.commentsRepository.create(commentDto);

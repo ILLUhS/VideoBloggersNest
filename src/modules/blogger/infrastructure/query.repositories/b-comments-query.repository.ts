@@ -7,14 +7,17 @@ import {
 import { Blog, BlogModelType } from '../../../../domain/schemas/blog.schema';
 import { Post, PostModelType } from '../../../../domain/schemas/post.schema';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
+import { QueryMapHelpers } from '../../../public/infrastructure/query-map.helpers';
 
 @Injectable()
-export class BCommentsQueryRepository {
+export class BCommentsQueryRepository extends QueryMapHelpers {
   constructor(
     @InjectModel(Comment.name) protected commentModel: CommentModelType,
     @InjectModel(Blog.name) protected blogModel: BlogModelType,
     @InjectModel(Post.name) protected postModel: PostModelType,
-  ) {}
+  ) {
+    super();
+  }
 
   async getCommentsByBlog(searchParams: QueryParamsDto, userId: string) {
     //берём все блоги юзера
@@ -34,6 +37,7 @@ export class BCommentsQueryRepository {
       .find({ postId: postsId })
       .where({ isBanned: false })
       .populate({ path: 'post', match: { isBanned: false } })
+      .populate({ path: 'reactions', match: { isBanned: false } })
       .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
       .limit(searchParams.pageSize)
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
@@ -48,21 +52,27 @@ export class BCommentsQueryRepository {
       page: searchParams.pageNumber,
       pageSize: searchParams.pageSize,
       totalCount: commentsCount,
-      items: comments.map((c) => ({
-        id: c.id,
-        content: c.content,
-        commentatorInfo: {
-          userId: c.userId,
-          userLogin: c.userLogin,
-        },
-        createdAt: c.createdAt,
-        postInfo: {
-          id: c.post.id,
-          title: c.post.title,
-          blogId: c.post.blogId,
-          blogName: c.post.blogName,
-        },
-      })),
+      items: await Promise.all(
+        comments.map(async (c) => {
+          const likesInfoMapped = await this.likesInfoMap(c.reactions, userId);
+          return {
+            id: c.id,
+            content: c.content,
+            createdAt: c.createdAt,
+            commentatorInfo: {
+              userId: c.userId,
+              userLogin: c.userLogin,
+            },
+            likesInfo: likesInfoMapped,
+            postInfo: {
+              id: c.post.id,
+              title: c.post.title,
+              blogId: c.post.blogId,
+              blogName: c.post.blogName,
+            },
+          };
+        }),
+      ),
     };
   }
 }

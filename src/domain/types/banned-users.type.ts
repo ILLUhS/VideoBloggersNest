@@ -1,7 +1,7 @@
 export type BannedUsersType = {
-  userId: string;
-  userLogin: string;
+  id: string;
+  login: string;
   isBanned: boolean;
-  banDate: string;
-  banReason: string;
+  banDate: string | null;
+  banReason: string | null;
 };

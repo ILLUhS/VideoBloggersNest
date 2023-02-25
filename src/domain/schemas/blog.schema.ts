@@ -94,8 +94,8 @@ export class Blog {
 
   banUser(bannedUser: BannedUserDtoType) {
     this.bannedUsers.push({
-      userId: bannedUser.id,
-      userLogin: bannedUser.login,
+      id: bannedUser.id,
+      login: bannedUser.login,
       isBanned: true,
       banDate: new Date().toISOString(),
       banReason: bannedUser.banReason,
@@ -103,10 +103,9 @@ export class Blog {
   }
 
   unbanUser(bannedUser: BannedUserDtoType) {
-    const userIndex = this.bannedUsers.findIndex(
-      (e) => e.userId === bannedUser.id,
-    );
+    const userIndex = this.bannedUsers.findIndex((e) => e.id === bannedUser.id);
     this.bannedUsers[userIndex].isBanned = false;
+    this.bannedUsers[userIndex].banReason = null;
     this.bannedUsers[userIndex].banDate = null;
   }
 

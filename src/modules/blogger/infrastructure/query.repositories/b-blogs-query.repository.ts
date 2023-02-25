@@ -48,7 +48,7 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
     let bannedUsers = blog.bannedUsers.filter(
       (b) =>
         b.isBanned === true &&
-        b.userLogin.match(new RegExp(searchParams.searchLoginTerm, 'i')),
+        b.login.match(new RegExp(searchParams.searchLoginTerm, 'i')),
     );
     const usersCount = bannedUsers.length;
     //первый элемент на странице
@@ -74,8 +74,8 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
       pageSize: searchParams.pageSize,
       totalCount: usersCount,
       items: bannedUsers.map((u) => ({
-        id: u.userId,
-        login: u.userLogin,
+        id: u.id,
+        login: u.login,
         banInfo: {
           isBanned: u.isBanned,
           banDate: u.banDate,
