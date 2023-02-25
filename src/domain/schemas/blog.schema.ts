@@ -104,9 +104,11 @@ export class Blog {
 
   unbanUser(bannedUser: BannedUserDtoType) {
     const userIndex = this.bannedUsers.findIndex((e) => e.id === bannedUser.id);
-    this.bannedUsers[userIndex].isBanned = false;
-    this.bannedUsers[userIndex].banReason = null;
-    this.bannedUsers[userIndex].banDate = null;
+    if (userIndex !== -1) {
+      this.bannedUsers[userIndex].isBanned = false;
+      this.bannedUsers[userIndex].banReason = null;
+      this.bannedUsers[userIndex].banDate = null;
+    }
   }
 
   ban() {
