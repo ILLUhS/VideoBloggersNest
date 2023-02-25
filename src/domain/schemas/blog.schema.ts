@@ -57,7 +57,7 @@ export class Blog {
   @Prop({ required: true })
   isBanned: boolean;
 
-  @Prop({ required: true })
+  @Prop({ default: null })
   banDate: string;
 
   @Prop({ default: [] })
