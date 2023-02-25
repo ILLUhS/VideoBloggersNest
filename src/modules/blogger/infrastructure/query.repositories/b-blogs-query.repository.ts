@@ -51,17 +51,13 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
         b.login.match(new RegExp(searchParams.searchLoginTerm, 'i')),
     );
     const usersCount = bannedUsers.length;
-    //первый элемент на странице
-    const firstIndex = (searchParams.pageNumber - 1) * searchParams.pageSize;
-    //последний элемент на странице
-    const lastIndex = firstIndex + searchParams.pageSize - 1;
-    //берём нужную часть массива
-    bannedUsers = bannedUsers.slice(firstIndex, lastIndex);
+    //сортировка
     if (searchParams.sortBy === 'createdAt') searchParams.sortBy = 'banDate';
     bannedUsers.sort((a, b) => {
       const elemA: string = a[searchParams.sortBy];
       const elemB: string = b[searchParams.sortBy];
       let result = elemA.localeCompare(elemB, undefined, {
+        localeMatcher: 'lookup',
         caseFirst: 'upper',
       });
       /*if (elemA < elemB) result = -1;
@@ -70,6 +66,12 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
       if (searchParams.sortDirection === 'desc') result = -result;
       return result;
     });
+    //первый элемент на странице
+    const firstIndex = (searchParams.pageNumber - 1) * searchParams.pageSize;
+    //последний элемент на странице
+    const lastIndex = firstIndex + searchParams.pageSize - 1;
+    //берём нужную часть массива
+    bannedUsers = bannedUsers.slice(firstIndex, lastIndex);
 
     return {
       pagesCount: Math.ceil(usersCount / searchParams.pageSize),
