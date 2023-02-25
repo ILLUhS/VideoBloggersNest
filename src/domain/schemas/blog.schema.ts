@@ -107,6 +107,7 @@ export class Blog {
       (e) => e.userId === bannedUser.id,
     );
     this.bannedUsers[userIndex].isBanned = false;
+    this.bannedUsers[userIndex].banDate = null;
   }
 
   ban() {
@@ -116,7 +117,7 @@ export class Blog {
 
   unban() {
     this.isBanned = false;
-    this.banDate = new Date().toISOString();
+    this.banDate = null;
   }
 }
 

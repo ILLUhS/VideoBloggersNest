@@ -13,8 +13,8 @@ export class BBlogsRepository {
   async findById(id: string): Promise<BlogDocument | null> {
     return this.blogModel.findOne({ id: id });
   }
-  async findByUserId(userId: string): Promise<BlogDocument | null> {
-    return this.blogModel.findOne({ userId: userId });
+  async findByUserId(userId: string): Promise<BlogDocument[] | null> {
+    return this.blogModel.find({ userId: userId }).exec();
   }
   async deleteById(id: string): Promise<boolean> {
     return (

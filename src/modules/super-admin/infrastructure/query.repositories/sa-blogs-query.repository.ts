@@ -17,14 +17,7 @@ export class SaBlogsQueryRepository {
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
       .select({
         _id: 0,
-        id: 1,
-        name: 1,
-        description: 1,
-        websiteUrl: 1,
-        createdAt: 1,
-        isMembership: 1,
-        userId: 1,
-        userLogin: 1,
+        __v: 0,
       })
       .exec();
     const blogsCount = await this.blogModel

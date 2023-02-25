@@ -8,6 +8,7 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
@@ -18,6 +19,7 @@ import RequestWithUser from '../../../../api/interfaces/request-with-user.interf
 import { QueryTransformPipe } from '../../../public/api/pipes/query-transform.pipe';
 import { QueryParamsDto } from '../../../super-admin/api/dto/query-params.dto';
 import { BBlogsQueryRepository } from '../../infrastructure/query.repositories/b-blogs-query.repository';
+import { CheckOwnerBlogInterceptor } from './interceptors/check-owner-blog.interceptor';
 
 @SkipThrottle()
 @Controller('blogger/users')
@@ -28,6 +30,7 @@ export class BUsersController {
   ) {}
 
   @UseGuards(BearerAuthGuard)
+  @UseInterceptors(CheckOwnerBlogInterceptor)
   @Get('blog/:id')
   async findBannedUsersByBlog(
     @Param('id') blogId: string,
