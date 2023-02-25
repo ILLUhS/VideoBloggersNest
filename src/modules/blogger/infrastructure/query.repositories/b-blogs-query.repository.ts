@@ -59,9 +59,11 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
     bannedUsers = bannedUsers.slice(firstIndex, lastIndex);
     if (searchParams.sortBy === 'createdAt') searchParams.sortBy = 'banDate';
     bannedUsers.sort((a, b) => {
-      const elemA = a[searchParams.sortBy];
-      const elemB = b[searchParams.sortBy];
-      let result = elemA.localeCompare(elemB);
+      const elemA: string = a[searchParams.sortBy];
+      const elemB: string = b[searchParams.sortBy];
+      let result = elemA.localeCompare(elemB, undefined, {
+        sensitivity: 'case',
+      });
       /*if (elemA < elemB) result = -1;
         else if (elemA > elemB) result = 1;
         else result = 0;*/
