@@ -13,6 +13,7 @@ export class BlogsQueryRepository {
       .find({
         name: { $regex: searchParams.searchNameTerm, $options: 'i' },
       })
+      .where({ isBanned: false })
       .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
       .limit(searchParams.pageSize)
       .sort([[searchParams.sortBy, searchParams.sortDirection]])
@@ -49,6 +50,7 @@ export class BlogsQueryRepository {
   async findBlogById(id: string): Promise<BlogsViewType | null> {
     return await this.blogModel
       .findOne({ id: id })
+      .where({ isBanned: false })
       .select({
         _id: 0,
         id: 1,
