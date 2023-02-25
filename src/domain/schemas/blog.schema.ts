@@ -60,7 +60,7 @@ export class Blog {
   @Prop({ default: null })
   banDate: string;
 
-  @Prop({ default: [] })
+  @Prop({ required: true, default: [] })
   bannedUsers: BannedUsersType[];
 
   static makeInstance(

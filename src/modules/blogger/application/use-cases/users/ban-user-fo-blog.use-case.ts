@@ -34,6 +34,7 @@ export class BanUserFoBlogUseCase
         login: bannedUser.login,
         banReason: banDto.banReason,
       });
+    blog.markModified('bannedUsers'); //монгус не видит изменения во вложенном массиве
     await this.blogsRepository.save(blog);
   }
 }

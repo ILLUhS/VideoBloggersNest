@@ -62,7 +62,7 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
       const elemA: string = a[searchParams.sortBy];
       const elemB: string = b[searchParams.sortBy];
       let result = elemA.localeCompare(elemB, undefined, {
-        sensitivity: 'case',
+        caseFirst: 'upper',
       });
       /*if (elemA < elemB) result = -1;
         else if (elemA > elemB) result = 1;
