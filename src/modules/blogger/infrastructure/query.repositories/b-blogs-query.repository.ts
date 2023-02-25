@@ -60,10 +60,10 @@ export class BBlogsQueryRepository extends BlogsQueryRepository {
     bannedUsers.sort((a, b) => {
       const elemA = a[searchParams.sortBy];
       const elemB = b[searchParams.sortBy];
-      let result;
-      if (elemA < elemB) result = -1;
+      let result = elemA.localeCompare(elemB);
+      /*if (elemA < elemB) result = -1;
       else if (elemA > elemB) result = 1;
-      else result = 0;
+      else result = 0;*/
       if (searchParams.sortDirection === 'desc') result = -result;
       return result;
     });
